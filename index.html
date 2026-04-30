@@ -190,19 +190,6 @@
         table.dataTable {
             font-size: 0.9rem;
             }
-           // 初始化 DataTable
-                            table = $('#fundTable').DataTable({
-                                data: data,
-                                columns: columns,
-                                scrollX: true,         // 允許橫向捲動
-                                scrollY: 'calc(100vh - 320px)', // 🌟 關鍵新增：設定表格最大高度，這會自動開啟表頭固定功能！
-                                scrollCollapse: true,  // 🌟 關鍵新增：如果資料筆數太少，表格高度會自動縮放
-                                pageLength: 20,        // 預設每頁顯示 20 筆
-                                language: {
-                                    url: "https://cdn.datatables.net/plug-ins/1.13.6/i18n/zh-HANT.json"
-                                }
-                            });
-        
     </style>
 </head>
 <body>
@@ -425,12 +412,14 @@
                             document.getElementById('loadingText').style.display = 'none';
                             document.getElementById('fundTable').style.display = 'table';
 
-                            // 初始化 DataTable
+                           // 初始化 DataTable
                             table = $('#fundTable').DataTable({
                                 data: data,
                                 columns: columns,
-                                scrollX: true, // 允許表格橫向捲動
-                                pageLength: 20,
+                                scrollX: true,         // 允許橫向捲動
+                                scrollY: 'calc(100vh - 320px)', // 設定表格最大高度，啟動表頭固定功能
+                                scrollCollapse: true,  // 如果資料少於高度，自動縮小
+                                pageLength: 20,        // 預設每頁顯示 20 筆
                                 language: {
                                     url: "https://cdn.datatables.net/plug-ins/1.13.6/i18n/zh-HANT.json"
                                 }

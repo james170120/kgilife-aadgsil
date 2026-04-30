@@ -51,42 +51,40 @@
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 
     <script>
-        // 設定 CSV 檔案名稱與編碼
-        const csvFileName = encodeURI("data_20260430110928招財進保.csv");
+        // 先嘗試不使用 encodeURI，直接輸入完整檔名
+        const csvFileName = "data_20260430110928招財進保.csv";
 
         Papa.parse(csvFileName, {
             download: true,
             header: true,
             skipEmptyLines: true,
-            encoding: "Big5", // 處理台灣常見的 CSV 中文編碼
+            encoding: "Big5",
             complete: function(results) {
                 const data = results.data;
                 
-                // 動態抓取 CSV 標頭來建立表格欄位
                 if(data.length > 0) {
                     const columns = Object.keys(data[0]).map(function(key) {
                         return { title: key, data: key };
                     });
 
-                    // 隱藏載入文字，顯示表格
                     document.getElementById('loadingText').style.display = 'none';
                     document.getElementById('fundTable').style.display = 'table';
 
-                    // 初始化 DataTables
                     $('#fundTable').DataTable({
                         data: data,
                         columns: columns,
-                        pageLength: 25, // 預設每頁顯示 25 筆
-                        order: [[ 11, 'desc' ]], // 預設用第 12 個欄位 (假設是 一年(%)) 降冪排序
+                        pageLength: 25,
+                        order: [[ 11, 'desc' ]],
                         language: {
-                            // 設定繁體中文介面
                             url: "https://cdn.datatables.net/plug-ins/1.13.6/i18n/zh-HANT.json"
                         }
                     });
+                } else {
+                    document.getElementById('loadingText').innerText = "CSV 檔案內似乎沒有資料哦！";
                 }
             },
             error: function(err) {
-                document.getElementById('loadingText').innerText = "讀取資料失敗，請確認檔案是否存在且檔名正確。";
+                document.getElementById('loadingText').innerText = "讀取失敗！如果您是直接點擊檔案開啟，請改用 GitHub Pages 或本機伺服器瀏覽。";
                 console.error("CSV 解析錯誤:", err);
             }
         });

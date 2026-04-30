@@ -1,4 +1,56 @@
-<script>
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>基金資料擷取與分析</title>
+    
+    <!-- 引入 DataTables CSS 樣式 -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .loading {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>📊 基金績效分析儀表板</h1>
+        <p id="loadingText" class="loading">資料載入中，請稍候...</p>
+        
+        <!-- 資料表呈現區 -->
+        <table id="fundTable" class="display" style="width:100%; display:none;"></table>
+    </div>
+
+    <!-- 引入 jQuery (DataTables 依賴) -->
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <!-- 引入 PapaParse (解析 CSV) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <!-- 引入 DataTables JS -->
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+    <script>
         const csvFileName = "data_20260430110928招財進保.csv";
 
         // 1. 用 fetch 抓取原始二進位資料 (ArrayBuffer)，避開 GitHub 的強制編碼
@@ -51,3 +103,5 @@
                 console.error("Fetch 錯誤:", err);
             });
     </script>
+</body>
+</html>

@@ -6,7 +6,9 @@
     <title>基金資料擷取與分析 - 招財進保</title>
     
     <!-- 引入 DataTables CSS 樣式 -->
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">  
+    <!-- 🌟 新增：引入 FixedColumns CSS 樣式 -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/4.3.0/css/fixedColumns.dataTables.min.css">
     
     <style>
         :root {
@@ -274,6 +276,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <!-- 引入 DataTables -->
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <!-- 🌟 新增：引入 FixedColumns JS 套件 -->
+    <script src="https://cdn.datatables.net/fixedcolumns/4.3.0/js/dataTables.fixedColumns.min.js"></script>
 
     <script>
         // 設定檔案名稱
@@ -412,13 +416,19 @@
                             document.getElementById('loadingText').style.display = 'none';
                             document.getElementById('fundTable').style.display = 'table';
 
-                           // 初始化 DataTable
+                            // 初始化 DataTable
                             table = $('#fundTable').DataTable({
                                 data: data,
                                 columns: columns,
                                 scrollX: true,         // 允許橫向捲動
-                                scrollY: 'calc(100vh - 320px)', // 設定表格最大高度，啟動表頭固定功能
+                                scrollY: 'calc(100vh - 320px)', // 設定表格最大高度，啟動表頭固定
                                 scrollCollapse: true,  // 如果資料少於高度，自動縮小
+                                
+                                // 🌟 關鍵新增：啟動凍結欄位，left: 1 代表固定左邊第一欄
+                                fixedColumns: {
+                                    left: 1 
+                                },
+                                
                                 pageLength: 20,        // 預設每頁顯示 20 筆
                                 language: {
                                     url: "https://cdn.datatables.net/plug-ins/1.13.6/i18n/zh-HANT.json"

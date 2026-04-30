@@ -1,93 +1,53 @@
-<!DOCTYPE html>
-<html lang="zh-TW">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>基金資料擷取與分析</title>
-    
-    <!-- 引入 DataTables CSS 樣式 -->
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
-    
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            padding: 20px;
-            background-color: #f8f9fa;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        h1 {
-            color: #333;
-            text-align: center;
-        }
-        .loading {
-            text-align: center;
-            color: #666;
-            font-style: italic;
-        }
-    </style>
-</head>
-<body>
-
-    <div class="container">
-        <h1>📊 基金績效分析儀表板</h1>
-        <p id="loadingText" class="loading">資料載入中，請稍候...</p>
-        
-        <!-- 資料表呈現區 -->
-        <table id="fundTable" class="display" style="width:100%; display:none;"></table>
-    </div>
-
-    <!-- 引入 jQuery (DataTables 依賴) -->
-    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-    <!-- 引入 PapaParse (解析 CSV) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-    <!-- 引入 DataTables JS -->
-    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-
-    <script>
-        // 先嘗試不使用 encodeURI，直接輸入完整檔名
+<script>
         const csvFileName = "data_20260430110928招財進保.csv";
 
-        Papa.parse(csvFileName, {
-            download: true,
-            header: true,
-            skipEmptyLines: true,
-            encoding: "UTF-8",
-            complete: function(results) {
-                const data = results.data;
-                
-                if(data.length > 0) {
-                    const columns = Object.keys(data[0]).map(function(key) {
-                        return { title: key, data: key };
-                    });
+        // 1. 用 fetch 抓取原始二進位資料 (ArrayBuffer)，避開 GitHub 的強制編碼
+        fetch(csvFileName)
+            .then(response => {
+                if (!response.ok) throw new Error("找不到檔案或網路錯誤");
+                return response.arrayBuffer();
+            })
+            .then(buffer => {
+                // 2. 手動強制使用 Big5 解碼
+                const decoder = new TextDecoder('big5');
+                const csvText = decoder.decode(buffer);
 
-                    document.getElementById('loadingText').style.display = 'none';
-                    document.getElementById('fundTable').style.display = 'table';
+                // 3. 將解碼後正確的中文字串，交給 PapaParse 處理
+                Papa.parse(csvText, {
+                    header: true,
+                    skipEmptyLines: true,
+                    complete: function(results) {
+                        const data = results.data;
+                        
+                        if(data.length > 0) {
+                            const columns = Object.keys(data[0]).map(function(key) {
+                                return { title: key, data: key };
+                            });
 
-                    $('#fundTable').DataTable({
-                        data: data,
-                        columns: columns,
-                        pageLength: 25,
-                        order: [[ 11, 'desc' ]],
-                        language: {
-                            url: "https://cdn.datatables.net/plug-ins/1.13.6/i18n/zh-HANT.json"
+                            document.getElementById('loadingText').style.display = 'none';
+                            document.getElementById('fundTable').style.display = 'table';
+
+                            $('#fundTable').DataTable({
+                                data: data,
+                                columns: columns,
+                                pageLength: 25,
+                                order: [[ 11, 'desc' ]],
+                                language: {
+                                    url: "https://cdn.datatables.net/plug-ins/1.13.6/i18n/zh-HANT.json"
+                                }
+                            });
+                        } else {
+                            document.getElementById('loadingText').innerText = "CSV 檔案內似乎沒有資料哦！";
                         }
-                    });
-                } else {
-                    document.getElementById('loadingText').innerText = "CSV 檔案內似乎沒有資料哦！";
-                }
-            },
-            error: function(err) {
-                document.getElementById('loadingText').innerText = "讀取失敗！如果您是直接點擊檔案開啟，請改用 GitHub Pages 或本機伺服器瀏覽。";
-                console.error("CSV 解析錯誤:", err);
-            }
-        });
+                    },
+                    error: function(err) {
+                        document.getElementById('loadingText').innerText = "解析失敗！請確認檔案內容格式。";
+                        console.error("CSV 解析錯誤:", err);
+                    }
+                });
+            })
+            .catch(err => {
+                document.getElementById('loadingText').innerText = "讀取檔案失敗！請確認檔名是否完全正確，或等候幾分鐘讓 GitHub Pages 更新。";
+                console.error("Fetch 錯誤:", err);
+            });
     </script>
-</body>
-</html>

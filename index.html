@@ -6,8 +6,8 @@
     <title>基金資料擷取與分析 - 招財進保</title>
     
     <!-- 引入 DataTables CSS 樣式 -->
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">  
-    <!-- 🌟 新增：引入 FixedColumns CSS 樣式 -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <!-- 引入 FixedColumns CSS 樣式 -->
     <link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/4.3.0/css/fixedColumns.dataTables.min.css">
     
     <style>
@@ -43,7 +43,7 @@
         /* 儀表板主要佈局 */
         .dashboard-container {
             display: flex;
-            height: calc(100vh - 60px); /* 扣除 Header 高度 */
+            height: calc(100vh - 60px);
             overflow: hidden;
         }
 
@@ -97,7 +97,7 @@
         select, input[type="number"] {
             width: 100%;
             padding: 8px 10px;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
             border: 1px solid #ccc;
             border-radius: 4px;
             box-sizing: border-box;
@@ -108,6 +108,11 @@
             outline: none;
             border-color: var(--accent-color);
             box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+
+        /* 讓輸入框和下拉選單靠緊一點 */
+        .input-group-compact {
+            margin-bottom: -5px;
         }
 
         .btn-group {
@@ -191,7 +196,7 @@
         /* 讓 DataTables 字體稍微小一點以容納更多資料 */
         table.dataTable {
             font-size: 0.9rem;
-            }
+        }
     </style>
 </head>
 <body>
@@ -211,30 +216,29 @@
                     <button class="quick-btn">科技股</button>
                     <button class="quick-btn">高股息</button>
                     <button class="quick-btn">穩健平衡</button>
-                    <!-- 這裡的按鈕功能暫時不寫，留作 UI 佔位 -->
                 </div>
             </div>
 
-            <!-- 區塊 2: 下拉式選單 -->
+            <!-- 區塊 2: 報酬率與幣別篩選 (🌟這次大幅升級的區塊) -->
             <div class="filter-section">
-                <div class="filter-title">2. 基本條件篩選</div>
+                <div class="filter-title">2. 報酬率與幣別篩選</div>
                 
-                <label for="filterReturn">A. 報酬率篩選 (大於等於)</label>
-                <select id="filterReturn">
-                    <option value="">-- 不限 --</option>
-                    <option value="10">一年報酬率 >= 10%</option>
-                    <option value="15">一年報酬率 >= 15%</option>
-                    <option value="20">一年報酬率 >= 20%</option>
-                    <option value="since_inception">成立以來為正報酬</option>
-                    <option value="custom">自訂一年報酬率 (%)</option>
+                <label class="input-group-compact" for="filterReturnPeriod">A. 選擇報酬率期間</label>
+                <select id="filterReturnPeriod">
+                    <option value="三個月(%)">三個月 (%)</option>
+                    <option value="六個月(%)">六個月 (%)</option>
+                    <option value="一年(%)" selected>一年 (%)</option>
+                    <option value="三年(%)">三年 (%)</option>
+                    <option value="成立以來(%)">成立以來 (%)</option>
                 </select>
-                <!-- 隱藏的自訂報酬率輸入框，選擇 custom 時顯示 -->
-                <input type="number" id="customReturnInput" placeholder="請輸入自訂%數" style="display:none;" step="0.1">
 
-                <label for="filterCurrency">B. 幣別</label>
+                <label class="input-group-compact" for="filterReturnValue">B. 目標報酬率 (大於等於 %)</label>
+                <input type="number" id="filterReturnValue" placeholder="例如填入 15，即代表 >= 15%" step="0.1">
+
+                <label class="input-group-compact" for="filterCurrency">C. 幣別</label>
                 <select id="filterCurrency">
                     <option value="">-- 不限 --</option>
-                    <!-- 這裡的選項會根據 CSV 內容動態生成 -->
+                    <!-- 動態生成選項 -->
                 </select>
             </div>
 
@@ -242,16 +246,16 @@
             <div class="filter-section">
                 <div class="filter-title">3. 進階數值條件</div>
                 
-                <label for="filterNav">A. 淨值 (小於等於)</label>
+                <label class="input-group-compact" for="filterNav">A. 淨值 (小於等於)</label>
                 <input type="number" id="filterNav" placeholder="例如: 20" step="0.01">
 
-                <label for="filterStdDev">B. 年化標準差 (小於等於)</label>
+                <label class="input-group-compact" for="filterStdDev">B. 年化標準差 (小於等於)</label>
                 <input type="number" id="filterStdDev" placeholder="風險容忍度，例如: 15" step="0.1">
 
-                <label for="filterSharpe">C. 年化Sharpe (大於等於)</label>
+                <label class="input-group-compact" for="filterSharpe">C. 年化Sharpe (大於等於)</label>
                 <input type="number" id="filterSharpe" placeholder="CP值，例如: 0.5" step="0.01">
 
-                <label for="filterBeta">D. 年化Beta (小於等於)</label>
+                <label class="input-group-compact" for="filterBeta">D. 年化Beta (小於等於)</label>
                 <input type="number" id="filterBeta" placeholder="波動度，例如: 1" step="0.01">
             </div>
 
@@ -276,28 +280,15 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <!-- 引入 DataTables -->
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-    <!-- 🌟 新增：引入 FixedColumns JS 套件 -->
+    <!-- 引入 FixedColumns -->
     <script src="https://cdn.datatables.net/fixedcolumns/4.3.0/js/dataTables.fixedColumns.min.js"></script>
 
     <script>
-        // 設定檔案名稱
         const csvFileName = "data_20260430110928招財進保.csv";
-        let table; // 宣告為全域變數，方便之後操作篩選
+        let table;
 
-        // 處理「自訂報酬率」的欄位顯示/隱藏
-        document.getElementById('filterReturn').addEventListener('change', function() {
-            const customInput = document.getElementById('customReturnInput');
-            if (this.value === 'custom') {
-                customInput.style.display = 'block';
-            } else {
-                customInput.style.display = 'none';
-                customInput.value = ''; // 清空值
-            }
-            table.draw(); // 觸發重繪
-        });
-
-        // 監聽所有輸入框與下拉選單的變化，一旦改變就重繪表格 (即時篩選)
-        const filterInputs = ['filterCurrency', 'filterReturn', 'customReturnInput', 'filterNav', 'filterStdDev', 'filterSharpe', 'filterBeta'];
+        // 🌟 註冊監聽器：當任何篩選欄位變動時，即時重繪表格
+        const filterInputs = ['filterReturnPeriod', 'filterReturnValue', 'filterCurrency', 'filterNav', 'filterStdDev', 'filterSharpe', 'filterBeta'];
         filterInputs.forEach(id => {
             const element = document.getElementById(id);
             if(element) {
@@ -307,11 +298,10 @@
             }
         });
 
-        // 清空按鈕功能
+        // 🌟 清空按鈕邏輯：重置所有欄位
         document.getElementById('btnReset').addEventListener('click', () => {
-            document.getElementById('filterReturn').value = '';
-            document.getElementById('customReturnInput').style.display = 'none';
-            document.getElementById('customReturnInput').value = '';
+            document.getElementById('filterReturnPeriod').value = '一年(%)'; // 恢復預設值為一年
+            document.getElementById('filterReturnValue').value = '';
             document.getElementById('filterCurrency').value = '';
             document.getElementById('filterNav').value = '';
             document.getElementById('filterStdDev').value = '';
@@ -320,72 +310,60 @@
             if(table) table.draw();
         });
 
-        // 核心邏輯：自訂 DataTables 的搜尋功能
+        // 🌟 核心邏輯：自訂 DataTables 搜尋引擎
         $.fn.dataTable.ext.search.push(
             function( settings, data, dataIndex ) {
-                // 取得各個篩選條件的值
-                let fReturn = document.getElementById('filterReturn').value;
-                let fCustomReturn = document.getElementById('customReturnInput').value;
-                let fCurrency = document.getElementById('filterCurrency').value;
+                // 取得目前輸入的篩選條件
+                let fReturnPeriod = document.getElementById('filterReturnPeriod').value; // 選到的期間文字 (例如: 三個月(%))
+                let fReturnValue = parseFloat(document.getElementById('filterReturnValue').value); // 目標 % 數
                 
+                let fCurrency = document.getElementById('filterCurrency').value;
                 let fNav = parseFloat(document.getElementById('filterNav').value) || null;
                 let fStdDev = parseFloat(document.getElementById('filterStdDev').value) || null;
                 let fSharpe = parseFloat(document.getElementById('filterSharpe').value) || null;
                 let fBeta = parseFloat(document.getElementById('filterBeta').value) || null;
 
-                // **請注意這裡的索引值 (Index)** 
-                // data[2] 代表第3個欄位(幣別)，data[8] 代表淨值，依此類推。
-                // 必須根據你的 CSV 實際欄位順序進行微調！
-                // 目前假設順序為: 0:標的名稱, 1:代碼, 2:幣別... 8:淨值, 11:一年(%), 13:成立以來(%), 14:年化標準差, 15:年化Sharpe, 16:年化Beta
-                
-                // 為了避免錯誤，我們會動態尋找欄位索引 (在初始化時尋找，詳見下方)
+                // 尋找各欄位的 Index
                 let cCurrency = settings.aoColumns.findIndex(c => c.sTitle === '幣別');
                 let cNav = settings.aoColumns.findIndex(c => c.sTitle === '淨值');
-                let c1YearReturn = settings.aoColumns.findIndex(c => c.sTitle === '一年(%)');
-                let cInception = settings.aoColumns.findIndex(c => c.sTitle === '成立以來(%)');
                 let cStdDev = settings.aoColumns.findIndex(c => c.sTitle === '年化標準差');
                 let cSharpe = settings.aoColumns.findIndex(c => c.sTitle === '年化Sharpe');
                 let cBeta = settings.aoColumns.findIndex(c => c.sTitle === '年化Beta');
+                
+                // 動態尋找使用者選擇的「報酬率期間」對應的欄位 Index
+                let cTargetReturn = settings.aoColumns.findIndex(c => c.sTitle === fReturnPeriod);
 
-                // 取得目前這筆資料的數值
+                // 取得這筆資料在這些欄位的值
                 let rowCurrency = cCurrency >= 0 ? data[cCurrency] : '';
                 let rowNav = cNav >= 0 ? parseFloat(data[cNav]) : null;
-                let row1YearReturn = c1YearReturn >= 0 ? parseFloat(data[c1YearReturn]) : null;
-                let rowInception = cInception >= 0 ? parseFloat(data[cInception]) : null;
                 let rowStdDev = cStdDev >= 0 ? parseFloat(data[cStdDev]) : null;
                 let rowSharpe = cSharpe >= 0 ? parseFloat(data[cSharpe]) : null;
                 let rowBeta = cBeta >= 0 ? parseFloat(data[cBeta]) : null;
+                let rowTargetReturn = cTargetReturn >= 0 ? parseFloat(data[cTargetReturn]) : null;
 
                 // 1. 幣別篩選
                 if (fCurrency && rowCurrency !== fCurrency) return false;
 
-                // 2. 報酬率篩選
-                if (fReturn) {
-                    if (fReturn === 'since_inception') {
-                        if (isNaN(rowInception) || rowInception <= 0) return false;
-                    } else if (fReturn === 'custom') {
-                        let customVal = parseFloat(fCustomReturn);
-                        if (!isNaN(customVal) && (isNaN(row1YearReturn) || row1YearReturn < customVal)) return false;
-                    } else {
-                        let targetVal = parseFloat(fReturn);
-                        if (!isNaN(targetVal) && (isNaN(row1YearReturn) || row1YearReturn < targetVal)) return false;
-                    }
+                // 2. 動態報酬率篩選 (如果有填寫目標數字)
+                if (!isNaN(fReturnValue)) {
+                    // 如果這檔基金該期間沒資料(NaN)，或者報酬率小於目標值，就隱藏
+                    if (isNaN(rowTargetReturn) || rowTargetReturn < fReturnValue) return false;
                 }
 
                 // 3. 進階數值篩選
-                if (fNav !== null && (isNaN(rowNav) || rowNav > fNav)) return false; // 淨值 <=
-                if (fStdDev !== null && (isNaN(rowStdDev) || rowStdDev > fStdDev)) return false; // 標準差 <=
-                if (fSharpe !== null && (isNaN(rowSharpe) || rowSharpe < fSharpe)) return false; // Sharpe >=
-                if (fBeta !== null && (isNaN(rowBeta) || rowBeta > fBeta)) return false; // Beta <=
+                if (fNav !== null && (isNaN(rowNav) || rowNav > fNav)) return false; 
+                if (fStdDev !== null && (isNaN(rowStdDev) || rowStdDev > fStdDev)) return false; 
+                if (fSharpe !== null && (isNaN(rowSharpe) || rowSharpe < fSharpe)) return false; 
+                if (fBeta !== null && (isNaN(rowBeta) || rowBeta > fBeta)) return false; 
 
-                return true; // 若都通過條件，則顯示
+                return true; 
             }
         );
 
-        // 讀取 CSV 資料 (使用 fetch 避免編碼問題)
+        // 讀取 CSV 資料
         fetch(csvFileName)
             .then(response => {
-                if (!response.ok) throw new Error("找不到檔案或網路錯誤");
+                if (!response.ok) throw new Error("找不到檔案");
                 return response.arrayBuffer();
             })
             .then(buffer => {
@@ -403,7 +381,6 @@
                                 return { title: key, data: key };
                             });
 
-                            // 動態產生幣別的下拉選單選項
                             let uniqueCurrencies = [...new Set(data.map(item => item['幣別']))].filter(Boolean);
                             let currencySelect = document.getElementById('filterCurrency');
                             uniqueCurrencies.forEach(curr => {
@@ -416,20 +393,17 @@
                             document.getElementById('loadingText').style.display = 'none';
                             document.getElementById('fundTable').style.display = 'table';
 
-                            // 初始化 DataTable
+                            // 初始化 DataTable (已包含固定表頭與左側欄位)
                             table = $('#fundTable').DataTable({
                                 data: data,
                                 columns: columns,
-                                scrollX: true,         // 允許橫向捲動
-                                scrollY: 'calc(100vh - 320px)', // 設定表格最大高度，啟動表頭固定
-                                scrollCollapse: true,  // 如果資料少於高度，自動縮小
-                                
-                                // 🌟 關鍵新增：啟動凍結欄位，left: 1 代表固定左邊第一欄
+                                scrollX: true,         
+                                scrollY: 'calc(100vh - 320px)', 
+                                scrollCollapse: true,  
                                 fixedColumns: {
                                     left: 1 
                                 },
-                                
-                                pageLength: 20,        // 預設每頁顯示 20 筆
+                                pageLength: 20,
                                 language: {
                                     url: "https://cdn.datatables.net/plug-ins/1.13.6/i18n/zh-HANT.json"
                                 }

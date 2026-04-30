@@ -189,6 +189,23 @@
         /* 讓 DataTables 字體稍微小一點以容納更多資料 */
         table.dataTable {
             font-size: 0.9rem;
+            /* --- 固定表頭 (Sticky Header) 的關鍵設定 --- */
+        
+        /* 1. 確保表格容器可以捲動且有相對定位 */
+        .dataTables_scrollBody {
+            max-height: calc(100vh - 200px); /* 限制表格最大高度，依據你的螢幕可微調 */
+            overflow-y: auto !important;
+        }
+
+        /* 2. 將表頭 (thead) 和裡面的 th 設定為 sticky */
+        table.dataTable thead th, 
+        table.dataTable thead td {
+            position: sticky;
+            top: 0;
+            background-color: #f8f9fa; /* 必須設定背景色，否則捲動時會透明重疊 */
+            z-index: 10; /* 確保表頭蓋在資料列上方 */
+            border-bottom: 2px solid var(--border-color); /* 讓表頭和資料有一條明顯的界線 */
+            box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.1); /* 加一點陰影更立體 */
         }
     </style>
 </head>

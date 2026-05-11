@@ -31,6 +31,7 @@
             background-color: var(--primary-bg);
             color: var(--text-main);
             font-size: 14px;
+            overflow: hidden; /* 🌟 鎖死外層捲軸，確保橫向捲軸固定在底部 */
         }
 
         /* 頂部導航列 */
@@ -40,6 +41,7 @@
             box-shadow: 0 1px 3px rgba(0,0,0,0.05);
             display: flex;
             align-items: center;
+            justify-content: space-between; /* 為了讓標題置左排版 */
             border-bottom: 1px solid var(--border-light);
         }
 
@@ -66,6 +68,46 @@
             overflow-y: auto;
             flex-shrink: 0;
             border-right: 1px solid var(--border-light);
+        }
+
+        /* 🌟 核心新增：先進的保單切換器 (Segmented Control) 樣式 */
+        .policy-switcher {
+            display: flex;
+            background: #e2e8f0;
+            padding: 4px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .policy-option {
+            flex: 1;
+            text-align: center;
+            padding: 8px 0;
+            font-size: 0.9rem;
+            font-weight: 600;
+            z-index: 1;
+            cursor: pointer;
+            transition: color 0.3s;
+            color: #64748b;
+        }
+
+        .policy-option.active {
+            color: var(--text-main);
+        }
+
+        /* 切換時的白色滑塊動畫 */
+        .switcher-slide {
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: calc(50% - 4px); /* 假設兩個選項，所以寬度是一半 */
+            height: calc(100% - 8px);
+            background: #fff;
+            border-radius: 9px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 0;
         }
 
         .filter-card {
@@ -183,7 +225,7 @@
         .main-content {
             flex-grow: 1;
             padding: 20px;
-            overflow-y: hidden;
+            overflow: hidden; /* 🌟 確保外層不捲動 */
         }
 
         .table-wrapper {
@@ -241,14 +283,15 @@
         table.dataTable tbody tr:hover {
             background-color: #f8fafc !important; /* 懸停變色 */
         }
-        /* 🌟 新增：限制名稱寬度並處理省略號 */
+        
+        /* 🌟 限制名稱寬度並處理省略號 */
         .name-container {
-            max-width: 200px;         /* 你可以根據喜好調整寬度，例如 180px 或 220px */
-            white-space: nowrap;      /* 強制不換行 */
-            overflow: hidden;         /* 隱藏超出部分 */
-            text-overflow: ellipsis;  /* 顯示 ... */
+            max-width: 200px;         
+            white-space: nowrap;      
+            overflow: hidden;         
+            text-overflow: ellipsis;  
             display: block;
-            cursor: help;             /* 讓滑鼠變成問號，提示使用者靠近有資訊 */
+            cursor: help;             
         }
 
         /* 讓固定欄位的背景保持白色，避免省略文字重疊感 */
@@ -260,12 +303,19 @@
 <body>
 
     <header>
-        <h1>📈 招財進保｜智慧基金篩選系統</h1>
+        <h1>📈 招財進保｜智慧保單與基金分析</h1>
     </header>
 
     <div class="dashboard-container">
         <div class="sidebar">
             
+            <label style="font-weight: 700; color: var(--text-main); margin-bottom: 10px;">目前檢視保單：</label>
+            <div class="policy-switcher" id="policySwitcher">
+                <div class="switcher-slide" id="switcherSlide"></div>
+                <div class="policy-option active" onclick="switchPolicy(0, 'data_20260511191422招財進保.csv')">招財進保</div>
+                <div class="policy-option" onclick="switchPolicy(1, 'data_20260511193452一生傳富.csv')">一生傳富</div>
+            </div>
+
             <div class="filter-card">
                 <div class="filter-title">探索策略 (一鍵快篩)</div>
                 <div class="quick-filters">
@@ -331,8 +381,27 @@
     <script src="https://cdn.datatables.net/fixedcolumns/4.3.0/js/dataTables.fixedColumns.min.js"></script>
 
     <script>
-        const csvFileName = "data_20260511191422招財進保.csv";
+        // 預設載入的第一個保單檔案
+        let currentFile = 'data_20260511191422招財進保.csv';
         let table;
+
+        // 🌟 核心新增：切換保單與重新載入資料庫的函式
+        function switchPolicy(index, fileName) {
+            // 1. 更新按鈕的 CSS 狀態
+            const options = document.querySelectorAll('.policy-option');
+            options.forEach(opt => opt.classList.remove('active'));
+            options[index].classList.add('active');
+            
+            // 2. 移動背後的白色滑塊 (利用 transform 達到平滑動畫)
+            document.getElementById('switcherSlide').style.transform = `translateX(${index * 100}%)`;
+            
+            // 3. 清空目前的篩選條件 (避免舊條件干擾新保單)
+            document.getElementById('btnReset').click();
+
+            // 4. 更新檔案名稱並觸發重新載入
+            currentFile = fileName;
+            loadCsvData(currentFile);
+        }
 
         // 🌟 註冊監聽器：當任何篩選欄位變動時，即時重繪並「自動排序」
         const filterInputs = ['filterReturnPeriod', 'filterReturnValue', 'filterCurrency', 'filterNav', 'filterStdDev', 'filterSharpe', 'filterBeta'];
@@ -373,23 +442,19 @@
             if(table) table.draw();
         });
 
-        // --- 🌟 一鍵快篩腳本 (預設幫使用者填入數值) ---
+        // 一鍵快篩腳本
         function applyQuickFilter(type) {
-            // 先清空
             document.getElementById('btnReset').click();
             
             if (type === 'tech') {
-                // 找尋高爆發的：一年報酬>20%，通常夏普也不錯
                 document.getElementById('filterReturnPeriod').value = '一年(%)';
                 document.getElementById('filterReturnValue').value = '20';
                 document.getElementById('filterSharpe').value = '0.5';
             } else if (type === 'dividend') {
-                // 穩健高股息：標準差不能太高，要求三年長線報酬為正
                 document.getElementById('filterReturnPeriod').value = '三年(%)';
                 document.getElementById('filterReturnValue').value = '15';
                 document.getElementById('filterStdDev').value = '15';
             } else if (type === 'lowrisk') {
-                // 低波動：Beta < 0.8, 標準差 < 10
                 document.getElementById('filterBeta').value = '0.8';
                 document.getElementById('filterStdDev').value = '10';
             }
@@ -432,101 +497,125 @@
             }
         );
 
-        fetch(csvFileName)
-            .then(response => response.arrayBuffer())
-            .then(buffer => {
-                const decoder = new TextDecoder('big5');
-                const csvText = decoder.decode(buffer);
+        // 🌟 核心新增：將「讀取並渲染表格」包裝成一個獨立函式，方便重複呼叫
+        function loadCsvData(fileName) {
+            fetch(fileName)
+                .then(response => {
+                    if (!response.ok) { throw new Error("找不到檔案：" + fileName); }
+                    return response.arrayBuffer();
+                })
+                .then(buffer => {
+                    const decoder = new TextDecoder('big5');
+                    const csvText = decoder.decode(buffer);
 
-                Papa.parse(csvText, {
-                    header: true,
-                    skipEmptyLines: true,
-                    complete: function(results) {
-                        const data = results.data;
-                        if(data.length > 0) {
-                            
-                            // 🌟 智慧判斷欄位：替不同資料加上紅綠顏色、標籤與名稱截斷
-                            const columns = Object.keys(data[0]).map(function(key) {
-                                let columnConfig = { title: key, data: key };
+                    Papa.parse(csvText, {
+                        header: true,
+                        skipEmptyLines: true,
+                        complete: function(results) {
+                            const data = results.data;
+                            if(data.length > 0) {
                                 
-                                // 針對「標的名稱」進行截斷與浮動視窗處理
-                                if (key === '標的名稱') {
-                                    columnConfig.render = function (data, type, row) {
-                                        if (type === 'display' && data) {
-                                            return `<span class="name-container" title="${data}">${data}</span>`;
-                                        }
-                                        return data;
-                                    };
-                                    columnConfig.width = "200px";
+                                // 如果表格已經存在，必須先銷毀並清空 HTML，否則會報錯
+                                if ($.fn.DataTable.isDataTable('#fundTable')) {
+                                    table.destroy();
+                                    $('#fundTable').empty(); 
                                 }
-
-                                // 🌟 關鍵修復：定義哪些欄位是「數字」，並正確處理排序
-                                const numericColumns = ['淨值', '三個月(%)', '六個月(%)', '一年(%)', '三年(%)', '成立以來(%)', '年化標準差', '年化Sharpe', '年化Beta'];
                                 
-                                if (numericColumns.includes(key)) {
-                                    columnConfig.render = function (data, type, row) {
-                                        let val = parseFloat(data);
-
-                                        // 1. 處理「排序 (sort)」時的邏輯：轉換成真正數字，沒資料的丟到最底
-                                        if (type === 'sort' || type === 'type') {
-                                            return isNaN(val) ? -999999 : val; 
-                                        }
-
-                                        // 2. 處理「顯示 (display)」時的邏輯：紅綠字上色
-                                        if (type === 'display') {
-                                            if (key.includes('(%)') || key === '年化Sharpe' || key === '年化Beta') {
-                                                if (!isNaN(val)) {
-                                                    if (val > 0) return `<span class="val-up">${data}</span>`;
-                                                    if (val < 0) return `<span class="val-down">${data}</span>`;
-                                                }
+                                // 🌟 智慧判斷欄位：替不同資料加上紅綠顏色、標籤與名稱截斷
+                                const columns = Object.keys(data[0]).map(function(key) {
+                                    let columnConfig = { title: key, data: key };
+                                    
+                                    // 針對「標的名稱」進行截斷與浮動視窗處理
+                                    if (key === '標的名稱') {
+                                        columnConfig.render = function (data, type, row) {
+                                            if (type === 'display' && data) {
+                                                return `<span class="name-container" title="${data}">${data}</span>`;
                                             }
-                                            return data; // 如果是淨值或標準差，就直接顯示黑字
-                                        }
+                                            return data;
+                                        };
+                                        columnConfig.width = "200px";
+                                    }
 
-                                        return data;
-                                    };
-                                }
-                                
-                                // 風險等級自動產生漂亮 Badge
-                                if (key === '風險收益等級') {
-                                    columnConfig.render = function ( data, type, row ) {
-                                        if (type === 'display') {
-                                            if (data === 'RR1' || data === 'RR2') return `<span class="badge badge-rr12">${data}</span>`;
-                                            if (data === 'RR3') return `<span class="badge badge-rr3">${data}</span>`;
-                                            if (data === 'RR4' || data === 'RR5') return `<span class="badge badge-rr45">${data}</span>`;
-                                        }
-                                        return data;
-                                    };
-                                }
-                                
-                                return columnConfig;
-                            });
+                                    // 🌟 關鍵修復：定義哪些欄位是「數字」，並正確處理排序
+                                    const numericColumns = ['淨值', '三個月(%)', '六個月(%)', '一年(%)', '三年(%)', '成立以來(%)', '年化標準差', '年化Sharpe', '年化Beta'];
+                                    
+                                    if (numericColumns.includes(key)) {
+                                        columnConfig.render = function (data, type, row) {
+                                            let val = parseFloat(data);
 
-                            let uniqueCurrencies = [...new Set(data.map(item => item['幣別']))].filter(Boolean);
-                            let currencySelect = document.getElementById('filterCurrency');
-                            uniqueCurrencies.forEach(curr => {
-                                let option = document.createElement('option');
-                                option.value = curr;
-                                option.text = curr;
-                                currencySelect.appendChild(option);
-                            });
+                                            // 1. 處理「排序 (sort)」時的邏輯
+                                            if (type === 'sort' || type === 'type') {
+                                                return isNaN(val) ? -999999 : val; 
+                                            }
 
-                            table = $('#fundTable').DataTable({
-                                data: data,
-                                columns: columns,
-                                scrollX: true,         
-                                scrollY: 'calc(100vh - 290px)', // 🌟 關鍵修改：多扣除 90px 給底部的分頁資訊與捲軸 
-                                scrollCollapse: true,  
-                                fixedColumns: { left: 1 },
-                                pageLength: 10,
-                                language: { url: "https://cdn.datatables.net/plug-ins/1.13.6/i18n/zh-HANT.json" },
-                                // 預設拿掉 DataTables 醜醜的外框
-                                className: 'row-border'
-                            });
+                                            // 2. 處理「顯示 (display)」時的邏輯：紅綠字上色
+                                            if (type === 'display') {
+                                                if (key.includes('(%)') || key === '年化Sharpe' || key === '年化Beta') {
+                                                    if (!isNaN(val)) {
+                                                        if (val > 0) return `<span class="val-up">${data}</span>`;
+                                                        if (val < 0) return `<span class="val-down">${data}</span>`;
+                                                    }
+                                                }
+                                                return data; // 如果是淨值或標準差，就直接顯示黑字
+                                            }
+
+                                            return data;
+                                        };
+                                    }
+                                    
+                                    // 風險等級自動產生漂亮 Badge
+                                    if (key === '風險收益等級') {
+                                        columnConfig.render = function ( data, type, row ) {
+                                            if (type === 'display') {
+                                                if (data === 'RR1' || data === 'RR2') return `<span class="badge badge-rr12">${data}</span>`;
+                                                if (data === 'RR3') return `<span class="badge badge-rr3">${data}</span>`;
+                                                if (data === 'RR4' || data === 'RR5') return `<span class="badge badge-rr45">${data}</span>`;
+                                            }
+                                            return data;
+                                        };
+                                    }
+                                    
+                                    return columnConfig;
+                                });
+
+                                // 動態更新幣別下拉選單
+                                let uniqueCurrencies = [...new Set(data.map(item => item['幣別']))].filter(Boolean);
+                                let currencySelect = document.getElementById('filterCurrency');
+                                currencySelect.innerHTML = '<option value="">全部幣別</option>'; // 先清空舊的
+                                uniqueCurrencies.forEach(curr => {
+                                    let option = document.createElement('option');
+                                    option.value = curr;
+                                    option.text = curr;
+                                    currencySelect.appendChild(option);
+                                });
+
+                                // 初始化 DataTable
+                                table = $('#fundTable').DataTable({
+                                    data: data,
+                                    columns: columns,
+                                    scrollX: true,         
+                                    scrollY: 'calc(100vh - 290px)', // 🌟 確保橫向捲軸固定在底部 
+                                    scrollCollapse: true,  
+                                    fixedColumns: { left: 1 },
+                                    pageLength: 25,
+                                    language: { url: "https://cdn.datatables.net/plug-ins/1.13.6/i18n/zh-HANT.json" },
+                                    className: 'row-border'
+                                });
+                            }
                         }
-                    }
+                    });
+                })
+                .catch(error => {
+                    console.error("載入失敗：", error);
+                    alert("載入保單資料失敗！請確認檔案 " + fileName + " 是否存在。");
                 });
-            });
+        }
+
+        // 🌟 網頁初次載入時，自動執行一次以讀取預設的保單 (招財進保)
+        document.addEventListener("DOMContentLoaded", function() {
+            loadCsvData(currentFile);
+        });
+
     </script>
 </body>
 </html>

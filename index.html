@@ -241,6 +241,20 @@
         table.dataTable tbody tr:hover {
             background-color: #f8fafc !important; /* 懸停變色 */
         }
+        /* 🌟 新增：限制名稱寬度並處理省略號 */
+        .name-container {
+            max-width: 200px;         /* 你可以根據喜好調整寬度，例如 180px 或 220px */
+            white-space: nowrap;      /* 強制不換行 */
+            overflow: hidden;         /* 隱藏超出部分 */
+            text-overflow: ellipsis;  /* 顯示 ... */
+            display: block;
+            cursor: help;             /* 讓滑鼠變成問號，提示使用者靠近有資訊 */
+        }
+
+        /* 讓固定欄位的背景保持白色，避免省略文字重疊感 */
+        .DTFC_LeftBodyLiner {
+            overflow-x: hidden !important;
+        }
     </style>
 </head>
 <body>
@@ -431,37 +445,51 @@
                         const data = results.data;
                         if(data.length > 0) {
                             
-                            // 🌟 智慧判斷欄位：替不同資料加上紅綠顏色與標籤
-                            const columns = Object.keys(data[0]).map(function(key) {
-                                let columnConfig = { title: key, data: key };
-                                
-                                // 如果標題包含 "(%)" 或是淨值，就套用紅綠字判斷
-                                if (key.includes('(%)') || key === '年化Sharpe' || key === '年化Beta') {
-                                    columnConfig.render = function ( data, type, row ) {
-                                        if (type === 'display') {
-                                            let val = parseFloat(data);
-                                            if (!isNaN(val)) {
-                                                if (val > 0) return `<span class="val-up">${data}</span>`;
-                                                if (val < 0) return `<span class="val-down">${data}</span>`;
-                                            }
-                                        }
-                                        return data;
-                                    };
-                                }
-                                
-                                // 風險等級自動產生漂亮 Badge
-                                if (key === '風險收益等級') {
-                                    columnConfig.render = function ( data, type, row ) {
-                                        if (type === 'display') {
-                                            if (data === 'RR1' || data === 'RR2') return `<span class="badge badge-rr12">${data}</span>`;
-                                            if (data === 'RR3') return `<span class="badge badge-rr3">${data}</span>`;
-                                            if (data === 'RR4' || data === 'RR5') return `<span class="badge badge-rr45">${data}</span>`;
-                                        }
-                                        return data;
-                                    };
-                                }
-                                return columnConfig;
-                            });
+                            // 🌟 智慧判斷欄位：替不同資料加上紅綠顏色、標籤與名稱截斷
+const columns = Object.keys(data[0]).map(function(key) {
+    let columnConfig = { title: key, data: key };
+    
+    // 🌟 新增：針對「標的名稱」進行截斷與浮動視窗處理
+    if (key === '標的名稱') {
+        columnConfig.render = function (data, type, row) {
+            if (type === 'display' && data) {
+                // 使用 title 屬性，滑鼠靠近會自動顯示完整文字
+                return `<span class="name-container" title="${data}">${data}</span>`;
+            }
+            return data;
+        };
+        // 強制設定這一欄的寬度，確保不會被撐開 (數值可依你的喜好調整)
+        columnConfig.width = "200px";
+    }
+
+    // 如果標題包含 "(%)" 或是淨值，就套用紅綠字判斷
+    if (key.includes('(%)') || key === '年化Sharpe' || key === '年化Beta') {
+        columnConfig.render = function ( data, type, row ) {
+            if (type === 'display') {
+                let val = parseFloat(data);
+                if (!isNaN(val)) {
+                    if (val > 0) return `<span class="val-up">${data}</span>`;
+                    if (val < 0) return `<span class="val-down">${data}</span>`;
+                }
+            }
+            return data;
+        };
+    }
+    
+    // 風險等級自動產生漂亮 Badge
+    if (key === '風險收益等級') {
+        columnConfig.render = function ( data, type, row ) {
+            if (type === 'display') {
+                if (data === 'RR1' || data === 'RR2') return `<span class="badge badge-rr12">${data}</span>`;
+                if (data === 'RR3') return `<span class="badge badge-rr3">${data}</span>`;
+                if (data === 'RR4' || data === 'RR5') return `<span class="badge badge-rr45">${data}</span>`;
+            }
+            return data;
+        };
+    }
+    
+    return columnConfig;
+});
 
                             let uniqueCurrencies = [...new Set(data.map(item => item['幣別']))].filter(Boolean);
                             let currencySelect = document.getElementById('filterCurrency');

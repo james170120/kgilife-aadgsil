@@ -3,304 +3,335 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>基金資料擷取與分析 - 招財進保</title>
+    <title>招財進保 - 智慧基金篩選</title>
     
-    <!-- 引入 DataTables CSS 樣式 -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
-    <!-- 引入 FixedColumns CSS 樣式 -->
     <link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/4.3.0/css/fixedColumns.dataTables.min.css">
     
     <style>
         :root {
-            --primary-color: #2c3e50;
-            --secondary-color: #34495e;
-            --accent-color: #3498db;
-            --bg-color: #f8f9fa;
-            --panel-bg: #ffffff;
-            --border-color: #e0e0e0;
+            --primary-bg: #f4f7fb;      /* 更柔和的背景色 */
+            --card-bg: #ffffff;
+            --text-main: #2c3e50;
+            --text-muted: #7f8c8d;
+            --accent-blue: #3a86ff;     /* 現代感的亮藍色 */
+            --accent-hover: #2a6bcc;
+            --border-light: #eef2f7;
+            
+            /* 股市常用色：台股習慣紅漲綠跌 */
+            --color-up: #e74c3c;        /* 紅色代表賺錢 */
+            --color-up-bg: #fdf2f0;
+            --color-down: #2ecc71;      /* 綠色代表賠錢 */
+            --color-down-bg: #effaf4;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             margin: 0;
-            padding: 0;
-            background-color: var(--bg-color);
-            color: var(--primary-color);
+            background-color: var(--primary-bg);
+            color: var(--text-main);
+            font-size: 14px;
         }
 
+        /* 頂部導航列 */
         header {
-            background-color: var(--primary-color);
-            color: white;
+            background-color: #fff;
             padding: 15px 30px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid var(--border-light);
         }
 
         header h1 {
             margin: 0;
-            font-size: 1.5rem;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text-main);
+            letter-spacing: 0.5px;
         }
 
-        /* 儀表板主要佈局 */
+        /* 佈局容器 */
         .dashboard-container {
             display: flex;
             height: calc(100vh - 60px);
             overflow: hidden;
         }
 
-        /* 左側篩選面板 */
+        /* 左側控制面板 (卡片式設計) */
         .sidebar {
-            width: 300px;
-            background-color: var(--panel-bg);
-            border-right: 1px solid var(--border-color);
+            width: 320px;
+            background-color: var(--primary-bg);
             padding: 20px;
             overflow-y: auto;
-            box-shadow: 2px 0 5px rgba(0,0,0,0.05);
             flex-shrink: 0;
+            border-right: 1px solid var(--border-light);
         }
 
-        .filter-section {
-            margin-bottom: 25px;
-            padding-bottom: 15px;
-            border-bottom: 1px dashed var(--border-color);
-        }
-        
-        .filter-section:last-child {
-            border-bottom: none;
+        .filter-card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.03);
+            margin-bottom: 15px;
+            border: 1px solid rgba(0,0,0,0.02);
         }
 
         .filter-title {
-            font-weight: 600;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-main);
             margin-bottom: 15px;
-            color: var(--secondary-color);
             display: flex;
             align-items: center;
         }
 
+        /* 標題左側的小飾條 */
         .filter-title::before {
             content: '';
             display: inline-block;
             width: 4px;
-            height: 16px;
-            background-color: var(--accent-color);
+            height: 14px;
+            background-color: var(--accent-blue);
             margin-right: 8px;
-            border-radius: 2px;
+            border-radius: 4px;
         }
 
-        /* 表單元素樣式 */
         label {
             display: block;
-            margin-bottom: 5px;
-            font-size: 0.9rem;
-            color: #555;
+            margin-bottom: 6px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 500;
         }
 
+        /* 現代化的輸入框與選單 */
         select, input[type="number"] {
             width: 100%;
-            padding: 8px 10px;
+            padding: 10px 12px;
             margin-bottom: 15px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-            font-family: inherit;
+            border: 1px solid #dce4ec;
+            border-radius: 8px;
+            background-color: #fafbfc;
+            font-size: 0.9rem;
+            color: var(--text-main);
+            transition: all 0.2s;
         }
 
         select:focus, input[type="number"]:focus {
             outline: none;
-            border-color: var(--accent-color);
-            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+            border-color: var(--accent-blue);
+            background-color: #fff;
+            box-shadow: 0 0 0 3px rgba(58, 134, 255, 0.15);
         }
 
-        /* 讓輸入框和下拉選單靠緊一點 */
         .input-group-compact {
-            margin-bottom: 4px;
+            margin-bottom: 6px;
         }
 
+        /* 按鈕樣式 */
         .btn-group {
             display: flex;
             gap: 10px;
-            margin-top: 15px;
+            margin-top: 10px;
         }
 
         button {
             flex: 1;
-            padding: 10px;
+            padding: 12px;
             border: none;
-            border-radius: 4px;
+            border-radius: 8px;
             cursor: pointer;
-            font-weight: bold;
-            transition: background-color 0.2s;
-        }
-
-        .btn-apply {
-            background-color: var(--accent-color);
-            color: white;
-        }
-        
-        .btn-apply:hover {
-            background-color: #2980b9;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.2s;
         }
 
         .btn-reset {
-            background-color: #e0e0e0;
-            color: #333;
+            background-color: #eef2f7;
+            color: #475569;
         }
 
         .btn-reset:hover {
-            background-color: #ccc;
+            background-color: #cbd5e1;
+            transform: translateY(-1px);
         }
 
-        /* 預留給「按鈕快速分類」的樣式 */
+        /* 懶人包標籤按鈕 */
         .quick-filters {
             display: flex;
             flex-wrap: wrap;
             gap: 8px;
-            margin-bottom: 15px;
         }
+        
         .quick-btn {
-            background: #f1f2f6;
-            border: 1px solid #ced6e0;
-            color: #57606f;
-            padding: 5px 10px;
-            border-radius: 15px;
+            background: #f1f5f9;
+            color: #475569;
+            padding: 6px 12px;
+            border-radius: 20px;
             font-size: 0.8rem;
-            cursor: pointer;
+            flex: none; /* 取消自動伸展 */
+            border: 1px solid transparent;
         }
-        .quick-btn.active {
-            background: var(--accent-color);
-            color: white;
-            border-color: var(--accent-color);
+        
+        .quick-btn:hover {
+            background: #e2e8f0;
+            border-color: #cbd5e1;
         }
 
-        /* 右側資料表區塊 */
+        /* 右側資料區塊 */
         .main-content {
             flex-grow: 1;
             padding: 20px;
             overflow-y: auto;
-            background-color: var(--bg-color);
         }
 
         .table-wrapper {
-            background: white;
+            background: var(--card-bg);
             padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            border: 1px solid rgba(0,0,0,0.02);
+            height: calc(100% - 40px); /* 滿版高度 */
         }
 
-        .loading {
+        /* --- 視覺化特殊樣式 (紅綠字、標籤) --- */
+        .val-up {
+            color: var(--color-up);
+            font-weight: 600;
+        }
+        
+        .val-down {
+            color: var(--color-down);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 700;
             text-align: center;
-            color: #666;
-            font-style: italic;
-            padding: 50px;
         }
+        .badge-rr12 { background-color: #d1fae5; color: #065f46; } /* 低風險: 綠 */
+        .badge-rr3 { background-color: #fef3c7; color: #92400e; }  /* 中風險: 黃 */
+        .badge-rr45 { background-color: #fee2e2; color: #991b1b; } /* 高風險: 紅 */
 
-        /* 讓 DataTables 字體稍微小一點以容納更多資料 */
+        /* 優化 DataTables 外觀 */
         table.dataTable {
-            font-size: 0.9rem;
+            border-collapse: collapse !important;
+        }
+        table.dataTable thead th {
+            background-color: #f8fafc;
+            color: #64748b;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            border-bottom: 2px solid #e2e8f0 !important;
+            padding: 12px 10px;
+        }
+        table.dataTable tbody td {
+            padding: 12px 10px;
+            border-bottom: 1px solid #f1f5f9;
+            vertical-align: middle;
+        }
+        table.dataTable.row-border tbody tr:first-child th, table.dataTable.row-border tbody tr:first-child td, table.dataTable.display tbody tr:first-child th, table.dataTable.display tbody tr:first-child td {
+            border-top: none;
+        }
+        table.dataTable tbody tr:hover {
+            background-color: #f8fafc !important; /* 懸停變色 */
         }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>📈 招財進保 - 基金分析儀表板</h1>
+        <h1>📈 招財進保｜智慧基金篩選系統</h1>
     </header>
 
     <div class="dashboard-container">
-        <!-- 左側：篩選面板 -->
         <div class="sidebar">
             
-            <!-- 區塊 1: 快速分類 (預留) -->
-            <div class="filter-section">
-                <div class="filter-title">1. 快速分類 (預留)</div>
+            <div class="filter-card">
+                <div class="filter-title">探索策略 (一鍵快篩)</div>
                 <div class="quick-filters">
-                    <button class="quick-btn">科技股</button>
-                    <button class="quick-btn">高股息</button>
-                    <button class="quick-btn">穩健平衡</button>
+                    <button class="quick-btn" onclick="applyQuickFilter('tech')">🚀 科技成長股</button>
+                    <button class="quick-btn" onclick="applyQuickFilter('dividend')">💰 穩健高股息</button>
+                    <button class="quick-btn" onclick="applyQuickFilter('lowrisk')">🛡️ 低波抗跌</button>
                 </div>
             </div>
 
-            <!-- 區塊 2: 報酬率與幣別篩選 (🌟這次大幅升級的區塊) -->
-            <div class="filter-section">
-                <div class="filter-title">2. 報酬率與幣別篩選</div>
+            <div class="filter-card">
+                <div class="filter-title">核心過濾條件</div>
                 
-                <label class="input-group-compact" for="filterReturnPeriod">A. 選擇報酬率期間</label>
+                <label class="input-group-compact" for="filterReturnPeriod">報酬率檢視期間</label>
                 <select id="filterReturnPeriod">
-                    <option value="三個月(%)">三個月 (%)</option>
-                    <option value="六個月(%)">六個月 (%)</option>
-                    <option value="一年(%)" selected>一年 (%)</option>
-                    <option value="三年(%)">三年 (%)</option>
-                    <option value="成立以來(%)">成立以來 (%)</option>
+                    <option value="三個月(%)">近三個月 (%)</option>
+                    <option value="六個月(%)">近六個月 (%)</option>
+                    <option value="一年(%)" selected>近一年 (%)</option>
+                    <option value="三年(%)">近三年 (%)</option>
+                    <option value="成立以來(%)">成立以來總報酬 (%)</option>
                 </select>
 
-                <label class="input-group-compact" for="filterReturnValue">B. 目標報酬率 (大於等於 %)</label>
-                <input type="number" id="filterReturnValue" placeholder="例如填入 15，即代表 >= 15%" step="0.1">
+                <label class="input-group-compact" for="filterReturnValue">要求最低報酬率 (%)</label>
+                <input type="number" id="filterReturnValue" placeholder="例如: 15" step="0.1">
 
-                <label class="input-group-compact" for="filterCurrency">C. 幣別</label>
+                <label class="input-group-compact" for="filterCurrency">計價幣別</label>
                 <select id="filterCurrency">
-                    <option value="">-- 不限 --</option>
-                    <!-- 動態生成選項 -->
+                    <option value="">全部幣別</option>
                 </select>
             </div>
 
-            <!-- 區塊 3: 可填欄位 -->
-            <div class="filter-section">
-                <div class="filter-title">3. 進階數值條件</div>
+            <div class="filter-card">
+                <div class="filter-title">進階風險指標</div>
                 
-                <label class="input-group-compact" for="filterNav">A. 淨值 (小於等於)</label>
+                <label class="input-group-compact" for="filterNav">最新淨值 (≦)</label>
                 <input type="number" id="filterNav" placeholder="例如: 20" step="0.01">
 
-                <label class="input-group-compact" for="filterStdDev">B. 年化標準差 (小於等於)</label>
-                <input type="number" id="filterStdDev" placeholder="風險容忍度，例如: 15" step="0.1">
+                <label class="input-group-compact" for="filterStdDev">年化標準差 (波動風險 ≦)</label>
+                <input type="number" id="filterStdDev" placeholder="建議 < 15" step="0.1">
 
-                <label class="input-group-compact" for="filterSharpe">C. 年化Sharpe (大於等於)</label>
-                <input type="number" id="filterSharpe" placeholder="CP值，例如: 0.5" step="0.01">
+                <label class="input-group-compact" for="filterSharpe">夏普值 (CP值 ≧)</label>
+                <input type="number" id="filterSharpe" placeholder="建議 > 0.5" step="0.01">
 
-                <label class="input-group-compact" for="filterBeta">D. 年化Beta (小於等於)</label>
-                <input type="number" id="filterBeta" placeholder="波動度，例如: 1" step="0.01">
-            </div>
-
-            <div class="btn-group">
-                <button class="btn-reset" id="btnReset">清空條件</button>
+                <label class="input-group-compact" for="filterBeta">Beta值 (大盤連動度 ≦)</label>
+                <input type="number" id="filterBeta" placeholder="建議 < 1" step="0.01">
+                
+                <div class="btn-group">
+                    <button class="btn-reset" id="btnReset">清除所有條件</button>
+                </div>
             </div>
 
         </div>
 
-        <!-- 右側：資料表呈現區 -->
         <div class="main-content">
             <div class="table-wrapper">
-                <p id="loadingText" class="loading">資料載入中，請稍候...</p>
-                <table id="fundTable" class="display nowrap" style="width:100%; display:none;"></table>
+                <table id="fundTable" class="display nowrap" style="width:100%;"></table>
             </div>
         </div>
     </div>
 
-    <!-- 引入 jQuery -->
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-    <!-- 引入 PapaParse -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-    <!-- 引入 DataTables -->
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-    <!-- 引入 FixedColumns -->
     <script src="https://cdn.datatables.net/fixedcolumns/4.3.0/js/dataTables.fixedColumns.min.js"></script>
 
     <script>
         const csvFileName = "data_20260430110928招財進保.csv";
         let table;
 
-        // 🌟 註冊監聽器：當任何篩選欄位變動時，即時重繪表格
+        // 監聽器
         const filterInputs = ['filterReturnPeriod', 'filterReturnValue', 'filterCurrency', 'filterNav', 'filterStdDev', 'filterSharpe', 'filterBeta'];
         filterInputs.forEach(id => {
             const element = document.getElementById(id);
             if(element) {
-                element.addEventListener('input', () => {
-                    if(table) table.draw();
-                });
+                element.addEventListener('input', () => { if(table) table.draw(); });
             }
         });
 
-        // 🌟 清空按鈕邏輯：重置所有欄位
+        // 清空按鈕
         document.getElementById('btnReset').addEventListener('click', () => {
-            document.getElementById('filterReturnPeriod').value = '一年(%)'; // 恢復預設值為一年
+            document.getElementById('filterReturnPeriod').value = '一年(%)';
             document.getElementById('filterReturnValue').value = '';
             document.getElementById('filterCurrency').value = '';
             document.getElementById('filterNav').value = '';
@@ -310,30 +341,47 @@
             if(table) table.draw();
         });
 
-        // 🌟 核心邏輯：自訂 DataTables 搜尋引擎
+        // --- 🌟 一鍵快篩腳本 (預設幫使用者填入數值) ---
+        function applyQuickFilter(type) {
+            // 先清空
+            document.getElementById('btnReset').click();
+            
+            if (type === 'tech') {
+                // 找尋高爆發的：一年報酬>20%，通常夏普也不錯
+                document.getElementById('filterReturnPeriod').value = '一年(%)';
+                document.getElementById('filterReturnValue').value = '20';
+                document.getElementById('filterSharpe').value = '0.5';
+            } else if (type === 'dividend') {
+                // 穩健高股息：標準差不能太高，要求三年長線報酬為正
+                document.getElementById('filterReturnPeriod').value = '三年(%)';
+                document.getElementById('filterReturnValue').value = '15';
+                document.getElementById('filterStdDev').value = '15';
+            } else if (type === 'lowrisk') {
+                // 低波動：Beta < 0.8, 標準差 < 10
+                document.getElementById('filterBeta').value = '0.8';
+                document.getElementById('filterStdDev').value = '10';
+            }
+            if(table) table.draw();
+        }
+
+        // DataTables 自訂搜尋邏輯
         $.fn.dataTable.ext.search.push(
             function( settings, data, dataIndex ) {
-                // 取得目前輸入的篩選條件
-                let fReturnPeriod = document.getElementById('filterReturnPeriod').value; // 選到的期間文字 (例如: 三個月(%))
-                let fReturnValue = parseFloat(document.getElementById('filterReturnValue').value); // 目標 % 數
-                
+                let fReturnPeriod = document.getElementById('filterReturnPeriod').value;
+                let fReturnValue = parseFloat(document.getElementById('filterReturnValue').value);
                 let fCurrency = document.getElementById('filterCurrency').value;
                 let fNav = parseFloat(document.getElementById('filterNav').value) || null;
                 let fStdDev = parseFloat(document.getElementById('filterStdDev').value) || null;
                 let fSharpe = parseFloat(document.getElementById('filterSharpe').value) || null;
                 let fBeta = parseFloat(document.getElementById('filterBeta').value) || null;
 
-                // 尋找各欄位的 Index
                 let cCurrency = settings.aoColumns.findIndex(c => c.sTitle === '幣別');
                 let cNav = settings.aoColumns.findIndex(c => c.sTitle === '淨值');
                 let cStdDev = settings.aoColumns.findIndex(c => c.sTitle === '年化標準差');
                 let cSharpe = settings.aoColumns.findIndex(c => c.sTitle === '年化Sharpe');
                 let cBeta = settings.aoColumns.findIndex(c => c.sTitle === '年化Beta');
-                
-                // 動態尋找使用者選擇的「報酬率期間」對應的欄位 Index
                 let cTargetReturn = settings.aoColumns.findIndex(c => c.sTitle === fReturnPeriod);
 
-                // 取得這筆資料在這些欄位的值
                 let rowCurrency = cCurrency >= 0 ? data[cCurrency] : '';
                 let rowNav = cNav >= 0 ? parseFloat(data[cNav]) : null;
                 let rowStdDev = cStdDev >= 0 ? parseFloat(data[cStdDev]) : null;
@@ -341,16 +389,8 @@
                 let rowBeta = cBeta >= 0 ? parseFloat(data[cBeta]) : null;
                 let rowTargetReturn = cTargetReturn >= 0 ? parseFloat(data[cTargetReturn]) : null;
 
-                // 1. 幣別篩選
                 if (fCurrency && rowCurrency !== fCurrency) return false;
-
-                // 2. 動態報酬率篩選 (如果有填寫目標數字)
-                if (!isNaN(fReturnValue)) {
-                    // 如果這檔基金該期間沒資料(NaN)，或者報酬率小於目標值，就隱藏
-                    if (isNaN(rowTargetReturn) || rowTargetReturn < fReturnValue) return false;
-                }
-
-                // 3. 進階數值篩選
+                if (!isNaN(fReturnValue) && (isNaN(rowTargetReturn) || rowTargetReturn < fReturnValue)) return false;
                 if (fNav !== null && (isNaN(rowNav) || rowNav > fNav)) return false; 
                 if (fStdDev !== null && (isNaN(rowStdDev) || rowStdDev > fStdDev)) return false; 
                 if (fSharpe !== null && (isNaN(rowSharpe) || rowSharpe < fSharpe)) return false; 
@@ -360,12 +400,8 @@
             }
         );
 
-        // 讀取 CSV 資料
         fetch(csvFileName)
-            .then(response => {
-                if (!response.ok) throw new Error("找不到檔案");
-                return response.arrayBuffer();
-            })
+            .then(response => response.arrayBuffer())
             .then(buffer => {
                 const decoder = new TextDecoder('big5');
                 const csvText = decoder.decode(buffer);
@@ -375,10 +411,38 @@
                     skipEmptyLines: true,
                     complete: function(results) {
                         const data = results.data;
-                        
                         if(data.length > 0) {
+                            
+                            // 🌟 智慧判斷欄位：替不同資料加上紅綠顏色與標籤
                             const columns = Object.keys(data[0]).map(function(key) {
-                                return { title: key, data: key };
+                                let columnConfig = { title: key, data: key };
+                                
+                                // 如果標題包含 "(%)" 或是淨值，就套用紅綠字判斷
+                                if (key.includes('(%)') || key === '年化Sharpe' || key === '年化Beta') {
+                                    columnConfig.render = function ( data, type, row ) {
+                                        if (type === 'display') {
+                                            let val = parseFloat(data);
+                                            if (!isNaN(val)) {
+                                                if (val > 0) return `<span class="val-up">${data}</span>`;
+                                                if (val < 0) return `<span class="val-down">${data}</span>`;
+                                            }
+                                        }
+                                        return data;
+                                    };
+                                }
+                                
+                                // 風險等級自動產生漂亮 Badge
+                                if (key === '風險收益等級') {
+                                    columnConfig.render = function ( data, type, row ) {
+                                        if (type === 'display') {
+                                            if (data === 'RR1' || data === 'RR2') return `<span class="badge badge-rr12">${data}</span>`;
+                                            if (data === 'RR3') return `<span class="badge badge-rr3">${data}</span>`;
+                                            if (data === 'RR4' || data === 'RR5') return `<span class="badge badge-rr45">${data}</span>`;
+                                        }
+                                        return data;
+                                    };
+                                }
+                                return columnConfig;
                             });
 
                             let uniqueCurrencies = [...new Set(data.map(item => item['幣別']))].filter(Boolean);
@@ -390,31 +454,21 @@
                                 currencySelect.appendChild(option);
                             });
 
-                            document.getElementById('loadingText').style.display = 'none';
-                            document.getElementById('fundTable').style.display = 'table';
-
-                            // 初始化 DataTable (已包含固定表頭與左側欄位)
                             table = $('#fundTable').DataTable({
                                 data: data,
                                 columns: columns,
                                 scrollX: true,         
-                                scrollY: 'calc(100vh - 320px)', 
+                                scrollY: 'calc(100vh - 200px)', 
                                 scrollCollapse: true,  
-                                fixedColumns: {
-                                    left: 1 
-                                },
-                                pageLength: 20,
-                                language: {
-                                    url: "https://cdn.datatables.net/plug-ins/1.13.6/i18n/zh-HANT.json"
-                                }
+                                fixedColumns: { left: 1 },
+                                pageLength: 25,
+                                language: { url: "https://cdn.datatables.net/plug-ins/1.13.6/i18n/zh-HANT.json" },
+                                // 預設拿掉 DataTables 醜醜的外框
+                                className: 'row-border'
                             });
                         }
                     }
                 });
-            })
-            .catch(err => {
-                document.getElementById('loadingText').innerText = "讀取檔案失敗！";
-                console.error(err);
             });
     </script>
 </body>

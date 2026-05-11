@@ -320,12 +320,30 @@
         const csvFileName = "data_20260430110928招財進保.csv";
         let table;
 
-        // 監聽器
+        // 🌟 註冊監聽器：當任何篩選欄位變動時，即時重繪並「自動排序」
         const filterInputs = ['filterReturnPeriod', 'filterReturnValue', 'filterCurrency', 'filterNav', 'filterStdDev', 'filterSharpe', 'filterBeta'];
         filterInputs.forEach(id => {
             const element = document.getElementById(id);
             if(element) {
-                element.addEventListener('input', () => { if(table) table.draw(); });
+                element.addEventListener('input', () => { 
+                    if(table) {
+                        // 1. 執行過濾邏輯
+                        table.draw(); 
+                        
+                        // 2. 獲取當前選取的「報酬率期間」標題
+                        let fReturnPeriod = document.getElementById('filterReturnPeriod').value;
+                        
+                        // 3. 找出該標題在表格中的索引值 (Column Index)
+                        let colIndex = table.columns().indexes().filter((idx) => {
+                            return table.column(idx).header().innerText === fReturnPeriod;
+                        });
+
+                        // 4. 讓該欄位自動執行「降冪排序」(從高排到低)
+                        if (colIndex.length > 0) {
+                            table.order([colIndex[0], 'desc']).draw();
+                        }
+                    }
+                });
             }
         });
 

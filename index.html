@@ -183,7 +183,7 @@
         .main-content {
             flex-grow: 1;
             padding: 20px;
-            overflow-y: auto;
+            overflow-y: hidden;
         }
 
         .table-wrapper {
@@ -515,7 +515,7 @@
                                 data: data,
                                 columns: columns,
                                 scrollX: true,         
-                                scrollY: 'calc(100vh - 200px)', 
+                                scrollY: 'calc(100vh - 290px)', // 🌟 關鍵修改：多扣除 90px 給底部的分頁資訊與捲軸 
                                 scrollCollapse: true,  
                                 fixedColumns: { left: 1 },
                                 pageLength: 10,

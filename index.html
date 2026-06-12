@@ -10,18 +10,16 @@
     
     <style>
         :root {
-            --primary-bg: #f4f7fb;      /* 更柔和的背景色 */
+            --primary-bg: #f4f7fb;
             --card-bg: #ffffff;
             --text-main: #2c3e50;
             --text-muted: #7f8c8d;
-            --accent-blue: #3a86ff;     /* 現代感的亮藍色 */
+            --accent-blue: #3a86ff;
             --accent-hover: #2a6bcc;
             --border-light: #eef2f7;
-            
-            /* 股市常用色：台股習慣紅漲綠跌 */
-            --color-up: #e74c3c;        /* 紅色代表賺錢 */
+            --color-up: #e74c3c;
             --color-up-bg: #fdf2f0;
-            --color-down: #2ecc71;      /* 綠色代表賠錢 */
+            --color-down: #2ecc71;
             --color-down-bg: #effaf4;
         }
 
@@ -31,17 +29,16 @@
             background-color: var(--primary-bg);
             color: var(--text-main);
             font-size: 14px;
-            overflow: hidden; /* 🌟 鎖死外層捲軸，確保橫向捲軸固定在底部 */
+            overflow: hidden; 
         }
 
-        /* 頂部導航列 */
         header {
             background-color: #fff;
             padding: 15px 30px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.05);
             display: flex;
             align-items: center;
-            justify-content: space-between; /* 為了讓標題置左排版 */
+            justify-content: space-between; 
             border-bottom: 1px solid var(--border-light);
         }
 
@@ -53,14 +50,12 @@
             letter-spacing: 0.5px;
         }
 
-        /* 佈局容器 */
         .dashboard-container {
             display: flex;
             height: calc(100vh - 60px);
             overflow: hidden;
         }
 
-        /* 左側控制面板 (卡片式設計) */
         .sidebar {
             width: 320px;
             background-color: var(--primary-bg);
@@ -70,7 +65,6 @@
             border-right: 1px solid var(--border-light);
         }
 
-        /* 🌟 核心新增：先進的保單切換器 (Segmented Control) 樣式 */
         .policy-switcher {
             display: flex;
             background: #e2e8f0;
@@ -96,12 +90,11 @@
             color: var(--text-main);
         }
 
-        /* 切換時的白色滑塊動畫 */
         .switcher-slide {
             position: absolute;
             top: 4px;
             left: 4px;
-            width: calc(50% - 4px); /* 假設兩個選項，所以寬度是一半 */
+            width: calc(50% - 4px); 
             height: calc(100% - 8px);
             background: #fff;
             border-radius: 9px;
@@ -128,7 +121,6 @@
             align-items: center;
         }
 
-        /* 標題左側的小飾條 */
         .filter-title::before {
             content: '';
             display: inline-block;
@@ -147,7 +139,6 @@
             font-weight: 500;
         }
 
-        /* 現代化的輸入框與選單 */
         select, input[type="number"] {
             width: 100%;
             padding: 10px 12px;
@@ -171,7 +162,6 @@
             margin-bottom: 6px;
         }
 
-        /* 按鈕樣式 */
         .btn-group {
             display: flex;
             gap: 10px;
@@ -199,7 +189,6 @@
             transform: translateY(-1px);
         }
 
-        /* 懶人包標籤按鈕 */
         .quick-filters {
             display: flex;
             flex-wrap: wrap;
@@ -212,7 +201,7 @@
             padding: 6px 12px;
             border-radius: 20px;
             font-size: 0.8rem;
-            flex: none; /* 取消自動伸展 */
+            flex: none;
             border: 1px solid transparent;
         }
         
@@ -221,11 +210,10 @@
             border-color: #cbd5e1;
         }
 
-        /* 右側資料區塊 */
         .main-content {
             flex-grow: 1;
             padding: 20px;
-            overflow: hidden; /* 🌟 確保外層不捲動 */
+            overflow: hidden; 
         }
 
         .table-wrapper {
@@ -234,18 +222,11 @@
             border-radius: 12px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.03);
             border: 1px solid rgba(0,0,0,0.02);
-            height: calc(100% - 40px); /* 滿版高度 */
+            height: calc(100% - 40px); 
         }
 
-        /* --- 視覺化特殊樣式 (紅綠字、標籤) --- */
-        .val-up {
-            color: var(--color-up);
-            font-weight: 600;
-        }
-        
-        .val-down {
-            color: var(--color-down);
-        }
+        .val-up { color: var(--color-up); font-weight: 600; }
+        .val-down { color: var(--color-down); }
 
         .badge {
             display: inline-block;
@@ -255,49 +236,97 @@
             font-weight: 700;
             text-align: center;
         }
-        .badge-rr12 { background-color: #d1fae5; color: #065f46; } /* 低風險: 綠 */
-        .badge-rr3 { background-color: #fef3c7; color: #92400e; }  /* 中風險: 黃 */
-        .badge-rr45 { background-color: #fee2e2; color: #991b1b; } /* 高風險: 紅 */
+        .badge-rr12 { background-color: #d1fae5; color: #065f46; } 
+        .badge-rr3 { background-color: #fef3c7; color: #92400e; }  
+        .badge-rr45 { background-color: #fee2e2; color: #991b1b; } 
 
-        /* 優化 DataTables 外觀 */
-        table.dataTable {
-            border-collapse: collapse !important;
-        }
+        table.dataTable { border-collapse: collapse !important; }
         table.dataTable thead th {
-            background-color: #f8fafc;
-            color: #64748b;
-            font-size: 0.8rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            border-bottom: 2px solid #e2e8f0 !important;
-            padding: 12px 10px;
+            background-color: #f8fafc; color: #64748b; font-size: 0.8rem; font-weight: 600; text-transform: uppercase;
+            border-bottom: 2px solid #e2e8f0 !important; padding: 12px 10px;
         }
-        table.dataTable tbody td {
-            padding: 12px 10px;
-            border-bottom: 1px solid #f1f5f9;
-            vertical-align: middle;
-        }
-        table.dataTable.row-border tbody tr:first-child th, table.dataTable.row-border tbody tr:first-child td, table.dataTable.display tbody tr:first-child th, table.dataTable.display tbody tr:first-child td {
-            border-top: none;
-        }
-        table.dataTable tbody tr:hover {
-            background-color: #f8fafc !important; /* 懸停變色 */
-        }
+        table.dataTable tbody td { padding: 12px 10px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
+        table.dataTable.row-border tbody tr:first-child th, table.dataTable.row-border tbody tr:first-child td, table.dataTable.display tbody tr:first-child th, table.dataTable.display tbody tr:first-child td { border-top: none; }
+        table.dataTable tbody tr:hover { background-color: #f8fafc !important; }
         
-        /* 🌟 限制名稱寬度並處理省略號 */
+        .DTFC_LeftBodyLiner { overflow-x: hidden !important; }
+
+        /* 🌟 新增：讓名稱看起來可以點擊 */
         .name-container {
             max-width: 200px;         
             white-space: nowrap;      
             overflow: hidden;         
             text-overflow: ellipsis;  
             display: block;
-            cursor: help;             
+        }
+        .name-clickable {
+            color: var(--accent-blue);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+        .name-clickable:hover {
+            color: var(--accent-hover);
+            text-decoration: underline;
+        }
+        .info-icon {
+            font-size: 0.85rem;
+            margin-right: 4px;
+            opacity: 0.7;
         }
 
-        /* 讓固定欄位的背景保持白色，避免省略文字重疊感 */
-        .DTFC_LeftBodyLiner {
-            overflow-x: hidden !important;
+        /* 🌟 新增：彈出視窗 (Modal) 樣式 */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.4); z-index: 1000; justify-content: center; align-items: center;
+            backdrop-filter: blur(3px); /* 背景微微模糊的高級感 */
+            animation: fadeIn 0.2s ease-out;
         }
+        
+        .modal-card {
+            background: #fff; width: 90%; max-width: 650px; border-radius: 16px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15); overflow: hidden;
+            display: flex; flex-direction: column; max-height: 85vh;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        .modal-header {
+            background: var(--primary-bg); padding: 18px 24px; border-bottom: 1px solid var(--border-light);
+            display: flex; justify-content: space-between; align-items: flex-start;
+        }
+        
+        .modal-title-group { display: flex; flex-direction: column; gap: 4px; }
+        .modal-title { font-size: 1.25rem; font-weight: 700; color: var(--text-main); margin: 0; line-height: 1.3; }
+        .modal-subtitle { font-size: 0.85rem; color: var(--text-muted); }
+
+        .btn-close-modal {
+            background: none; border: none; font-size: 1.8rem; line-height: 1;
+            color: #94a3b8; cursor: pointer; padding: 0; transition: color 0.2s;
+        }
+        .btn-close-modal:hover { color: #ef4444; }
+
+        .modal-body {
+            padding: 24px; overflow-y: auto; background: #fff;
+        }
+
+        /* Modal 內部的網格資料排版 */
+        .data-section-title {
+            font-size: 0.95rem; font-weight: 700; color: var(--text-main);
+            margin: 0 0 12px 0; display: flex; align-items: center;
+        }
+        .data-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 12px; margin-bottom: 24px;
+        }
+        .data-box {
+            background: #f8fafc; border: 1px solid #e2e8f0; padding: 12px; border-radius: 10px;
+        }
+        .data-label { font-size: 0.75rem; color: #64748b; margin-bottom: 4px; }
+        .data-value { font-size: 1.05rem; font-weight: 600; color: var(--text-main); }
+        .data-value.large { font-size: 1.2rem; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
     </style>
 </head>
 <body>
@@ -308,7 +337,6 @@
 
     <div class="dashboard-container">
         <div class="sidebar">
-            
             <label style="font-weight: 700; color: var(--text-main); margin-bottom: 10px;">目前檢視保單：</label>
             <div class="policy-switcher" id="policySwitcher">
                 <div class="switcher-slide" id="switcherSlide"></div>
@@ -341,9 +369,10 @@
                 <input type="number" id="filterReturnValue" placeholder="例如: 15" step="0.1">
 
                 <label class="input-group-compact" for="filterCurrency">計價幣別</label>
-                <select id="filterCurrency">
-                    <option value="">全部幣別</option>
-                </select>
+                <select id="filterCurrency"><option value="">全部幣別</option></select>
+
+                <label class="input-group-compact" for="filterDividend">配息頻率</label>
+                <select id="filterDividend"><option value="">全部頻率</option></select>
             </div>
 
             <div class="filter-card">
@@ -365,7 +394,6 @@
                     <button class="btn-reset" id="btnReset">清除所有條件</button>
                 </div>
             </div>
-
         </div>
 
         <div class="main-content">
@@ -375,53 +403,52 @@
         </div>
     </div>
 
+    <div class="modal-overlay" id="fundModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <div class="modal-title-group">
+                    <h2 class="modal-title" id="modalFundName">基金名稱</h2>
+                    <span class="modal-subtitle" id="modalFundCode">基金代碼</span>
+                </div>
+                <button class="btn-close-modal" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="modalContentArea">
+                </div>
+        </div>
+    </div>
+
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/fixedcolumns/4.3.0/js/dataTables.fixedColumns.min.js"></script>
 
     <script>
-        // 預設載入的第一個保單檔案
         let currentFile = 'data_20260525190857招財進保.csv';
         let table;
 
-        // 🌟 核心新增：切換保單與重新載入資料庫的函式
         function switchPolicy(index, fileName) {
-            // 1. 更新按鈕的 CSS 狀態
             const options = document.querySelectorAll('.policy-option');
             options.forEach(opt => opt.classList.remove('active'));
             options[index].classList.add('active');
             
-            // 2. 移動背後的白色滑塊 (利用 transform 達到平滑動畫)
             document.getElementById('switcherSlide').style.transform = `translateX(${index * 100}%)`;
-            
-            // 3. 清空目前的篩選條件 (避免舊條件干擾新保單)
             document.getElementById('btnReset').click();
 
-            // 4. 更新檔案名稱並觸發重新載入
             currentFile = fileName;
             loadCsvData(currentFile);
         }
 
-        // 🌟 註冊監聽器：當任何篩選欄位變動時，即時重繪並「自動排序」
-        const filterInputs = ['filterReturnPeriod', 'filterReturnValue', 'filterCurrency', 'filterNav', 'filterStdDev', 'filterSharpe', 'filterBeta'];
+        const filterInputs = ['filterReturnPeriod', 'filterReturnValue', 'filterCurrency', 'filterDividend', 'filterNav', 'filterStdDev', 'filterSharpe', 'filterBeta'];
         filterInputs.forEach(id => {
             const element = document.getElementById(id);
             if(element) {
                 element.addEventListener('input', () => { 
                     if(table) {
-                        // 1. 執行過濾邏輯
                         table.draw(); 
-                        
-                        // 2. 獲取當前選取的「報酬率期間」標題
                         let fReturnPeriod = document.getElementById('filterReturnPeriod').value;
-                        
-                        // 3. 找出該標題在表格中的索引值 (Column Index)
                         let colIndex = table.columns().indexes().filter((idx) => {
                             return table.column(idx).header().innerText === fReturnPeriod;
                         });
-
-                        // 4. 讓該欄位自動執行「降冪排序」(從高排到低)
                         if (colIndex.length > 0) {
                             table.order([colIndex[0], 'desc']).draw();
                         }
@@ -430,11 +457,11 @@
             }
         });
 
-        // 清空按鈕
         document.getElementById('btnReset').addEventListener('click', () => {
             document.getElementById('filterReturnPeriod').value = '一年(%)';
             document.getElementById('filterReturnValue').value = '';
             document.getElementById('filterCurrency').value = '';
+            document.getElementById('filterDividend').value = '';
             document.getElementById('filterNav').value = '';
             document.getElementById('filterStdDev').value = '';
             document.getElementById('filterSharpe').value = '';
@@ -442,10 +469,8 @@
             if(table) table.draw();
         });
 
-        // 一鍵快篩腳本
         function applyQuickFilter(type) {
             document.getElementById('btnReset').click();
-            
             if (type === 'tech') {
                 document.getElementById('filterReturnPeriod').value = '一年(%)';
                 document.getElementById('filterReturnValue').value = '20';
@@ -461,18 +486,19 @@
             if(table) table.draw();
         }
 
-        // DataTables 自訂搜尋邏輯
         $.fn.dataTable.ext.search.push(
             function( settings, data, dataIndex ) {
                 let fReturnPeriod = document.getElementById('filterReturnPeriod').value;
                 let fReturnValue = parseFloat(document.getElementById('filterReturnValue').value);
                 let fCurrency = document.getElementById('filterCurrency').value;
+                let fDividend = document.getElementById('filterDividend').value;
                 let fNav = parseFloat(document.getElementById('filterNav').value) || null;
                 let fStdDev = parseFloat(document.getElementById('filterStdDev').value) || null;
                 let fSharpe = parseFloat(document.getElementById('filterSharpe').value) || null;
                 let fBeta = parseFloat(document.getElementById('filterBeta').value) || null;
 
                 let cCurrency = settings.aoColumns.findIndex(c => c.sTitle === '幣別');
+                let cDividend = settings.aoColumns.findIndex(c => c.sTitle === '配息頻率');
                 let cNav = settings.aoColumns.findIndex(c => c.sTitle === '淨值');
                 let cStdDev = settings.aoColumns.findIndex(c => c.sTitle === '年化標準差');
                 let cSharpe = settings.aoColumns.findIndex(c => c.sTitle === '年化Sharpe');
@@ -480,6 +506,7 @@
                 let cTargetReturn = settings.aoColumns.findIndex(c => c.sTitle === fReturnPeriod);
 
                 let rowCurrency = cCurrency >= 0 ? data[cCurrency] : '';
+                let rowDividend = cDividend >= 0 ? data[cDividend] : '';
                 let rowNav = cNav >= 0 ? parseFloat(data[cNav]) : null;
                 let rowStdDev = cStdDev >= 0 ? parseFloat(data[cStdDev]) : null;
                 let rowSharpe = cSharpe >= 0 ? parseFloat(data[cSharpe]) : null;
@@ -487,6 +514,7 @@
                 let rowTargetReturn = cTargetReturn >= 0 ? parseFloat(data[cTargetReturn]) : null;
 
                 if (fCurrency && rowCurrency !== fCurrency) return false;
+                if (fDividend && rowDividend !== fDividend) return false;
                 if (!isNaN(fReturnValue) && (isNaN(rowTargetReturn) || rowTargetReturn < fReturnValue)) return false;
                 if (fNav !== null && (isNaN(rowNav) || rowNav > fNav)) return false; 
                 if (fStdDev !== null && (isNaN(rowStdDev) || rowStdDev > fStdDev)) return false; 
@@ -497,7 +525,6 @@
             }
         );
 
-        // 🌟 核心新增：將「讀取並渲染表格」包裝成一個獨立函式，方便重複呼叫
         function loadCsvData(fileName) {
             fetch(fileName)
                 .then(response => {
@@ -514,41 +541,36 @@
                         complete: function(results) {
                             const data = results.data;
                             if(data.length > 0) {
-                                
-                                // 如果表格已經存在，必須先銷毀並清空 HTML，否則會報錯
                                 if ($.fn.DataTable.isDataTable('#fundTable')) {
                                     table.destroy();
                                     $('#fundTable').empty(); 
                                 }
                                 
-                                // 🌟 智慧判斷欄位：替不同資料加上紅綠顏色、標籤與名稱截斷
                                 const columns = Object.keys(data[0]).map(function(key) {
                                     let columnConfig = { title: key, data: key };
                                     
-                                    // 針對「標的名稱」進行截斷與浮動視窗處理
+                                    // 🌟 修改：將標的名稱加上 meta.row，方便點擊時抓取整列資料
                                     if (key === '標的名稱') {
-                                        columnConfig.render = function (data, type, row) {
+                                        columnConfig.render = function (data, type, row, meta) {
                                             if (type === 'display' && data) {
-                                                return `<span class="name-container" title="${data}">${data}</span>`;
+                                                return `
+                                                    <span class="name-container name-clickable" data-row-idx="${meta.row}">
+                                                        <span class="info-icon">ℹ️</span>${data}
+                                                    </span>`;
                                             }
                                             return data;
                                         };
                                         columnConfig.width = "200px";
                                     }
 
-                                    // 🌟 關鍵修復：定義哪些欄位是「數字」，並正確處理排序
                                     const numericColumns = ['淨值', '三個月(%)', '六個月(%)', '一年(%)', '三年(%)', '成立以來(%)', '年化標準差', '年化Sharpe', '年化Beta'];
                                     
                                     if (numericColumns.includes(key)) {
                                         columnConfig.render = function (data, type, row) {
                                             let val = parseFloat(data);
-
-                                            // 1. 處理「排序 (sort)」時的邏輯
                                             if (type === 'sort' || type === 'type') {
                                                 return isNaN(val) ? -999999 : val; 
                                             }
-
-                                            // 2. 處理「顯示 (display)」時的邏輯：紅綠字上色
                                             if (type === 'display') {
                                                 if (key.includes('(%)') || key === '年化Sharpe' || key === '年化Beta') {
                                                     if (!isNaN(val)) {
@@ -556,14 +578,12 @@
                                                         if (val < 0) return `<span class="val-down">${data}</span>`;
                                                     }
                                                 }
-                                                return data; // 如果是淨值或標準差，就直接顯示黑字
+                                                return data; 
                                             }
-
                                             return data;
                                         };
                                     }
                                     
-                                    // 風險等級自動產生漂亮 Badge
                                     if (key === '風險收益等級') {
                                         columnConfig.render = function ( data, type, row ) {
                                             if (type === 'display') {
@@ -574,14 +594,12 @@
                                             return data;
                                         };
                                     }
-                                    
                                     return columnConfig;
                                 });
 
-                                // 動態更新幣別下拉選單
                                 let uniqueCurrencies = [...new Set(data.map(item => item['幣別']))].filter(Boolean);
                                 let currencySelect = document.getElementById('filterCurrency');
-                                currencySelect.innerHTML = '<option value="">全部幣別</option>'; // 先清空舊的
+                                currencySelect.innerHTML = '<option value="">全部幣別</option>'; 
                                 uniqueCurrencies.forEach(curr => {
                                     let option = document.createElement('option');
                                     option.value = curr;
@@ -589,12 +607,21 @@
                                     currencySelect.appendChild(option);
                                 });
 
-                                // 初始化 DataTable
+                                let uniqueDividends = [...new Set(data.map(item => item['配息頻率']))].filter(Boolean);
+                                let dividendSelect = document.getElementById('filterDividend');
+                                dividendSelect.innerHTML = '<option value="">全部頻率</option>';
+                                uniqueDividends.forEach(freq => {
+                                    let option = document.createElement('option');
+                                    option.value = freq;
+                                    option.text = freq;
+                                    dividendSelect.appendChild(option);
+                                });
+
                                 table = $('#fundTable').DataTable({
                                     data: data,
                                     columns: columns,
                                     scrollX: true,         
-                                    scrollY: 'calc(100vh - 290px)', // 🌟 確保橫向捲軸固定在底部 
+                                    scrollY: 'calc(100vh - 290px)', 
                                     scrollCollapse: true,  
                                     fixedColumns: { left: 1 },
                                     pageLength: 25,
@@ -611,7 +638,84 @@
                 });
         }
 
-        // 🌟 網頁初次載入時，自動執行一次以讀取預設的保單 (招財進保)
+        // 🌟 核心新增：Modal 互動邏輯與動態生成 HTML
+        $(document).on('click', '.name-clickable', function() {
+            let rowIdx = $(this).attr('data-row-idx');
+            let rowData = table.row(rowIdx).data();
+            
+            if(rowData) {
+                openModal(rowData);
+            }
+        });
+
+        // 將數據轉成有顏色的 HTML
+        function formatVal(val) {
+            let num = parseFloat(val);
+            if (isNaN(num)) return val || '-';
+            if (num > 0) return `<span class="val-up">${val}</span>`;
+            if (num < 0) return `<span class="val-down">${val}</span>`;
+            return val;
+        }
+
+        function formatBadge(val) {
+            if (!val) return '-';
+            if (val === 'RR1' || val === 'RR2') return `<span class="badge badge-rr12">${val}</span>`;
+            if (val === 'RR3') return `<span class="badge badge-rr3">${val}</span>`;
+            if (val === 'RR4' || val === 'RR5') return `<span class="badge badge-rr45">${val}</span>`;
+            return val;
+        }
+
+        function openModal(data) {
+            // 設定標題
+            document.getElementById('modalFundName').innerText = data['標的名稱'];
+            // 如果 CSV 有「代碼」欄位，可以顯示在標題下方，若無則留空
+            document.getElementById('modalFundCode').innerText = data['代碼'] ? `代碼：${data['代碼']}` : '';
+
+            // 生成排版精美的 HTML 內容
+            let contentHtml = `
+                <div class="data-section-title">📊 基礎資訊</div>
+                <div class="data-grid">
+                    <div class="data-box"><div class="data-label">最新淨值</div><div class="data-value large">${data['淨值'] || '-'}</div></div>
+                    <div class="data-box"><div class="data-label">計價幣別</div><div class="data-value">${data['幣別'] || '-'}</div></div>
+                    <div class="data-box"><div class="data-label">風險等級</div><div class="data-value">${formatBadge(data['風險收益等級'])}</div></div>
+                    <div class="data-box"><div class="data-label">配息頻率</div><div class="data-value">${data['配息頻率'] || '-'}</div></div>
+                </div>
+
+                <div class="data-section-title">📈 績效表現</div>
+                <div class="data-grid">
+                    <div class="data-box"><div class="data-label">近三個月</div><div class="data-value">${formatVal(data['三個月(%)'])}</div></div>
+                    <div class="data-box"><div class="data-label">近六個月</div><div class="data-value">${formatVal(data['六個月(%)'])}</div></div>
+                    <div class="data-box"><div class="data-label">近一年</div><div class="data-value">${formatVal(data['一年(%)'])}</div></div>
+                    <div class="data-box"><div class="data-label">近三年</div><div class="data-value">${formatVal(data['三年(%)'])}</div></div>
+                    <div class="data-box"><div class="data-label">成立以來</div><div class="data-value">${formatVal(data['成立以來(%)'])}</div></div>
+                </div>
+
+                <div class="data-section-title">🛡️ 風險與波動指標</div>
+                <div class="data-grid">
+                    <div class="data-box"><div class="data-label">年化標準差</div><div class="data-value">${data['年化標準差'] || '-'}</div></div>
+                    <div class="data-box"><div class="data-label">夏普值 (CP值)</div><div class="data-value">${formatVal(data['年化Sharpe'])}</div></div>
+                    <div class="data-box"><div class="data-label">Beta值 (連動性)</div><div class="data-value">${formatVal(data['年化Beta'])}</div></div>
+                </div>
+            `;
+
+            document.getElementById('modalContentArea').innerHTML = contentHtml;
+            
+            // 顯示 Modal
+            document.getElementById('fundModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('fundModal').style.display = 'none';
+        }
+
+        // 點擊卡片外部的黑色半透明區域，也可以關閉視窗
+        window.onclick = function(event) {
+            let modal = document.getElementById('fundModal');
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+
         document.addEventListener("DOMContentLoaded", function() {
             loadCsvData(currentFile);
         });

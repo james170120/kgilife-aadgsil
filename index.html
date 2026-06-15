@@ -320,7 +320,6 @@
         }
         .data-box {
             background: #f8fafc; border: 1px solid #e2e8f0; padding: 12px; border-radius: 10px;
-            position: relative; /* 給 Tooltip 定位用 */
         }
         .data-label { 
             font-size: 0.75rem; color: #64748b; margin-bottom: 4px; 
@@ -329,39 +328,46 @@
         .data-value { font-size: 1.05rem; font-weight: 600; color: var(--text-main); }
         .data-value.large { font-size: 1.2rem; }
 
-        /* 🌟 新增：懸停提示框 (Tooltip) 專業樣式 */
-        .info-tooltip {
-            position: relative;
-            display: inline-flex;
-            align-items: center;
-            margin-left: 6px;
+        /* 🌟 終極解法：全域提示框 (Global Tooltip) 樣式 */
+        .global-tooltip {
+            position: fixed; /* 浮在全螢幕最上層，無視任何框框 */
+            visibility: hidden;
+            width: 220px;
+            background-color: #334155;
+            color: #fff;
+            text-align: left;
+            border-radius: 6px;
+            padding: 8px 12px;
+            z-index: 999999; /* 保證比所有東西都高 */
+            opacity: 0;
+            transition: opacity 0.2s;
+            font-size: 0.75rem;
+            font-weight: 400;
+            line-height: 1.4;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            pointer-events: none;
         }
+        
+        .global-tooltip::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #334155 transparent transparent transparent;
+        }
+
         .help-icon {
             display: inline-flex; justify-content: center; align-items: center;
             width: 14px; height: 14px; background-color: #cbd5e1; color: #fff;
             border-radius: 50%; font-size: 10px; font-weight: bold; cursor: help;
             transition: background-color 0.2s;
+            margin-left: 6px;
         }
-        .info-tooltip:hover .help-icon {
+        .help-icon:hover {
             background-color: var(--accent-blue);
-        }
-        .tooltip-text {
-            visibility: hidden; width: 200px; background-color: #334155; color: #fff;
-            text-align: left; border-radius: 6px; padding: 8px 12px; position: absolute;
-            z-index: 10; bottom: 130%; left: 50%; transform: translateX(-50%);
-            opacity: 0; transition: opacity 0.2s, bottom 0.2s;
-            font-size: 0.75rem; font-weight: 400; line-height: 1.4;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1); pointer-events: none;
-            white-space: normal; /* 允許換行 */
-        }
-        /* 畫出提示框下方的小三角形 */
-        .tooltip-text::after {
-            content: ""; position: absolute; top: 100%; left: 50%;
-            margin-left: -5px; border-width: 5px; border-style: solid;
-            border-color: #334155 transparent transparent transparent;
-        }
-        .info-tooltip:hover .tooltip-text {
-            visibility: visible; opacity: 1; bottom: 150%;
         }
 
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -424,18 +430,19 @@
                 <label class="input-group-compact" for="filterNav">最新淨值 (≦)</label>
                 <input type="number" id="filterNav" placeholder="例如: 20" step="0.01">
 
+                <!-- 🌟 更乾淨的寫法：將文字放在 data-tooltip 屬性中 -->
                 <label class="input-group-compact" for="filterStdDev">年化標準差 (波動風險 ≦)
-                    <span class="info-tooltip"><span class="help-icon">?</span><span class="tooltip-text">衡量基金的波動大小。數值越大，代表漲跌起伏越劇烈（風險越高）。</span></span>
+                    <span class="help-icon" data-tooltip="衡量基金的波動大小。數值越大，代表漲跌起伏越劇烈（風險越高）。">?</span>
                 </label>
                 <input type="number" id="filterStdDev" placeholder="建議 < 15" step="0.1">
 
                 <label class="input-group-compact" for="filterSharpe">夏普值 (CP值 ≧)
-                    <span class="info-tooltip"><span class="help-icon">?</span><span class="tooltip-text">衡量承受每1%風險能帶來的超額報酬。數值越大越好，代表承擔相同風險下賺得比較多。</span></span>
+                    <span class="help-icon" data-tooltip="衡量承受每1%風險能帶來的超額報酬。數值越大越好，代表承擔相同風險下賺得比較多。">?</span>
                 </label>
                 <input type="number" id="filterSharpe" placeholder="建議 > 0.5" step="0.01">
 
                 <label class="input-group-compact" for="filterBeta">Beta值 (大盤連動度 ≦)
-                    <span class="info-tooltip"><span class="help-icon">?</span><span class="tooltip-text">大盤漲跌1%時，基金跟著漲跌的幅度。大於1代表比大盤活潑，小於1代表比大盤抗跌。</span></span>
+                    <span class="help-icon" data-tooltip="大盤漲跌1%時，基金跟著漲跌的幅度。大於1代表比大盤活潑，小於1代表比大盤抗跌。">?</span>
                 </label>
                 <input type="number" id="filterBeta" placeholder="建議 < 1" step="0.01">
                 
@@ -462,9 +469,13 @@
                 <button class="btn-close-modal" onclick="closeModal()">&times;</button>
             </div>
             <div class="modal-body" id="modalContentArea">
-                </div>
+                <!-- Javascript 會把數據卡片塞進這裡 -->
+            </div>
         </div>
     </div>
+
+    <!-- 🌟 全域隱形提示框 -->
+    <div id="globalTooltip" class="global-tooltip"></div>
 
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
@@ -496,7 +507,7 @@
                         table.draw(); 
                         let fReturnPeriod = document.getElementById('filterReturnPeriod').value;
                         let colIndex = table.columns().indexes().filter((idx) => {
-                            return table.column(idx).header().innerText === fReturnPeriod;
+                            return table.column(idx).header().innerText.replace(/<[^>]*>?/gm, '').trim() === fReturnPeriod.trim();
                         });
                         if (colIndex.length > 0) {
                             table.order([colIndex[0], 'desc']).draw();
@@ -548,14 +559,14 @@
                 let fSharpe = parseFloat(document.getElementById('filterSharpe').value) || null;
                 let fBeta = parseFloat(document.getElementById('filterBeta').value) || null;
 
-                let cInceptionDate = settings.aoColumns.findIndex(c => c.sTitle === '成立日期'); 
-                let cCurrency = settings.aoColumns.findIndex(c => c.sTitle === '幣別');
-                let cDividend = settings.aoColumns.findIndex(c => c.sTitle === '配息頻率');
-                let cNav = settings.aoColumns.findIndex(c => c.sTitle === '淨值');
-                let cStdDev = settings.aoColumns.findIndex(c => c.sTitle === '年化標準差');
-                let cSharpe = settings.aoColumns.findIndex(c => c.sTitle === '年化Sharpe');
-                let cBeta = settings.aoColumns.findIndex(c => c.sTitle === '年化Beta');
-                let cTargetReturn = settings.aoColumns.findIndex(c => c.sTitle === fReturnPeriod);
+                let cInceptionDate = settings.aoColumns.findIndex(c => c.sTitle.includes('成立日期')); 
+                let cCurrency = settings.aoColumns.findIndex(c => c.sTitle.includes('幣別'));
+                let cDividend = settings.aoColumns.findIndex(c => c.sTitle.includes('配息頻率'));
+                let cNav = settings.aoColumns.findIndex(c => c.sTitle.includes('淨值') && !c.sTitle.includes('日期'));
+                let cStdDev = settings.aoColumns.findIndex(c => c.sTitle.includes('年化標準差'));
+                let cSharpe = settings.aoColumns.findIndex(c => c.sTitle.includes('年化Sharpe'));
+                let cBeta = settings.aoColumns.findIndex(c => c.sTitle.includes('年化Beta'));
+                let cTargetReturn = settings.aoColumns.findIndex(c => c.sTitle.includes(fReturnPeriod));
 
                 let rowInceptionDate = cInceptionDate >= 0 ? String(data[cInceptionDate]) : ''; 
                 let rowCurrency = cCurrency >= 0 ? data[cCurrency] : '';
@@ -640,6 +651,11 @@
                                 const columns = Object.keys(data[0]).map(function(key) {
                                     let columnConfig = { title: key, data: key };
                                     
+                                    // 🌟 改變寫法，將說明文字放在 data-tooltip 中
+                                    if (key === '嘉實基金評等') {
+                                        columnConfig.title = '嘉實基金評等 <span class="help-icon" data-tooltip="嘉實資訊(Moneydj)針對績效與風險的綜合評分。最高5顆星，星數越多代表在同類基金中表現越佳。">?</span>';
+                                    }
+
                                     if (key === '標的名稱') {
                                         columnConfig.render = function (data, type, row, meta) {
                                             if (type === 'display' && data) {
@@ -757,13 +773,18 @@
             document.getElementById('modalFundName').innerText = data['標的名稱'];
             document.getElementById('modalFundCode').innerText = data['代碼'] ? `代碼：${data['代碼']}` : '';
 
-            // 🌟 更新：在 Modal 的風險指標標題旁邊加上 Tooltip
             let contentHtml = `
                 <div class="data-section-title">📊 基礎資訊</div>
                 <div class="data-grid">
                     <div class="data-box"><div class="data-label">最新淨值</div><div class="data-value large">${data['淨值'] || '-'}</div></div>
                     <div class="data-box"><div class="data-label">計價幣別</div><div class="data-value">${data['幣別'] || '-'}</div></div>
                     <div class="data-box"><div class="data-label">風險等級</div><div class="data-value">${formatBadge(data['風險收益等級'])}</div></div>
+                    <div class="data-box">
+                        <div class="data-label">嘉實評等
+                            <span class="help-icon" data-tooltip="嘉實(Moneydj)針對績效與風險的綜合評分。最高5顆星，星數越多代表在同類基金中表現越佳。">?</span>
+                        </div>
+                        <div class="data-value" style="color:#eab308; font-weight:700;">${data['嘉實基金評等'] ? data['嘉實基金評等'] + ' ⭐' : '-'}</div>
+                    </div>
                     <div class="data-box"><div class="data-label">配息頻率</div><div class="data-value">${data['配息頻率'] || '-'}</div></div>
                     <div class="data-box"><div class="data-label">成立日期</div><div class="data-value">${data['成立日期'] || '-'}</div></div>
                 </div>
@@ -782,19 +803,19 @@
                 <div class="data-grid">
                     <div class="data-box">
                         <div class="data-label">年化標準差 
-                            <span class="info-tooltip"><span class="help-icon">?</span><span class="tooltip-text">衡量基金的波動大小。數值越大，代表漲跌起伏越劇烈（風險越高）。</span></span>
+                            <span class="help-icon" data-tooltip="衡量基金的波動大小。數值越大，代表漲跌起伏越劇烈（風險越高）。">?</span>
                         </div>
                         <div class="data-value">${data['年化標準差'] || '-'}</div>
                     </div>
                     <div class="data-box">
                         <div class="data-label">夏普值 (CP值)
-                            <span class="info-tooltip"><span class="help-icon">?</span><span class="tooltip-text">衡量承受每1%風險能帶來的超額報酬。數值越大越好，代表承擔相同風險下賺得比較多。</span></span>
+                            <span class="help-icon" data-tooltip="衡量承受每1%風險能帶來的超額報酬。數值越大越好，代表承擔相同風險下賺得比較多。">?</span>
                         </div>
                         <div class="data-value">${formatVal(data['年化Sharpe'])}</div>
                     </div>
                     <div class="data-box">
                         <div class="data-label">Beta值 (連動性)
-                            <span class="info-tooltip"><span class="help-icon">?</span><span class="tooltip-text">大盤漲跌1%時，基金跟著漲跌的幅度。大於1代表比大盤活潑，小於1代表比大盤抗跌。</span></span>
+                            <span class="help-icon" data-tooltip="大盤漲跌1%時，基金跟著漲跌的幅度。大於1代表比大盤活潑，小於1代表比大盤抗跌。">?</span>
                         </div>
                         <div class="data-value">${formatVal(data['年化Beta'])}</div>
                     </div>
@@ -815,6 +836,33 @@
                 closeModal();
             }
         }
+
+        // 🌟 讓 JS 自動精準計算提示框位置，無視任何遮擋！
+        $(document).on('mouseenter', '.help-icon', function() {
+            let text = $(this).attr('data-tooltip');
+            let tooltip = document.getElementById('globalTooltip');
+            tooltip.innerHTML = text;
+            
+            // 先顯示才能抓到實際長度與寬度
+            tooltip.style.visibility = 'visible';
+            tooltip.style.opacity = '1';
+            
+            // 取得問號在螢幕上的絕對位置
+            let rect = this.getBoundingClientRect();
+            
+            // 計算提示框要出現在問號的正上方，並居中對齊
+            let top = rect.top - tooltip.offsetHeight - 8;
+            let left = rect.left + (rect.width / 2) - (tooltip.offsetWidth / 2);
+            
+            tooltip.style.top = top + 'px';
+            tooltip.style.left = left + 'px';
+            
+        }).on('mouseleave', '.help-icon', function() {
+            // 滑鼠離開就隱藏
+            let tooltip = document.getElementById('globalTooltip');
+            tooltip.style.opacity = '0';
+            tooltip.style.visibility = 'hidden';
+        });
 
         document.addEventListener("DOMContentLoaded", function() {
             loadCsvData(currentFile);

@@ -139,7 +139,7 @@
             font-weight: 500;
         }
 
-        select, input[type="number"] {
+        select, input[type="number"], input[type="text"] {
             width: 100%;
             padding: 10px 12px;
             margin-bottom: 15px;
@@ -149,9 +149,10 @@
             font-size: 0.9rem;
             color: var(--text-main);
             transition: all 0.2s;
+            box-sizing: border-box;
         }
 
-        select:focus, input[type="number"]:focus {
+        select:focus, input[type="number"]:focus, input[type="text"]:focus {
             outline: none;
             border-color: var(--accent-blue);
             background-color: #fff;
@@ -251,7 +252,6 @@
         
         .DTFC_LeftBodyLiner { overflow-x: hidden !important; }
 
-        /* 🌟 新增：讓名稱看起來可以點擊 */
         .name-container {
             max-width: 200px;         
             white-space: nowrap;      
@@ -275,11 +275,10 @@
             opacity: 0.7;
         }
 
-        /* 🌟 新增：彈出視窗 (Modal) 樣式 */
         .modal-overlay {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.4); z-index: 1000; justify-content: center; align-items: center;
-            backdrop-filter: blur(3px); /* 背景微微模糊的高級感 */
+            backdrop-filter: blur(3px); 
             animation: fadeIn 0.2s ease-out;
         }
         
@@ -309,7 +308,6 @@
             padding: 24px; overflow-y: auto; background: #fff;
         }
 
-        /* Modal 內部的網格資料排版 */
         .data-section-title {
             font-size: 0.95rem; font-weight: 700; color: var(--text-main);
             margin: 0 0 12px 0; display: flex; align-items: center;
@@ -368,6 +366,9 @@
                 <label class="input-group-compact" for="filterReturnValue">要求最低報酬率 (%)</label>
                 <input type="number" id="filterReturnValue" placeholder="例如: 15" step="0.1">
 
+                <label class="input-group-compact" for="filterInceptionYear">成立年份 (含以前)</label>
+                <input type="number" id="filterInceptionYear" placeholder="例如: 2018 ">
+
                 <label class="input-group-compact" for="filterCurrency">計價幣別</label>
                 <select id="filterCurrency"><option value="">全部幣別</option></select>
 
@@ -423,7 +424,7 @@
     <script src="https://cdn.datatables.net/fixedcolumns/4.3.0/js/dataTables.fixedColumns.min.js"></script>
 
     <script>
-        let currentFile = 'data_20260525190857招財進保.csv';
+        let currentFile = 'data_20260615184130招財進保.csv';
         let table;
 
         function switchPolicy(index, fileName) {
@@ -438,7 +439,7 @@
             loadCsvData(currentFile);
         }
 
-        const filterInputs = ['filterReturnPeriod', 'filterReturnValue', 'filterCurrency', 'filterDividend', 'filterNav', 'filterStdDev', 'filterSharpe', 'filterBeta'];
+        const filterInputs = ['filterReturnPeriod', 'filterReturnValue', 'filterInceptionYear', 'filterCurrency', 'filterDividend', 'filterNav', 'filterStdDev', 'filterSharpe', 'filterBeta'];
         filterInputs.forEach(id => {
             const element = document.getElementById(id);
             if(element) {
@@ -460,6 +461,7 @@
         document.getElementById('btnReset').addEventListener('click', () => {
             document.getElementById('filterReturnPeriod').value = '一年(%)';
             document.getElementById('filterReturnValue').value = '';
+            document.getElementById('filterInceptionYear').value = ''; 
             document.getElementById('filterCurrency').value = '';
             document.getElementById('filterDividend').value = '';
             document.getElementById('filterNav').value = '';
@@ -490,6 +492,7 @@
             function( settings, data, dataIndex ) {
                 let fReturnPeriod = document.getElementById('filterReturnPeriod').value;
                 let fReturnValue = parseFloat(document.getElementById('filterReturnValue').value);
+                let fInceptionYear = document.getElementById('filterInceptionYear').value; 
                 let fCurrency = document.getElementById('filterCurrency').value;
                 let fDividend = document.getElementById('filterDividend').value;
                 let fNav = parseFloat(document.getElementById('filterNav').value) || null;
@@ -497,6 +500,7 @@
                 let fSharpe = parseFloat(document.getElementById('filterSharpe').value) || null;
                 let fBeta = parseFloat(document.getElementById('filterBeta').value) || null;
 
+                let cInceptionDate = settings.aoColumns.findIndex(c => c.sTitle === '成立日期'); 
                 let cCurrency = settings.aoColumns.findIndex(c => c.sTitle === '幣別');
                 let cDividend = settings.aoColumns.findIndex(c => c.sTitle === '配息頻率');
                 let cNav = settings.aoColumns.findIndex(c => c.sTitle === '淨值');
@@ -505,6 +509,7 @@
                 let cBeta = settings.aoColumns.findIndex(c => c.sTitle === '年化Beta');
                 let cTargetReturn = settings.aoColumns.findIndex(c => c.sTitle === fReturnPeriod);
 
+                let rowInceptionDate = cInceptionDate >= 0 ? String(data[cInceptionDate]) : ''; 
                 let rowCurrency = cCurrency >= 0 ? data[cCurrency] : '';
                 let rowDividend = cDividend >= 0 ? data[cDividend] : '';
                 let rowNav = cNav >= 0 ? parseFloat(data[cNav]) : null;
@@ -513,6 +518,19 @@
                 let rowBeta = cBeta >= 0 ? parseFloat(data[cBeta]) : null;
                 let rowTargetReturn = cTargetReturn >= 0 ? parseFloat(data[cTargetReturn]) : null;
 
+                // 🌟 更新：抓取前四位數字轉為年份，並判斷是否小於等於使用者輸入的年份
+                if (fInceptionYear && cInceptionDate >= 0) {
+                    let targetYear = parseInt(fInceptionYear, 10);
+                    let match = rowInceptionDate.match(/\d{4}/); // 尋找字串中的4位數字
+                    if (!isNaN(targetYear)) {
+                        // 如果該基金沒有合法的年份格式，就濾掉
+                        if (!match) return false; 
+                        let fundYear = parseInt(match[0], 10);
+                        // 如果基金成立年份「大於」使用者輸入的年份，代表它太年輕，濾掉它！
+                        if (fundYear > targetYear) return false;
+                    }
+                }
+                
                 if (fCurrency && rowCurrency !== fCurrency) return false;
                 if (fDividend && rowDividend !== fDividend) return false;
                 if (!isNaN(fReturnValue) && (isNaN(rowTargetReturn) || rowTargetReturn < fReturnValue)) return false;
@@ -549,7 +567,6 @@
                                 const columns = Object.keys(data[0]).map(function(key) {
                                     let columnConfig = { title: key, data: key };
                                     
-                                    // 🌟 修改：將標的名稱加上 meta.row，方便點擊時抓取整列資料
                                     if (key === '標的名稱') {
                                         columnConfig.render = function (data, type, row, meta) {
                                             if (type === 'display' && data) {
@@ -638,7 +655,6 @@
                 });
         }
 
-        // 🌟 核心新增：Modal 互動邏輯與動態生成 HTML
         $(document).on('click', '.name-clickable', function() {
             let rowIdx = $(this).attr('data-row-idx');
             let rowData = table.row(rowIdx).data();
@@ -648,7 +664,6 @@
             }
         });
 
-        // 將數據轉成有顏色的 HTML
         function formatVal(val) {
             let num = parseFloat(val);
             if (isNaN(num)) return val || '-';
@@ -666,12 +681,9 @@
         }
 
         function openModal(data) {
-            // 設定標題
             document.getElementById('modalFundName').innerText = data['標的名稱'];
-            // 如果 CSV 有「代碼」欄位，可以顯示在標題下方，若無則留空
             document.getElementById('modalFundCode').innerText = data['代碼'] ? `代碼：${data['代碼']}` : '';
 
-            // 生成排版精美的 HTML 內容
             let contentHtml = `
                 <div class="data-section-title">📊 基礎資訊</div>
                 <div class="data-grid">
@@ -679,6 +691,7 @@
                     <div class="data-box"><div class="data-label">計價幣別</div><div class="data-value">${data['幣別'] || '-'}</div></div>
                     <div class="data-box"><div class="data-label">風險等級</div><div class="data-value">${formatBadge(data['風險收益等級'])}</div></div>
                     <div class="data-box"><div class="data-label">配息頻率</div><div class="data-value">${data['配息頻率'] || '-'}</div></div>
+                    <div class="data-box"><div class="data-label">成立日期</div><div class="data-value">${data['成立日期'] || '-'}</div></div>
                 </div>
 
                 <div class="data-section-title">📈 績效表現</div>
@@ -699,8 +712,6 @@
             `;
 
             document.getElementById('modalContentArea').innerHTML = contentHtml;
-            
-            // 顯示 Modal
             document.getElementById('fundModal').style.display = 'flex';
         }
 
@@ -708,7 +719,6 @@
             document.getElementById('fundModal').style.display = 'none';
         }
 
-        // 點擊卡片外部的黑色半透明區域，也可以關閉視窗
         window.onclick = function(event) {
             let modal = document.getElementById('fundModal');
             if (event.target == modal) {

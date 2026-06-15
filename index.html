@@ -161,6 +161,8 @@
 
         .input-group-compact {
             margin-bottom: 6px;
+            display: flex;
+            align-items: center;
         }
 
         .btn-group {
@@ -318,10 +320,49 @@
         }
         .data-box {
             background: #f8fafc; border: 1px solid #e2e8f0; padding: 12px; border-radius: 10px;
+            position: relative; /* 給 Tooltip 定位用 */
         }
-        .data-label { font-size: 0.75rem; color: #64748b; margin-bottom: 4px; }
+        .data-label { 
+            font-size: 0.75rem; color: #64748b; margin-bottom: 4px; 
+            display: flex; align-items: center;
+        }
         .data-value { font-size: 1.05rem; font-weight: 600; color: var(--text-main); }
         .data-value.large { font-size: 1.2rem; }
+
+        /* 🌟 新增：懸停提示框 (Tooltip) 專業樣式 */
+        .info-tooltip {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            margin-left: 6px;
+        }
+        .help-icon {
+            display: inline-flex; justify-content: center; align-items: center;
+            width: 14px; height: 14px; background-color: #cbd5e1; color: #fff;
+            border-radius: 50%; font-size: 10px; font-weight: bold; cursor: help;
+            transition: background-color 0.2s;
+        }
+        .info-tooltip:hover .help-icon {
+            background-color: var(--accent-blue);
+        }
+        .tooltip-text {
+            visibility: hidden; width: 200px; background-color: #334155; color: #fff;
+            text-align: left; border-radius: 6px; padding: 8px 12px; position: absolute;
+            z-index: 10; bottom: 130%; left: 50%; transform: translateX(-50%);
+            opacity: 0; transition: opacity 0.2s, bottom 0.2s;
+            font-size: 0.75rem; font-weight: 400; line-height: 1.4;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1); pointer-events: none;
+            white-space: normal; /* 允許換行 */
+        }
+        /* 畫出提示框下方的小三角形 */
+        .tooltip-text::after {
+            content: ""; position: absolute; top: 100%; left: 50%;
+            margin-left: -5px; border-width: 5px; border-style: solid;
+            border-color: #334155 transparent transparent transparent;
+        }
+        .info-tooltip:hover .tooltip-text {
+            visibility: visible; opacity: 1; bottom: 150%;
+        }
 
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
@@ -361,13 +402,14 @@
                     <option value="一年(%)" selected>近一年 (%)</option>
                     <option value="三年(%)">近三年 (%)</option>
                     <option value="成立以來(%)">成立以來總報酬 (%)</option>
+                    <option value="成立以來平均報酬(%)">成立以來平均年報酬 (%)</option>
                 </select>
 
                 <label class="input-group-compact" for="filterReturnValue">要求最低報酬率 (%)</label>
                 <input type="number" id="filterReturnValue" placeholder="例如: 15" step="0.1">
 
                 <label class="input-group-compact" for="filterInceptionYear">成立年份 (含以前)</label>
-                <input type="number" id="filterInceptionYear" placeholder="例如: 2018 ">
+                <input type="number" id="filterInceptionYear" placeholder="例如: 2018 (尋找老字號標的)">
 
                 <label class="input-group-compact" for="filterCurrency">計價幣別</label>
                 <select id="filterCurrency"><option value="">全部幣別</option></select>
@@ -382,13 +424,19 @@
                 <label class="input-group-compact" for="filterNav">最新淨值 (≦)</label>
                 <input type="number" id="filterNav" placeholder="例如: 20" step="0.01">
 
-                <label class="input-group-compact" for="filterStdDev">年化標準差 (波動風險 ≦)</label>
+                <label class="input-group-compact" for="filterStdDev">年化標準差 (波動風險 ≦)
+                    <span class="info-tooltip"><span class="help-icon">?</span><span class="tooltip-text">衡量基金的波動大小。數值越大，代表漲跌起伏越劇烈（風險越高）。</span></span>
+                </label>
                 <input type="number" id="filterStdDev" placeholder="建議 < 15" step="0.1">
 
-                <label class="input-group-compact" for="filterSharpe">夏普值 (CP值 ≧)</label>
+                <label class="input-group-compact" for="filterSharpe">夏普值 (CP值 ≧)
+                    <span class="info-tooltip"><span class="help-icon">?</span><span class="tooltip-text">衡量承受每1%風險能帶來的超額報酬。數值越大越好，代表承擔相同風險下賺得比較多。</span></span>
+                </label>
                 <input type="number" id="filterSharpe" placeholder="建議 > 0.5" step="0.01">
 
-                <label class="input-group-compact" for="filterBeta">Beta值 (大盤連動度 ≦)</label>
+                <label class="input-group-compact" for="filterBeta">Beta值 (大盤連動度 ≦)
+                    <span class="info-tooltip"><span class="help-icon">?</span><span class="tooltip-text">大盤漲跌1%時，基金跟著漲跌的幅度。大於1代表比大盤活潑，小於1代表比大盤抗跌。</span></span>
+                </label>
                 <input type="number" id="filterBeta" placeholder="建議 < 1" step="0.01">
                 
                 <div class="btn-group">
@@ -518,15 +566,12 @@
                 let rowBeta = cBeta >= 0 ? parseFloat(data[cBeta]) : null;
                 let rowTargetReturn = cTargetReturn >= 0 ? parseFloat(data[cTargetReturn]) : null;
 
-                // 🌟 更新：抓取前四位數字轉為年份，並判斷是否小於等於使用者輸入的年份
                 if (fInceptionYear && cInceptionDate >= 0) {
                     let targetYear = parseInt(fInceptionYear, 10);
-                    let match = rowInceptionDate.match(/\d{4}/); // 尋找字串中的4位數字
+                    let match = rowInceptionDate.match(/\d{4}/); 
                     if (!isNaN(targetYear)) {
-                        // 如果該基金沒有合法的年份格式，就濾掉
                         if (!match) return false; 
                         let fundYear = parseInt(match[0], 10);
-                        // 如果基金成立年份「大於」使用者輸入的年份，代表它太年輕，濾掉它！
                         if (fundYear > targetYear) return false;
                     }
                 }
@@ -557,12 +602,40 @@
                         header: true,
                         skipEmptyLines: true,
                         complete: function(results) {
-                            const data = results.data;
+                            let data = results.data;
                             if(data.length > 0) {
                                 if ($.fn.DataTable.isDataTable('#fundTable')) {
                                     table.destroy();
                                     $('#fundTable').empty(); 
                                 }
+
+                                data.forEach(function(row) {
+                                    let totalReturn = parseFloat(row['成立以來(%)']);
+                                    let inceptionStr = row['成立日期'];
+                                    let navStr = row['淨值日期'];
+
+                                    if (!isNaN(totalReturn) && inceptionStr && navStr) {
+                                        let incDate = new Date(inceptionStr);
+                                        let navDate = new Date(navStr);
+                                        
+                                        if (!isNaN(incDate) && !isNaN(navDate)) {
+                                            let diffTime = Math.abs(navDate - incDate);
+                                            let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                                            let years = diffDays / 365.25; 
+                                            
+                                            if (years > 0) {
+                                                let avgReturn = totalReturn / years;
+                                                row['成立以來平均報酬(%)'] = avgReturn.toFixed(2);
+                                            } else {
+                                                row['成立以來平均報酬(%)'] = '0.00';
+                                            }
+                                        } else {
+                                            row['成立以來平均報酬(%)'] = '-';
+                                        }
+                                    } else {
+                                        row['成立以來平均報酬(%)'] = '-';
+                                    }
+                                });
                                 
                                 const columns = Object.keys(data[0]).map(function(key) {
                                     let columnConfig = { title: key, data: key };
@@ -580,7 +653,7 @@
                                         columnConfig.width = "200px";
                                     }
 
-                                    const numericColumns = ['淨值', '三個月(%)', '六個月(%)', '一年(%)', '三年(%)', '成立以來(%)', '年化標準差', '年化Sharpe', '年化Beta'];
+                                    const numericColumns = ['淨值', '三個月(%)', '六個月(%)', '一年(%)', '三年(%)', '成立以來(%)', '成立以來平均報酬(%)', '年化標準差', '年化Sharpe', '年化Beta'];
                                     
                                     if (numericColumns.includes(key)) {
                                         columnConfig.render = function (data, type, row) {
@@ -684,6 +757,7 @@
             document.getElementById('modalFundName').innerText = data['標的名稱'];
             document.getElementById('modalFundCode').innerText = data['代碼'] ? `代碼：${data['代碼']}` : '';
 
+            // 🌟 更新：在 Modal 的風險指標標題旁邊加上 Tooltip
             let contentHtml = `
                 <div class="data-section-title">📊 基礎資訊</div>
                 <div class="data-grid">
@@ -700,14 +774,30 @@
                     <div class="data-box"><div class="data-label">近六個月</div><div class="data-value">${formatVal(data['六個月(%)'])}</div></div>
                     <div class="data-box"><div class="data-label">近一年</div><div class="data-value">${formatVal(data['一年(%)'])}</div></div>
                     <div class="data-box"><div class="data-label">近三年</div><div class="data-value">${formatVal(data['三年(%)'])}</div></div>
-                    <div class="data-box"><div class="data-label">成立以來</div><div class="data-value">${formatVal(data['成立以來(%)'])}</div></div>
+                    <div class="data-box"><div class="data-label">成立以來總報酬</div><div class="data-value">${formatVal(data['成立以來(%)'])}</div></div>
+                    <div class="data-box" style="background: #eff6ff; border-color: #bfdbfe;"><div class="data-label" style="color: #1e40af; font-weight:600;">✨ 成立以來平均年報酬</div><div class="data-value">${formatVal(data['成立以來平均報酬(%)'])}</div></div>
                 </div>
 
                 <div class="data-section-title">🛡️ 風險與波動指標</div>
                 <div class="data-grid">
-                    <div class="data-box"><div class="data-label">年化標準差</div><div class="data-value">${data['年化標準差'] || '-'}</div></div>
-                    <div class="data-box"><div class="data-label">夏普值 (CP值)</div><div class="data-value">${formatVal(data['年化Sharpe'])}</div></div>
-                    <div class="data-box"><div class="data-label">Beta值 (連動性)</div><div class="data-value">${formatVal(data['年化Beta'])}</div></div>
+                    <div class="data-box">
+                        <div class="data-label">年化標準差 
+                            <span class="info-tooltip"><span class="help-icon">?</span><span class="tooltip-text">衡量基金的波動大小。數值越大，代表漲跌起伏越劇烈（風險越高）。</span></span>
+                        </div>
+                        <div class="data-value">${data['年化標準差'] || '-'}</div>
+                    </div>
+                    <div class="data-box">
+                        <div class="data-label">夏普值 (CP值)
+                            <span class="info-tooltip"><span class="help-icon">?</span><span class="tooltip-text">衡量承受每1%風險能帶來的超額報酬。數值越大越好，代表承擔相同風險下賺得比較多。</span></span>
+                        </div>
+                        <div class="data-value">${formatVal(data['年化Sharpe'])}</div>
+                    </div>
+                    <div class="data-box">
+                        <div class="data-label">Beta值 (連動性)
+                            <span class="info-tooltip"><span class="help-icon">?</span><span class="tooltip-text">大盤漲跌1%時，基金跟著漲跌的幅度。大於1代表比大盤活潑，小於1代表比大盤抗跌。</span></span>
+                        </div>
+                        <div class="data-value">${formatVal(data['年化Beta'])}</div>
+                    </div>
                 </div>
             `;
 

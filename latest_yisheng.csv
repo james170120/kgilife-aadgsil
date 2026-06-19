@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>基金快搜</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta http-equiv="Cache-Control" content="no-cache" />
+<meta http-equiv="Expires" content="0" />
+<meta HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=big5">
+<meta HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">
+<script src="/JustPlugin/modernizr/GetJustPlugin.djjs?a=40"></script>
+<script src="/JustPlugin/js/polyFill.js"></script>
+<script src="/JustPlugin/jquery-plugin/GetJustPlugin.djjs?a=10"></script>
+<script src="/JustPlugin/jquery-plugin/GetJustPlugin.djjs?a=11"></script>
+<script src="/JustPlugin/bs/3.3.6/js/GetJustPlugin.djjs?a=1"></script>
+<link rel="stylesheet" href="/JustPlugin/bs/3.3.6/css/GetJustPlugin.djcss?a=2">
+<script type="text/JavaScript" src="/w/js/jsFunction.djjs"></script>
+<link rel="stylesheet" href="/w/css/wfund.css" type="text/css">
+<script src="/JustPlugin/js/common.js"></script>
+<link rel="stylesheet" href="/JustPlugin/css/common.css" type="text/css">
+<link rel="stylesheet" href="/JustPlugin/bs/checkbox/GetJustPlugin.djcss?a=53" type="text/css">
+</head>
+<body>
+<script type="text/javascript" src="/w/js/SU.js"></script>
+<div id="SysJustIFRAMEDIV" class="container-fluid">
+
+<!-- 輸出功能form -->
+<form id="csvForm" name="csvForm" action="/asp/exportexcel.asp" method="post">
+	<input type="hidden" name="csv_text" id="csv_text" value="init">
+</form>
+
+
+<script type="text/javascript">
+	$(function () {
+		//show_loading();
+
+		var query = decodeURIComponent(getUrlParam().q);
+
+		$.ajax({
+			url: '/w/custom/djjson/SearchProductJSON.djjson?' + query
+		})
+		.done(function (json) {
+			var data = []
+			, g_csvString = ''
+			, orders = 'V3,V40,V26,V5,V35,V28,V42,V1,V18,V11,V12,V13,V15,V36,V23,V21,V22,V48,V39,V27,V47'
+			, th = {
+				'V3': '標的名稱',
+				'V40': '代碼',
+				'V26': '幣別',
+				'V5': '類型',
+				'V35': '成立日期',
+				'V28': '風險收益等級',
+				'V42': '配息頻率',
+				'V1': '淨值日期',
+				'V18': '淨值',
+				'V11': '三個月(%)',
+				'V12': '六個月(%)',
+				'V13': '一年(%)',
+				'V15': '三年(%)',
+				'V36': '成立以來(%)',
+				'V23': '年化標準差',
+				'V21': '年化Sharpe',
+				'V22': '年化Beta',
+				'V48': '規模日期',
+				'V39': '基金規模',
+				'V27': '嘉實基金評等',
+				'V47': '備註'
+			};
+
+
+			data.push(
+				orders.split(',').map(function (col) {
+					return th[col];
+				}).join(',')
+			);
+
+			g_csvString = data.concat(
+				json.ResultSet.Result.map(function (tick) {
+					return orders.split(',').map(function (col) {
+						var value = tick[col] || '';
+						if (col == 'V47') {
+							console.log('V47:', tick[col], ' = value =', value);
+						}
+						if (col == 'V39' && dataValid(tick['V34'], 1)) {
+							return '{0}({1})'.format(value.replace(/,/g, ''), tick['V34']);
+						} else if (col == 'V40') {
+							var parts = value.split('-');
+							return deletehtml_1(parts[1] || '');
+						} else {
+							return deletehtml_1(value.replace(/,/g, ''));
+						}
+					}).join(',')
+				})
+			).join('\n');
+
+			$('#csv_text').val(g_csvString);
+			$('form').trigger('submit');
+
+			setTimeout(function () {
+				if (Modernizr.isios)
+					hide_loading();
+				else
+					window.close();
+			}, 1500);
+		});
+	});
+
+	function deletehtml_1(a){
+		var x = String(a).replace(/<[\s\S]*?>/g, "");
+
+		return x;
+	}
+</script>
+</div>
+<script language="javascript" src="/w/js/SD.js"></script>
+</body></html>

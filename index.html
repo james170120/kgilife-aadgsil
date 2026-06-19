@@ -490,19 +490,41 @@
 async function fetchLastUpdateTime(fileName) {
     const owner = 'james170120'; // 記得改成你的帳號
     const repo = 'kgilife-aadgsil'; // 你的 repo 名稱
+	const cleanFileName = fileName.split('?')[0];
     const url = `https://api.github.com/repos/${owner}/${repo}/commits?path=${fileName}&page=1&per_page=1`;
-    
+	
+    const timeTag = document.getElementById('lastUpdateTag');
+    timeTag.innerText = '⌛ 正在確認最新數據時間...';
+    timeTag.style.color = '#7f8c8d'; // 處理中顯示灰色
+	
     try {
         const response = await fetch(url);
+		if (!response.ok) {
+            throw new Error(`GitHub API 回應錯誤: ${response.status}`);
+        }
         const data = await response.json();
-        if (data.length > 0) {
+        
+        if (data && data.length > 0 && data[0].commit && data[0].commit.committer) {
             const date = new Date(data[0].commit.committer.date);
-            // 轉換成台灣時間格式
-            const timeStr = date.toLocaleString('zh-TW', { timeZone: 'Asia/Taipei' });
-            document.getElementById('lastUpdateTag').innerText = `🟢 最後更新時間：${timeStr}`;
+            const timeStr = date.toLocaleString('zh-TW', { 
+                timeZone: 'Asia/Taipei',
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            timeTag.innerText = `🟢 最後更新時間：${timeStr}`;
+            timeTag.style.color = '#2ecc71'; // 成功顯示綠色
+        } else {
+            timeTag.innerText = `⚠️ 尚未有更新紀錄`;
+            timeTag.style.color = '#e67e22'; // 警告顯示橘色
         }
     } catch (e) {
-        document.getElementById('lastUpdateTag').innerText = `🔴 無法取得更新時間`;
+        console.error("抓取更新時間失敗：", e);
+        timeTag.innerText = `🔴 無法取得更新時間`;
+        timeTag.style.color = '#e74c3c'; // 失敗顯示紅色
     }
 }
         let currentFile = 'latest_zhaocai.csv';

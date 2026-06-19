@@ -515,7 +515,7 @@ async function fetchLastUpdateTime(fileName) {
                 minute: '2-digit',
                 second: '2-digit'
             });
-            timeTag.innerText = `🟢 最後更新時間：${timeStr}`;
+            timeTag.innerText = `🟢 最新資料庫更新時間：${timeStr}`;
             timeTag.style.color = '#2ecc71'; // 成功顯示綠色
         } else {
             timeTag.innerText = `⚠️ 尚未有更新紀錄`;
@@ -523,7 +523,7 @@ async function fetchLastUpdateTime(fileName) {
         }
     } catch (e) {
         console.error("抓取更新時間失敗：", e);
-        timeTag.innerText = `🔴 無法取得更新時間`;
+        timeTag.innerText = `🔴 無法取得資料庫更新時間`;
         timeTag.style.color = '#e74c3c'; // 失敗顯示紅色
     }
 }

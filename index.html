@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>智慧基金篩選 - 凱基人壽</title>
     
-   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💰</text></svg>">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💰</text></svg>">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/4.3.0/css/fixedColumns.dataTables.min.css">
     
@@ -381,6 +381,11 @@
         <h1>📈 智慧基金篩選 - 凱基人壽</h1>
     </header>
 
+
+    <div id="lastUpdateTag" style="font-size: 0.8rem; color: #2ecc71; margin-top: 5px; font-weight: 600;">
+    ⌛ 正在確認最新數據時間...
+    </div>
+    
     <div class="dashboard-container">
         <div class="sidebar">
             <label style="font-weight: 700; color: var(--text-main); margin-bottom: 10px;">目前檢視保單：</label>
@@ -483,6 +488,39 @@
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/fixedcolumns/4.3.0/js/dataTables.fixedColumns.min.js"></script>
 
+// 放入你的 <script> 區塊中
+async function fetchLastUpdateTime(fileName) {
+    const owner = '你的GitHub帳號名稱'; // 記得改成你的帳號
+    const repo = 'Github'; // 你的 repo 名稱
+    const url = `https://api.github.com/repos/${owner}/${repo}/commits?path=${fileName}&page=1&per_page=1`;
+    
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+        if (data.length > 0) {
+            const date = new Date(data[0].commit.committer.date);
+            // 轉換成台灣時間格式
+            const timeStr = date.toLocaleString('zh-TW', { timeZone: 'Asia/Taipei' });
+            document.getElementById('lastUpdateTag').innerText = `🟢 最後更新時間：${timeStr}`;
+        }
+    } catch (e) {
+        document.getElementById('lastUpdateTag').innerText = `🔴 無法取得更新時間`;
+    }
+}
+
+// 配合你的 switchPolicy 函式，切換保單時自動更新時間
+// 在原本的 switchPolicy 函式中加入這行：
+function switchPolicy(index, fileName) {
+    // ... 原本的程式碼 ...
+    fetchLastUpdateTime(fileName); // 新增這行
+}
+
+// 在網頁載入時預設抓取
+document.addEventListener("DOMContentLoaded", function() {
+    loadCsvData(currentFile);
+    fetchLastUpdateTime(currentFile); // 新增這行
+});
+    
     <script>
         let currentFile = 'data_20260615184130招財進保.csv';
         let table;

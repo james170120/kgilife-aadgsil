@@ -914,6 +914,67 @@ function loadCsvData(fileName) {
             loadCsvData(currentFile);
 fetchLastUpdateTime(currentFile);
         });
+		// 🌟 開發者後門：連續點擊標題 5 次觸發強制更新
+        let clickCount = 0;
+        let clickTimer = null;
+
+        // 監聽最上方的 h1 標題
+        document.querySelector('header h1').addEventListener('click', function() {
+            clickCount++;
+            
+            // 如果是第一次點擊，啟動 2 秒的倒數計時器
+            if (clickCount === 1) {
+                clickTimer = setTimeout(() => { 
+                    clickCount = 0; // 2 秒內沒點滿 5 下，就重新計算
+                }, 2000); 
+            }
+
+            // 連續點滿 5 下
+            if (clickCount >= 5) {
+                clearTimeout(clickTimer);
+                clickCount = 0;
+                
+                // 跳出密碼輸入框
+                let pwd = prompt("🕵️‍♂️ 進入開發者模式：\n請輸入強制更新密碼：");
+                
+                // 設定你的專屬密碼 (例如：8888)
+                if (pwd === "8888") { 
+                    triggerN8nUpdate();
+                } else if (pwd !== null) {
+                    alert("❌ 密碼錯誤，存取拒絕！");
+                }
+            }
+        });
+
+        // 觸發 n8n 的函數
+        function triggerN8nUpdate() {
+            // 👇 ！！！請將這裡換成你在 n8n 複製的 Production Webhook URL ！！！
+            const webhookZhaocai = "https://james15211521.zeabur.app/webhook/force-update";
+            const webhookYisheng = "https://james15211521.zeabur.app/webhook/force-update";
+
+            const timeTag = document.getElementById('lastUpdateTag');
+            timeTag.innerText = '🚀 正在向 n8n 發送強制更新指令...';
+            timeTag.style.color = '#3a86ff';
+
+            // 根據目前檢視的保單，呼叫對應的 Webhook
+            const targetUrl = (currentFile.includes('zhaocai')) ? webhookZhaocai : webhookYisheng;
+
+            fetch(targetUrl, { method: 'GET' })
+                .then(response => {
+                    if (response.ok) {
+                        alert("✅ 成功觸發 n8n 強制更新！\n\n機器人已經在背景努力抓取最新資料並上傳 GitHub。\n請大約等待 1~2 分鐘後，再重新整理此網頁查看最新時間。");
+                        timeTag.innerText = '⏳ n8n 背景更新中，請稍後重新整理...';
+                    } else {
+                        throw new Error('伺服器無回應');
+                    }
+                })
+                .catch(error => {
+                    console.error("觸發失敗:", error);
+                    alert("❌ 觸發 n8n 失敗，請確認 Webhook 網址是否正確且已啟用 (Active)。");
+                    timeTag.innerText = `🔴 強制更新失敗`;
+                    timeTag.style.color = '#e74c3c'; 
+                });
+        }
 
     </script>
 </body>

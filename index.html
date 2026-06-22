@@ -375,31 +375,41 @@
         @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
 		/* =========================================================
-           📱 手機與平板的響應式設計 (RWD) 魔法
+           📱 手機與平板的響應式設計 (RWD) 魔法 (解鎖滑動版)
            ========================================================= */
         @media (max-width: 768px) {
-            /* 1. 整個畫面從「左右並排」改成「上下疊加」 */
+            /* 🌟 關鍵解藥：解除網頁滑動鎖定，讓手機可以自由上下滑 */
+            body {
+                overflow: auto !important; 
+            }
+
+            /* 整個畫面從「左右並排」改成「上下疊加」 */
             .dashboard-container {
                 flex-direction: column;
                 height: auto; 
-                overflow: visible;
             }
 
-            /* 2. 左側邊欄變成 100% 寬度，並放在上方 */
+            /* 左側邊欄變成 100% 寬度 */
             .sidebar {
-                width: auto; /* 解除原本 320px 的限制 */
+                width: 100%;
+                box-sizing: border-box;
                 border-right: none;
                 border-bottom: 1px solid var(--border-light);
                 padding: 15px;
             }
 
-            /* 3. 主表格區域微調，確保有足夠的滑動空間 */
+            /* 確保主內容區能自然長高 */
             .main-content {
                 padding: 10px;
-                height: 600px; /* 給表格一個固定的高度，讓它可以在內部滑動 */
+                height: auto;
             }
 
-            /* 4. 讓上方標題與時間稍微縮小，適應手機螢幕 */
+            /* 給表格專屬的高度，這樣滑到下面時，表格裡面依然可以上下左右滑 */
+            .table-wrapper {
+                height: 75vh; 
+            }
+
+            /* 讓上方標題與時間稍微縮小，適應手機螢幕 */
             header {
                 flex-direction: column;
                 align-items: flex-start;
@@ -410,7 +420,7 @@
                 font-size: 1.2rem;
             }
 
-            /* 5. 手機沒有滑鼠，隱藏懸浮的問號提示框，保持畫面乾淨 */
+            /* 手機沒有滑鼠，隱藏懸浮的問號提示框 */
             .global-tooltip {
                 display: none !important;
             }

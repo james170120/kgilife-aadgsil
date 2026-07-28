@@ -95,7 +95,7 @@
             position: absolute;
             top: 4px;
             left: 4px;
-            width: calc(50% - 4px); 
+            width: calc(33.333% - 4px); /* 🌟 改成 33.333% */
             height: calc(100% - 8px);
             background: #fff;
             border-radius: 9px;
@@ -444,6 +444,7 @@
                 <div class="switcher-slide" id="switcherSlide"></div>
                 <div class="policy-option active" onclick="switchPolicy(0, 'latest_zhaocai.csv')">招財進保</div>
                 <div class="policy-option" onclick="switchPolicy(1, 'latest_yisheng.csv')">一生傳富</div>
+				<div class="policy-option" onclick="switchPolicy(2, 'latest_chubb.csv')">安達人壽</div>
             </div>
 
             <div class="filter-card">
@@ -1004,13 +1005,15 @@ fetchLastUpdateTime(currentFile);
             // 👇 ！！！請將這裡換成你在 n8n 複製的 Production Webhook URL ！！！
             const webhookZhaocai = "https://james15211521.zeabur.app/webhook/force-update";
             const webhookYisheng = "https://james15211521.zeabur.app/webhook/force-update";
+			const webhookChubb = "https://james15211521.zeabur.app/webhook/force-update";
 
+			
             const timeTag = document.getElementById('lastUpdateTag');
             timeTag.innerText = '🚀 正在向 n8n 發送強制更新指令...';
             timeTag.style.color = '#3a86ff';
-
-            // 根據目前檢視的保單，呼叫對應的 Webhook
-            const targetUrl = (currentFile.includes('zhaocai')) ? webhookZhaocai : webhookYisheng;
+			
+			// 決定要呼叫哪個 URL (如果三個都共用同一個，就直接用 webhookUrl)
+            let targetUrl = webhookUrl;
 
             fetch(targetUrl, { method: 'GET' })
                 .then(response => {

@@ -445,7 +445,7 @@
                 <div class="switcher-slide" id="companySwitcherSlide" style="width: calc(33.333% - 2.66px);"></div>
                 <div class="policy-option active" onclick="switchCompany(0, 'kgi')">凱基人壽</div>
                 <div class="policy-option" onclick="switchCompany(1, 'chubb')">安達人壽</div>
-                <div class="policy-option" onclick="switchCompany(2, 'other')">其他公司</div>
+                <div class="policy-option" onclick="switchCompany(2, 'cardif')">法巴人壽</div>
             </div>
 
             <!-- 🌟 第二層：凱基專屬的保單選單 (預設顯示) -->
@@ -618,12 +618,12 @@ async function fetchLastUpdateTime(fileName) {
                 currentFile = 'latest_chubb.csv';     
                 loadCsvData(currentFile);
                 fetchLastUpdateTime(currentFile);
-            } else {
-                kgiContainer.style.display = 'none';
-                alert("🚧 其他公司尚未開放，敬請期待！");
-                if ($.fn.DataTable.isDataTable('#fundTable')) {
-                    table.clear().draw(); 
-                }
+            } else if (companyId === 'cardif') {
+                // 🌟 新增法巴人壽的處理邏輯
+                kgiContainer.style.display = 'none';  // 隱藏凱基的次選單
+                currentFile = 'latest_cardif.csv';    // 載入法巴的 CSV
+                loadCsvData(currentFile);
+                fetchLastUpdateTime(currentFile);
             }
         }
 

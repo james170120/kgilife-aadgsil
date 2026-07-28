@@ -602,7 +602,6 @@ async function fetchLastUpdateTime(fileName) {
         let table;
 
         // 🌟 第一層：切換保險公司
-        // 🌟 第一層：切換保險公司
         function switchCompany(index, companyId) {
             const options = document.querySelectorAll('#companySwitcher .policy-option');
             options.forEach(opt => opt.classList.remove('active'));
@@ -611,23 +610,8 @@ async function fetchLastUpdateTime(fileName) {
             document.getElementById('companySwitcherSlide').style.transform = `translateX(${index * 100}%)`;
             document.getElementById('btnReset').click();
 
-            // 🌐 官方網站字典
-            const officialLinks = {
-                'kgi': 'https://kgilife.moneydj.com/main.asp?sUrl=$W$HTML$SELECT]DJHTM{P}SBR1',
-                'chubb': 'https://chubb.moneydj.com/fund-page.html?sUrl=$W$HTML$SELECT]DJHTM{A}1',
-                'cardif': 'https://cardif.moneydj.com/main.asp?sUrl=$W$HTML$SELECT]DJHTM'
-            };
-            
-            // 更新傳送門網址
-            const linkElement = document.getElementById('officialLink');
-            if (officialLinks[companyId]) {
-                linkElement.href = officialLinks[companyId];
-                linkElement.style.display = 'inline-block'; // 確保有網址時顯示
-            } else {
-                linkElement.style.display = 'none'; // 沒網址時隱藏
-            }
-
             const kgiContainer = document.getElementById('kgiPolicyContainer');
+            const linkElement = document.getElementById('officialLink');
             currentCompany = companyId;
 
             if (companyId === 'kgi') {
@@ -635,16 +619,34 @@ async function fetchLastUpdateTime(fileName) {
                 currentFile = currentKgiFile;         
                 loadCsvData(currentFile);
                 fetchLastUpdateTime(currentFile);
+                
+                // 🌟 凱基專屬：判斷目前是哪張子保單，給予對應的網址
+                if (currentKgiFile === 'latest_zhaocai.csv') {
+                    linkElement.href = 'https://kgilife.moneydj.com/main.asp?sUrl=$W$HTML$SELECT]DJHTM{P}SBR1';
+                } else {
+                    linkElement.href = 'https://kgilife.moneydj.com/main.asp?sUrl=$W$HTML$SELECT]DJHTM{P}SJF1';
+                }
+                linkElement.style.display = 'inline-block';
+
             } else if (companyId === 'chubb') {
                 kgiContainer.style.display = 'none';  
                 currentFile = 'latest_chubb.csv';     
                 loadCsvData(currentFile);
                 fetchLastUpdateTime(currentFile);
+                
+                // 🌟 安達專屬網址
+                linkElement.href = 'https://chubb.moneydj.com/fund-page.html?sUrl=$W$HTML$SELECT]DJHTM{A}1';
+                linkElement.style.display = 'inline-block';
+
             } else if (companyId === 'cardif') {
                 kgiContainer.style.display = 'none';  
                 currentFile = 'latest_cardif.csv';    
                 loadCsvData(currentFile);
                 fetchLastUpdateTime(currentFile);
+                
+                // 🌟 法巴專屬網址
+                linkElement.href = 'https://cardif.moneydj.com/main.asp?sUrl=$W$HTML$SELECT]DJHTM';
+                linkElement.style.display = 'inline-block';
             }
         }
 
@@ -661,6 +663,14 @@ async function fetchLastUpdateTime(fileName) {
             currentFile = fileName;
             loadCsvData(currentFile);
             fetchLastUpdateTime(currentFile);
+            
+            // 🌟 切換子保單時，官方網站連結也要跟著換！
+            const linkElement = document.getElementById('officialLink');
+            if (fileName === 'latest_zhaocai.csv') {
+                linkElement.href = 'https://kgilife.moneydj.com/main.asp?sUrl=$W$HTML$SELECT]DJHTM{P}SBR1';
+            } else if (fileName === 'latest_yisheng.csv') {
+                linkElement.href = 'https://kgilife.moneydj.com/main.asp?sUrl=$W$HTML$SELECT]DJHTM{P}SJF1';
+            }
         }
 
         // --- 過濾器與重置按鈕邏輯 ---

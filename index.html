@@ -439,7 +439,12 @@
 </div>
     <div class="dashboard-container">
         <div class="sidebar">
-            <label style="font-weight: 700; color: var(--text-main); margin-bottom: 10px;">保險公司：</label>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <label style="font-weight: 700; color: var(--text-main); margin-bottom: 0;">保險公司：</label>
+                <a id="officialLink" href="https://kgilife.moneydj.com/main.asp?sUrl=$W$HTML$SELECT]DJHTM{P}SBR1" target="_blank" style="font-size: 0.8rem; color: var(--accent-blue); text-decoration: none; transition: color 0.2s; font-weight: 600;">
+                    🌐 官方網站
+                </a>
+            </div>
             <div class="policy-switcher" id="companySwitcher">
                 <!-- 🌟 第一層：3個按鈕，寬度設為 33.33% -->
                 <div class="switcher-slide" id="companySwitcherSlide" style="width: calc(33.333% - 2.66px);"></div>
@@ -597,6 +602,7 @@ async function fetchLastUpdateTime(fileName) {
         let table;
 
         // 🌟 第一層：切換保險公司
+        // 🌟 第一層：切換保險公司
         function switchCompany(index, companyId) {
             const options = document.querySelectorAll('#companySwitcher .policy-option');
             options.forEach(opt => opt.classList.remove('active'));
@@ -604,6 +610,22 @@ async function fetchLastUpdateTime(fileName) {
             
             document.getElementById('companySwitcherSlide').style.transform = `translateX(${index * 100}%)`;
             document.getElementById('btnReset').click();
+
+            // 🌐 官方網站字典
+            const officialLinks = {
+                'kgi': 'https://kgilife.moneydj.com/main.asp?sUrl=$W$HTML$SELECT]DJHTM{P}SBR1',
+                'chubb': 'https://chubb.moneydj.com/fund-page.html?sUrl=$W$HTML$SELECT]DJHTM{A}1',
+                'cardif': 'https://cardif.moneydj.com/main.asp?sUrl=$W$HTML$SELECT]DJHTM'
+            };
+            
+            // 更新傳送門網址
+            const linkElement = document.getElementById('officialLink');
+            if (officialLinks[companyId]) {
+                linkElement.href = officialLinks[companyId];
+                linkElement.style.display = 'inline-block'; // 確保有網址時顯示
+            } else {
+                linkElement.style.display = 'none'; // 沒網址時隱藏
+            }
 
             const kgiContainer = document.getElementById('kgiPolicyContainer');
             currentCompany = companyId;
@@ -619,9 +641,8 @@ async function fetchLastUpdateTime(fileName) {
                 loadCsvData(currentFile);
                 fetchLastUpdateTime(currentFile);
             } else if (companyId === 'cardif') {
-                // 🌟 新增法巴人壽的處理邏輯
-                kgiContainer.style.display = 'none';  // 隱藏凱基的次選單
-                currentFile = 'latest_cardif.csv';    // 載入法巴的 CSV
+                kgiContainer.style.display = 'none';  
+                currentFile = 'latest_cardif.csv';    
                 loadCsvData(currentFile);
                 fetchLastUpdateTime(currentFile);
             }

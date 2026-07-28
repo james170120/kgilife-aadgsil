@@ -544,45 +544,52 @@
 
     <script>
 async function fetchLastUpdateTime(fileName) {
-    const owner = 'james170120'; // 記得改成你的帳號
-    const repo = 'kgilife-aadgsil'; // 你的 repo 名稱
-	const cleanFileName = fileName.split('?')[0];
-    const url = `https://api.github.com/repos/${owner}/${repo}/commits?path=${fileName}&page=1&per_page=1`;
-	
-    const timeTag = document.getElementById('lastUpdateTag');
-    timeTag.innerText = '⌛ 正在確認最新數據時間...';
-    timeTag.style.color = '#7f8c8d'; // 處理中顯示灰色
-	
-    try {
-        const response = await fetch(url);
-		if (!response.ok) {
-            throw new Error(`GitHub API 回應錯誤: ${response.status}`);
+            const owner = 'james170120'; // 你的帳號
+            const repo = 'kgilife-aadgsil'; // 你的 repo 名稱
+            
+            // 🌟 確保檔名乾淨，切掉問號後面的東西
+            const cleanFileName = fileName.split('?')[0];
+            
+            // 🌟 確保檔名有正確編碼 (防止中文字或特殊符號讓 API 壞掉)
+            const encodedFileName = encodeURIComponent(cleanFileName);
+            
+            // 🌟 這裡一定要用 encodedFileName，不能用原本的 fileName！
+            const url = `https://api.github.com/repos/${owner}/${repo}/commits?path=${encodedFileName}&page=1&per_page=1`;
+            
+            const timeTag = document.getElementById('lastUpdateTag');
+            timeTag.innerText = '⌛ 正在確認最新數據時間...';
+            timeTag.style.color = '#7f8c8d'; 
+            
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`GitHub API 回應錯誤: ${response.status}`);
+                }
+                const data = await response.json();
+                
+                if (data && data.length > 0 && data[0].commit && data[0].commit.committer) {
+                    const date = new Date(data[0].commit.committer.date);
+                    const timeStr = date.toLocaleString('zh-TW', { 
+                        timeZone: 'Asia/Taipei',
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit'
+                    });
+                    timeTag.innerText = `🟢 最新資料庫更新時間：${timeStr}`;
+                    timeTag.style.color = '#2ecc71'; 
+                } else {
+                    timeTag.innerText = `⚠️ 尚未有更新紀錄`;
+                    timeTag.style.color = '#e67e22'; 
+                }
+            } catch (e) {
+                console.error("抓取更新時間失敗：", e);
+                timeTag.innerText = `🔴 無法取得資料庫更新時間`;
+                timeTag.style.color = '#e74c3c'; 
+            }
         }
-        const data = await response.json();
-        
-        if (data && data.length > 0 && data[0].commit && data[0].commit.committer) {
-            const date = new Date(data[0].commit.committer.date);
-            const timeStr = date.toLocaleString('zh-TW', { 
-                timeZone: 'Asia/Taipei',
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit',
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit'
-            });
-            timeTag.innerText = `🟢 最新資料庫更新時間：${timeStr}`;
-            timeTag.style.color = '#2ecc71'; // 成功顯示綠色
-        } else {
-            timeTag.innerText = `⚠️ 尚未有更新紀錄`;
-            timeTag.style.color = '#e67e22'; // 警告顯示橘色
-        }
-    } catch (e) {
-        console.error("抓取更新時間失敗：", e);
-        timeTag.innerText = `🔴 無法取得資料庫更新時間`;
-        timeTag.style.color = '#e74c3c'; // 失敗顯示紅色
-    }
-}
         // --- 🌟 全域變數宣告 (統一放在這裡，不要重複) ---
         let currentCompany = 'kgi';
         let currentKgiFile = 'latest_zhaocai.csv'; 

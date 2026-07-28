@@ -626,6 +626,7 @@ async function fetchLastUpdateTime(fileName) {
                 } else {
                     linkElement.href = 'https://kgilife.moneydj.com/main.asp?sUrl=$W$HTML$SELECT]DJHTM{P}SJF1';
                 }
+				linkElement.innerHTML = '🌐 凱基官方網站';
                 linkElement.style.display = 'inline-block';
 
             } else if (companyId === 'chubb') {
@@ -636,6 +637,7 @@ async function fetchLastUpdateTime(fileName) {
                 
                 // 🌟 安達專屬網址
                 linkElement.href = 'https://chubb.moneydj.com/fund-page.html?sUrl=$W$HTML$SELECT]DJHTM{A}1';
+				linkElement.innerHTML = '🌐 安達官方網站';
                 linkElement.style.display = 'inline-block';
 
             } else if (companyId === 'cardif') {
@@ -646,6 +648,7 @@ async function fetchLastUpdateTime(fileName) {
                 
                 // 🌟 法巴專屬網址
                 linkElement.href = 'https://cardif.moneydj.com/main.asp?sUrl=$W$HTML$SELECT]DJHTM';
+				linkElement.innerHTML = '🌐 法巴官方網站';
                 linkElement.style.display = 'inline-block';
             }
         }
@@ -671,6 +674,7 @@ async function fetchLastUpdateTime(fileName) {
             } else if (fileName === 'latest_yisheng.csv') {
                 linkElement.href = 'https://kgilife.moneydj.com/main.asp?sUrl=$W$HTML$SELECT]DJHTM{P}SJF1';
             }
+			linkElement.innerHTML = '🌐 凱基官方網站';
         }
 
         // --- 過濾器與重置按鈕邏輯 ---

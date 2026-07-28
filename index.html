@@ -439,20 +439,22 @@
 </div>
     <div class="dashboard-container">
         <div class="sidebar">
-            <label style="font-weight: 700; color: var(--text-main); margin-bottom: 10px;">目前檢視保單：</label>
-            <div class="policy-switcher" id="policySwitcher">
-                <div class="switcher-slide" id="switcherSlide"></div>
-                <div class="policy-option active" onclick="switchPolicy(0, 'latest_zhaocai.csv')">招財進保</div>
-                <div class="policy-option" onclick="switchPolicy(1, 'latest_yisheng.csv')">一生傳富</div>
-				<div class="policy-option" onclick="switchPolicy(2, 'latest_chubb.csv')">安達人壽</div>
+            <label style="font-weight: 700; color: var(--text-main); margin-bottom: 10px;">保險公司：</label>
+            <div class="policy-switcher" id="companySwitcher">
+                <!-- 🌟 第一層：3個按鈕，寬度設為 33.33% -->
+                <div class="switcher-slide" id="companySwitcherSlide" style="width: calc(33.333% - 2.66px);"></div>
+                <div class="policy-option active" onclick="switchCompany(0, 'kgi')">凱基人壽</div>
+                <div class="policy-option" onclick="switchCompany(1, 'chubb')">安達人壽</div>
+                <div class="policy-option" onclick="switchCompany(2, 'other')">其他公司</div>
             </div>
 
-            <div class="filter-card">
-                <div class="filter-title">探索策略 (一鍵快篩)</div>
-                <div class="quick-filters">
-                    <button class="quick-btn" onclick="applyQuickFilter('tech')">🚀 科技成長股</button>
-                    <button class="quick-btn" onclick="applyQuickFilter('dividend')">💰 穩健高股息</button>
-                    <button class="quick-btn" onclick="applyQuickFilter('lowrisk')">🛡️ 低波抗跌</button>
+            <!-- 🌟 第二層：凱基專屬的保單選單 (預設顯示) -->
+            <div id="kgiPolicyContainer" style="display: block; margin-bottom: 20px;">
+                <div class="policy-switcher" id="kgiSwitcher" style="background: #eef2f7; padding: 3px; border-radius: 10px; margin-bottom: 0;">
+                    <!-- 2個按鈕，寬度設為 50% -->
+                    <div class="switcher-slide" id="kgiSwitcherSlide" style="top: 3px; left: 3px; width: calc(50% - 3px); height: calc(100% - 6px); border-radius: 8px;"></div>
+                    <div class="policy-option active" style="font-size: 0.85rem; padding: 6px 0;" onclick="switchKgiPolicy(0, 'latest_zhaocai.csv')">招財進保</div>
+                    <div class="policy-option" style="font-size: 0.85rem; padding: 6px 0;" onclick="switchKgiPolicy(1, 'latest_yisheng.csv')">一生傳富</div>
                 </div>
             </div>
 
@@ -584,18 +586,7 @@ async function fetchLastUpdateTime(fileName) {
         let currentFile = 'latest_zhaocai.csv';
         let table;
 
-        function switchPolicy(index, fileName) {
-            const options = document.querySelectorAll('.policy-option');
-            options.forEach(opt => opt.classList.remove('active'));
-            options[index].classList.add('active');
-            
-            document.getElementById('switcherSlide').style.transform = `translateX(${index * 100}%)`;
-            document.getElementById('btnReset').click();
-
-            currentFile = fileName;
-            loadCsvData(currentFile);
-	    fetchLastUpdateTime(fileName);
-        }
+        
 
         const filterInputs = ['filterReturnPeriod', 'filterReturnValue', 'filterInceptionYear', 'filterCurrency', 'filterDividend', 'filterNav', 'filterStdDev', 'filterSharpe', 'filterBeta'];
         filterInputs.forEach(id => {
@@ -629,21 +620,57 @@ async function fetchLastUpdateTime(fileName) {
             if(table) table.draw();
         });
 
-        function applyQuickFilter(type) {
-            document.getElementById('btnReset').click();
-            if (type === 'tech') {
-                document.getElementById('filterReturnPeriod').value = '一年(%)';
-                document.getElementById('filterReturnValue').value = '20';
-                document.getElementById('filterSharpe').value = '0.5';
-            } else if (type === 'dividend') {
-                document.getElementById('filterReturnPeriod').value = '三年(%)';
-                document.getElementById('filterReturnValue').value = '15';
-                document.getElementById('filterStdDev').value = '15';
-            } else if (type === 'lowrisk') {
-                document.getElementById('filterBeta').value = '0.8';
-                document.getElementById('filterStdDev').value = '10';
+        let currentCompany = 'kgi';
+        let currentKgiFile = 'latest_zhaocai.csv'; // 記住凱基目前選的是哪張保單
+        let currentFile = currentKgiFile;
+        let table;
+
+        // 🌟 第一層：切換保險公司
+        function switchCompany(index, companyId) {
+            const options = document.querySelectorAll('#companySwitcher .policy-option');
+            options.forEach(opt => opt.classList.remove('active'));
+            options[index].classList.add('active');
+            
+            // 移動第一層白色滑塊
+            document.getElementById('companySwitcherSlide').style.transform = `translateX(${index * 100}%)`;
+            document.getElementById('btnReset').click(); // 切換公司時清空過濾條件
+
+            const kgiContainer = document.getElementById('kgiPolicyContainer');
+            currentCompany = companyId;
+
+            if (companyId === 'kgi') {
+                kgiContainer.style.display = 'block'; // 顯示凱基次選單
+                currentFile = currentKgiFile;         // 載入上次選的凱基保單
+                loadCsvData(currentFile);
+                fetchLastUpdateTime(currentFile);
+            } else if (companyId === 'chubb') {
+                kgiContainer.style.display = 'none';  // 隱藏凱基次選單
+                currentFile = 'latest_chubb.csv';     // 直接載入安達檔案
+                loadCsvData(currentFile);
+                fetchLastUpdateTime(currentFile);
+            } else {
+                kgiContainer.style.display = 'none';
+                alert("🚧 其他公司尚未開放，敬請期待！");
+                if ($.fn.DataTable.isDataTable('#fundTable')) {
+                    table.clear().draw(); // 清空表格
+                }
             }
-            if(table) table.draw();
+        }
+
+        // 🌟 第二層：切換凱基專屬保單
+        function switchKgiPolicy(index, fileName) {
+            const options = document.querySelectorAll('#kgiSwitcher .policy-option');
+            options.forEach(opt => opt.classList.remove('active'));
+            options[index].classList.add('active');
+            
+            // 移動第二層白色滑塊
+            document.getElementById('kgiSwitcherSlide').style.transform = `translateX(${index * 100}%)`;
+            document.getElementById('btnReset').click(); // 切換保單時清空過濾條件
+
+            currentKgiFile = fileName; // 記憶這次選了哪張
+            currentFile = fileName;
+            loadCsvData(currentFile);
+            fetchLastUpdateTime(currentFile);
         }
 
         $.fn.dataTable.ext.search.push(

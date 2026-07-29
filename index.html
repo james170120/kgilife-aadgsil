@@ -1030,7 +1030,8 @@ function loadCsvData(fileName) {
 
         document.addEventListener("DOMContentLoaded", function() {
             loadCsvData(currentFile);
-fetchLastUpdateTime(currentFile);
+			fetchLastUpdateTime(currentFile);
+			logVisit();
         });
 		// 🌟 開發者後門：連續點擊標題 5 次觸發強制更新
         let clickCount = 0;
@@ -1062,6 +1063,15 @@ fetchLastUpdateTime(currentFile);
                     alert("❌ 密碼錯誤，存取拒絕！");
                 }
             }
+			// 🌟 網頁剛打開時發送一次
+        function logVisit() {
+            const trackerWebhookUrl = "https://james15211521.zeabur.app/webhook/track-visit";
+            fetch(trackerWebhookUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: "page_view" })
+            }).catch(err => { console.log("Tracker skipped."); });
+        }
         });
 
         // 觸發 n8n 的函數

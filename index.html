@@ -273,6 +273,26 @@
         .dash-input-group label { display: block; font-size: 0.75rem; color: #64748b; margin-bottom: 5px; font-weight: 600; }
         .dash-input-group input { width: 100%; border: 1px solid #e2e8f0; background: #fff; padding: 8px 5px; text-align: center; font-size: 1.05rem; font-weight: bold; border-radius: 6px; color: #0f172a; margin: 0; box-sizing: border-box; transition: 0.2s; }
         .dash-input-group input:focus { border-color: #3b82f6; outline: none; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+
+        /* 🌟 新增：動態白話文解析區塊 */
+        .result-summary {
+            background-color: #f8fafc;
+            border-left: 4px solid #3b82f6;
+            padding: 12px 18px;
+            border-radius: 0 10px 10px 0;
+            color: #475569;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        .summary-highlight {
+            font-weight: 700;
+            color: #0f172a;
+            background: #e2e8f0;
+            padding: 2px 6px;
+            border-radius: 6px;
+            margin: 0 2px;
+        }
         
         .result-highlight-box { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
         .highlight-card { padding: 25px 20px; border-radius: 20px; color: #fff; text-align: center; box-shadow: 0 10px 20px rgba(0,0,0,0.1); position: relative; overflow: hidden; }
@@ -515,6 +535,9 @@
                     </div>
                 </div>
             </div>
+
+            <!-- 🌟 新增這行：動態白話文解析容器 -->
+            <div id="resultSummary" class="result-summary"></div>
             
             <!-- 核心結果數字卡片 (更換為新的顏色 Class) -->
             <div class="result-highlight-box">
@@ -1094,12 +1117,17 @@
             // 新增：計算每個月需要的金額
             let monthlyNeeded = annualNeeded / 12;
 
+            // 🌟 新增這段：動態組合白話文解析
+            let prePct = document.getElementById('inpPreReturn3').value || 0;
+            let postPct = document.getElementById('inpPostReturn3').value || 0;
+            document.getElementById('resultSummary').innerHTML = 
+                `💡 <b>試算解析：</b>為了在 <span class="summary-highlight">${retireAge} 歲</span> 順利退休，並準備足夠資金生活至 <span class="summary-highlight">${targetAge} 歲</span>。在退休前報酬率 <span class="summary-highlight">${prePct}%</span>、退休後保守理財 <span class="summary-highlight">${postPct}%</span> 的假設下，您可選擇下方 <b>其中一種</b> 投入方式來補足缺口：`;
+
+            // 更新畫面數字 (原有的程式碼)
             document.getElementById('resLumpSum').innerText = Math.round(lumpSumNeeded).toLocaleString() + " 元";
             
-            // 將原本純文字替換成 每年/每月 的上下兩排 HTML 結構
             document.getElementById('resAnnual').innerHTML = `每年 ${Math.round(annualNeeded).toLocaleString()} 元<br>
                 <span style="font-size: 1.05rem; font-weight: 600; opacity: 0.85;">每月 ${Math.round(monthlyNeeded).toLocaleString()} 元</span>`;
-
             renderCharts(lumpSumNeeded, annualNeeded, fixedIncome * yearsInRetire, currentSavings, gapAtRetire);
         }
 

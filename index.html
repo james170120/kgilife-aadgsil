@@ -1103,7 +1103,7 @@
             renderCharts(lumpSumNeeded, annualNeeded, fixedIncome * yearsInRetire, currentSavings, gapAtRetire);
         }
 
-          function renderCharts(lumpSum, annual, totalSocial, totalSavings, gapAtRetire) {
+        function renderCharts(lumpSum, annual, totalSocial, totalSavings, gapAtRetire) {
             Chart.defaults.font.family = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif';
 
             // 📊 投入方案對比 (長條圖)
@@ -1114,8 +1114,8 @@
                 data: {
                     labels: ['現在一筆投入', '持續每年投入'],
                     datasets: [{
-                        // 🌟 換成與上方卡片完全呼應的深海藍與碧玉綠
-                        data: [lumpSum, annual],
+                        // 🌟 1. 將傳入圖表的數據先四捨五入 (Math.round) 取整數
+                        data: [Math.round(lumpSum), Math.round(annual)],
                         backgroundColor: ['#3b82f6', '#14b8a6'], 
                         borderRadius: 8,
                         barPercentage: 0.6
@@ -1123,8 +1123,28 @@
                 },
                 options: { 
                     maintainAspectRatio: false, 
-                    plugins: { legend: { display: false } },
-                    scales: { y: { beginAtZero: true, grid: { borderDash: [5, 5] } }, x: { grid: { display: false } } }
+                    plugins: { 
+                        legend: { display: false },
+                        // 🌟 2. 設定 Tooltip 加上千分位逗號與單位
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return ' ' + context.raw.toLocaleString() + ' 元';
+                                }
+                            }
+                        }
+                    },
+                    scales: { 
+                        y: { 
+                            beginAtZero: true, 
+                            grid: { borderDash: [5, 5] },
+                            // 🌟 3. 將 Y 軸的數字也加上千分位逗號
+                            ticks: {
+                                callback: function(value) { return value.toLocaleString(); }
+                            }
+                        }, 
+                        x: { grid: { display: false } } 
+                    }
                 }
             });
 
@@ -1136,8 +1156,8 @@
                 data: {
                     labels: ['社會保險基本盤', '目前已準備理財', '最終資金缺口'],
                     datasets: [{
-                        data: [totalSocial, totalSavings, gapAtRetire],
-                        // 🌟 依序填入：暖陽金(社保)、碧玉綠(已準備)、深海藍(缺口)
+                        // 🌟 圓餅圖數據也四捨五入取整數
+                        data: [Math.round(totalSocial), Math.round(totalSavings), Math.round(gapAtRetire)],
                         backgroundColor: ['#f59e0b', '#14b8a6', '#3b82f6'],
                         borderWidth: 3,
                         borderColor: '#fff'
@@ -1146,8 +1166,14 @@
                 options: { 
                     maintainAspectRatio: false,
                     cutout: '65%',
-                    plugins: { legend: { position: 'bottom' } } 
-                }
+                    plugins: { 
+                        legend: { position: 'bottom' },
+                        // 🌟 圓餅圖 Tooltip 同步格式化
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return ' ' + context.label + ' : ' + context.raw.toLocaleString() + ' 元';
+                                }
             });
         }
 

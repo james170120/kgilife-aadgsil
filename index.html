@@ -1097,9 +1097,10 @@
             renderCharts(lumpSumNeeded, annualNeeded, fixedIncome * yearsInRetire, currentSavings, gapAtRetire);
         }
 
-        function renderCharts(lumpSum, annual, totalSocial, totalSavings, gapAtRetire) {
+          function renderCharts(lumpSum, annual, totalSocial, totalSavings, gapAtRetire) {
             Chart.defaults.font.family = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif';
 
+            // 📊 投入方案對比 (長條圖)
             let barCtx = document.getElementById('barChart').getContext('2d');
             if (myBarChart) myBarChart.destroy();
             myBarChart = new Chart(barCtx, {
@@ -1107,8 +1108,9 @@
                 data: {
                     labels: ['現在一筆投入', '持續每年投入'],
                     datasets: [{
+                        // 🌟 換成與上方卡片完全呼應的深海藍與碧玉綠
                         data: [lumpSum, annual],
-                        backgroundColor: ['#ea580c', '#8b5cf6'],
+                        backgroundColor: ['#3b82f6', '#14b8a6'], 
                         borderRadius: 8,
                         barPercentage: 0.6
                     }]
@@ -1120,6 +1122,7 @@
                 }
             });
 
+            // 🥧 退休資金結構分析 (圓餅圖)
             let pieCtx = document.getElementById('pieChart').getContext('2d');
             if (myPieChart) myPieChart.destroy();
             myPieChart = new Chart(pieCtx, {
@@ -1128,7 +1131,8 @@
                     labels: ['社會保險基本盤', '目前已準備理財', '最終資金缺口'],
                     datasets: [{
                         data: [totalSocial, totalSavings, gapAtRetire],
-                        backgroundColor: ['#3b82f6', '#10b981', '#ef4444'],
+                        // 🌟 依序填入：暖陽金(社保)、碧玉綠(已準備)、深海藍(缺口)
+                        backgroundColor: ['#f59e0b', '#14b8a6', '#3b82f6'],
                         borderWidth: 3,
                         borderColor: '#fff'
                     }]

@@ -358,7 +358,8 @@
 <body>
 
     <header>
-        <h1>📈 智慧基金篩選 </h1>
+        <!-- 🌟 給標題加上 ID，讓 JS 可以控制它 -->
+        <h1 id="headerTitle">📈 智慧基金篩選 </h1>
         
         <!-- 🍔 漢堡選單容器 -->
         <div class="header-menu-container">
@@ -1004,6 +1005,8 @@
         const dropdownMenu = document.getElementById('dropdownMenu');
         const navFund = document.getElementById('navFund');
         const navCalc = document.getElementById('navCalc');
+        const headerTitle = document.getElementById('headerTitle'); // 🌟 抓取標題元素
+        const lastUpdateTag = document.getElementById('lastUpdateTag'); // 🌟 抓取更新時間元素
 
         hamburgerBtn.addEventListener('click', function(e) {
             e.stopPropagation(); 
@@ -1016,6 +1019,7 @@
             }
         });
 
+        // 點擊「基金篩選」
         navFund.addEventListener('click', function(e) {
             e.preventDefault();
             this.classList.add('active');
@@ -1025,8 +1029,13 @@
             document.getElementById('calculatorContainer').style.display = 'none';
             if(table) table.columns.adjust(); 
             dropdownMenu.classList.remove('show'); 
+            
+            // 🌟 切換回基金模式：改回原標題，並「顯示」更新時間
+            headerTitle.innerText = '📈 智慧基金篩選';
+            lastUpdateTag.style.display = 'block';
         });
 
+        // 點擊「退休試算」
         navCalc.addEventListener('click', function(e) {
             e.preventDefault();
             this.classList.add('active');
@@ -1035,10 +1044,14 @@
             document.querySelector('.dashboard-container').style.display = 'none';
             document.getElementById('calculatorContainer').style.display = 'block'; 
             dropdownMenu.classList.remove('show'); 
+            
+            // 🌟 切換到試算模式：更改標題，並「隱藏」更新時間
+            headerTitle.innerText = '💰 退休試算';
+            lastUpdateTag.style.display = 'none';
         });
 
 
-// ==========================================
+        // ==========================================
         // 💰 退休試算核心運算 (防破圖版)
         // ==========================================
         let myBarChart = null;

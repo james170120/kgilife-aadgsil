@@ -255,7 +255,8 @@
         .btn-back:hover { background: #e2e8f0; }
 
         /* 🔥 階段三：儀表板 (深色卡片對比) */
-        .card-step3 { max-width: 650px; width: 100%; margin: 0 auto; }
+        .card-step3 { max-width: 900px; width: 100%; margin: 0 auto; } /* 🌟 這裡加寬到 900px 讓圖表有空間並排 */
+        
         .dashboard-header { display: flex; gap: 10px; background: #fff; padding: 15px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); margin-bottom: 20px; border: 1px solid #f1f5f9; }
         .dash-input-group { flex: 1; background: #f8fafc; padding: 10px; border-radius: 10px; text-align: center; }
         .dash-input-group label { font-size: 0.75rem; color: #64748b; margin-bottom: 5px; font-weight: 600; }
@@ -269,14 +270,23 @@
         .hl-title { font-size: 0.9rem; opacity: 0.9; margin-bottom: 10px; font-weight: 600; }
         .hl-value { font-size: 1.8rem; font-weight: 800; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
 
+        /* 🌟 新增：圖表並排容器 */
+        .charts-container {
+            display: flex;
+            gap: 20px;
+        }
+
         /* 🌟 這是解決破圖的關鍵：給圖表專屬的安全容器 */
         .chart-safe-zone {
+            flex: 1; /* 讓兩個圖表平分一半的寬度 */
+            min-width: 0; /* 🚨 Chart.js 放在 Flex 裡面必加的防爆框神句 */
             background: #fff;
             padding: 20px;
             border-radius: 16px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.03);
             margin-bottom: 20px;
             border: 1px solid #f1f5f9;
+            box-sizing: border-box;
         }
         .chart-title { font-weight: 700; color: #334155; margin-bottom: 15px; border-left: 4px solid #3b82f6; padding-left: 10px; }
         .canvas-wrapper {

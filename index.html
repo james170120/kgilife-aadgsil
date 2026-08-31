@@ -554,7 +554,7 @@
             <!-- 圖表安全區 -->
             <div class="charts-container">
                 <div class="chart-safe-zone">
-                    <div class="chart-title">📊 投入方案對比</div>
+                    <div class="chart-title">📈 資金成長與消耗軌跡</div>
                     <div class="canvas-wrapper"><canvas id="barChart"></canvas></div>
                 </div>
                 <div class="chart-safe-zone">
@@ -1074,7 +1074,7 @@
             calculateResult();
         }
 
-        // 🌟 修改：核心計算現在改為去抓取 Step 3 (儀表板) 上面的輸入框數值
+        // 🌟 修改：將參數打包並傳遞給圖表繪製函數
         function calculateResult() {
             goToStep(3); 
             
@@ -1082,7 +1082,6 @@
             let retireAge = parseFloat(document.getElementById('inpRetireAge3').value) || 0;
             let targetAge = parseFloat(document.getElementById('inpTargetAge3').value) || 0;
             
-            // 使用 getRawNumber 拔掉逗號再計算
             let annualExp = getRawNumber(document.getElementById('inpAnnualExp3').value);
             let currentSavings = getRawNumber(document.getElementById('inpCurrentSavings3').value);
             let fixedIncome = getRawNumber(document.getElementById('inpFixedIncome3').value);
@@ -1093,7 +1092,6 @@
             let yearsToRetire = retireAge - currentAge;
             let yearsInRetire = targetAge - retireAge;
             
-            // 若使用者正在輸入，年齡不合理時不要跳 Alert 影響體驗，直接歸零即可
             if(yearsToRetire <= 0 || yearsInRetire <= 0) {
                 document.getElementById('resLumpSum').innerText = "0 元";
                 document.getElementById('resAnnual').innerText = "0 元";
@@ -1103,7 +1101,7 @@
             let annualGap = annualExp - fixedIncome;
             if(annualGap < 0) annualGap = 0;
 
-            // 期初年金公式 (乘上 1 + 報酬率)
+            // 期初年金公式
             let totalNeededAtRetire = annualGap * ((1 - Math.pow(1 + postReturn, -yearsInRetire)) / postReturn) * (1 + postReturn);
             
             let gapAtRetire = totalNeededAtRetire - currentSavings;
@@ -1113,51 +1111,107 @@
             
             let fvFactor = ((Math.pow(1 + preReturn, yearsToRetire) - 1) / preReturn) * (1 + preReturn);
             let annualNeeded = gapAtRetire / fvFactor;
-
-            // 新增：計算每個月需要的金額
             let monthlyNeeded = annualNeeded / 12;
 
-            // 🌟 新增這段：動態組合白話文解析
+            // 動態文字解析
             let prePct = document.getElementById('inpPreReturn3').value || 0;
             let postPct = document.getElementById('inpPostReturn3').value || 0;
             document.getElementById('resultSummary').innerHTML = 
                 `💡 <b>試算解析：</b>為了在 <span class="summary-highlight">${retireAge} 歲</span> 順利退休，並準備足夠資金生活至 <span class="summary-highlight">${targetAge} 歲</span>。在退休前報酬率 <span class="summary-highlight">${prePct}%</span>、退休後保守理財 <span class="summary-highlight">${postPct}%</span> 的假設下，您可選擇下方 <b>其中一種</b> 投入方式來補足缺口：`;
 
-            // 更新畫面數字 (原有的程式碼)
             document.getElementById('resLumpSum').innerText = Math.round(lumpSumNeeded).toLocaleString() + " 元";
-            
             document.getElementById('resAnnual').innerHTML = `每年 ${Math.round(annualNeeded).toLocaleString()} 元<br>
                 <span style="font-size: 1.05rem; font-weight: 600; opacity: 0.85;">每月 ${Math.round(monthlyNeeded).toLocaleString()} 元</span>`;
-            renderCharts(lumpSumNeeded, annualNeeded, fixedIncome * yearsInRetire, currentSavings, gapAtRetire);
+
+            // 🌟 傳入額外的軌跡運算參數給 renderCharts
+            renderCharts(lumpSumNeeded, annualNeeded, fixedIncome * yearsInRetire, currentSavings, gapAtRetire, {
+                currentAge, retireAge, targetAge, preReturn, postReturn, annualGap
+            });
         }
 
-        function renderCharts(lumpSum, annual, totalSocial, totalSavings, gapAtRetire) {
+        // 🌟 修改：升級為動態曲線圖 (Line Chart)
+        function renderCharts(lumpSum, annual, totalSocial, totalSavings, gapAtRetire, params) {
             Chart.defaults.font.family = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif';
 
-            // 📊 投入方案對比 (長條圖)
+            // --- 產生資金軌跡陣列 ---
+            let labels = [];
+            let dataLump = [];
+            let dataAnn = [];
+
+            let balLump = lumpSum;
+            let balAnn = 0;
+
+            for (let age = params.currentAge; age <= params.targetAge; age++) {
+                labels.push(age + '歲');
+                
+                if (age < params.retireAge) {
+                    // 退休前：累積期
+                    dataLump.push(Math.round(Math.max(0, balLump)));
+                    balAnn += annual; // 每年初投入
+                    dataAnn.push(Math.round(Math.max(0, balAnn)));
+                    
+                    balLump *= (1 + params.preReturn);
+                    balAnn *= (1 + params.preReturn);
+                } else if (age < params.targetAge) {
+                    // 退休後：消耗期 (每年初領生活費)
+                    dataLump.push(Math.round(Math.max(0, balLump)));
+                    dataAnn.push(Math.round(Math.max(0, balAnn)));
+                    
+                    balLump -= params.annualGap;
+                    balAnn -= params.annualGap;
+                    
+                    balLump *= (1 + params.postReturn);
+                    balAnn *= (1 + params.postReturn);
+                } else {
+                    // 目標壽命最後一年 (餘額趨近於 0)
+                    dataLump.push(Math.round(Math.max(0, balLump)));
+                    dataAnn.push(Math.round(Math.max(0, balAnn)));
+                }
+            }
+
+            // 📈 資金成長與消耗軌跡 (曲線圖)
             let barCtx = document.getElementById('barChart').getContext('2d');
             if (myBarChart) myBarChart.destroy();
             myBarChart = new Chart(barCtx, {
-                type: 'bar',
+                type: 'line', // 🌟 改為曲線圖
                 data: {
-                    labels: ['現在一筆投入', '持續每年投入'],
-                    datasets: [{
-                        // 🌟 1. 將傳入圖表的數據先四捨五入 (Math.round) 取整數
-                        data: [Math.round(lumpSum), Math.round(annual)],
-                        backgroundColor: ['#3b82f6', '#14b8a6'], 
-                        borderRadius: 8,
-                        barPercentage: 0.6
-                    }]
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: '現在一筆投入',
+                            data: dataLump,
+                            borderColor: '#3b82f6',
+                            backgroundColor: 'rgba(59, 130, 246, 0.12)', // 淡藍色背景填滿
+                            borderWidth: 2,
+                            fill: true,
+                            pointRadius: 0, // 隱藏多餘的點，游標移過去才顯示
+                            pointHitRadius: 10,
+                            tension: 0.4 // 讓曲線平滑
+                        },
+                        {
+                            label: '每年持續投入',
+                            data: dataAnn,
+                            borderColor: '#14b8a6',
+                            backgroundColor: 'transparent',
+                            borderWidth: 2.5,
+                            borderDash: [6, 4], // 🌟 設定虛線，這樣重疊時才看得到藍線！
+                            fill: false,
+                            pointRadius: 0,
+                            pointHitRadius: 10,
+                            tension: 0.4
+                        }
+                    ]
                 },
                 options: { 
                     maintainAspectRatio: false, 
                     plugins: { 
-                        legend: { display: false },
-                        // 🌟 2. 設定 Tooltip 加上千分位逗號與單位
+                        legend: { display: true, position: 'top', labels: { usePointStyle: true, boxWidth: 8 } },
                         tooltip: {
+                            mode: 'index', // 🌟 游標移過去時，同時顯示兩條線的數字
+                            intersect: false,
                             callbacks: {
                                 label: function(context) {
-                                    return ' ' + context.raw.toLocaleString() + ' 元';
+                                    return ' ' + context.dataset.label + '：' + context.raw.toLocaleString() + ' 元';
                                 }
                             }
                         }
@@ -1166,17 +1220,17 @@
                         y: { 
                             beginAtZero: true, 
                             grid: { borderDash: [5, 5] },
-                            // 🌟 3. 將 Y 軸的數字也加上千分位逗號
-                            ticks: {
-                                callback: function(value) { return value.toLocaleString(); }
-                            }
+                            ticks: { callback: function(value) { return value.toLocaleString(); } }
                         }, 
-                        x: { grid: { display: false } } 
+                        x: { 
+                            grid: { display: false },
+                            ticks: { maxTicksLimit: 8 } // 避免 X 軸標籤太擠
+                        } 
                     }
                 }
             });
 
-            // 🥧 退休資金結構分析 (圓餅圖)
+            // 🥧 退休資金結構分析 (圓餅圖) 保持不變
             let pieCtx = document.getElementById('pieChart').getContext('2d');
             if (myPieChart) myPieChart.destroy();
             myPieChart = new Chart(pieCtx, {
@@ -1184,7 +1238,6 @@
                 data: {
                     labels: ['社會保險基本盤', '目前已準備理財', '最終資金缺口'],
                     datasets: [{
-                        // 🌟 圓餅圖數據也四捨五入取整數
                         data: [Math.round(totalSocial), Math.round(totalSavings), Math.round(gapAtRetire)],
                         backgroundColor: ['#f59e0b', '#14b8a6', '#3b82f6'],
                         borderWidth: 3,
@@ -1196,13 +1249,12 @@
                     cutout: '65%',
                     plugins: { 
                         legend: { position: 'bottom' },
-                        // 🌟 圓餅圖 Tooltip 同步格式化
                         tooltip: {
                             callbacks: {
                                 label: function(context) {
                                     return ' ' + context.label + ' : ' + context.raw.toLocaleString() + ' 元';
                                 }
-                              } 
+                            }
                         }
                     } 
                 }

@@ -992,49 +992,81 @@
             document.getElementById('calculatorContainer').scrollTop = 0;
         }
 
-function calculateResult() {
+        function calculateResult() {
+            goToStep(3); 
+            // 🌟 新增：數字加上千分位逗號
+        function formatNumber(val) {
+            if (!val) return '';
+            let raw = val.toString().replace(/\D/g, ''); // 拔除所有非數字字元
+            return raw ? parseInt(raw, 10).toLocaleString('en-US') : '';
+        }
+
+        // 🌟 新增：將帶有逗號的字串還原成純數字來計算
+        function getRawNumber(val) {
+            if (!val) return 0;
+            return parseFloat(val.toString().replace(/,/g, '')) || 0;
+        }
+
+        function goToStep(step) {
+            document.querySelectorAll('.step-container').forEach(c => c.classList.remove('active'));
+            document.getElementById('calcStep' + step).classList.add('active');
+            document.getElementById('calculatorContainer').scrollTop = 0;
+        }
+
+        // 🌟 新增：從 Step 2 進入 Step 3 時，把填寫好的資料「複製」到儀表板上
+        function startCalculation() {
+            document.getElementById('inpCurrentAge3').value = document.getElementById('inpCurrentAge').value;
+            document.getElementById('inpRetireAge3').value = document.getElementById('inpRetireAge').value;
+            document.getElementById('inpAnnualExp3').value = document.getElementById('inpAnnualExp').value;
+            document.getElementById('inpCurrentSavings3').value = document.getElementById('inpCurrentSavings').value;
+            document.getElementById('inpFixedIncome3').value = document.getElementById('inpFixedIncome').value;
+            
+            calculateResult();
+        }
+
+        // 🌟 修改：核心計算現在改為去抓取 Step 3 (儀表板) 上面的輸入框數值
+        function calculateResult() {
             goToStep(3); 
             
-            let currentAge = parseFloat(document.getElementById('inpCurrentAge').value) || 30;
-            let retireAge = parseFloat(document.getElementById('inpRetireAge').value) || 65;
-            let targetAge = parseFloat(document.getElementById('inpTargetAge').value) || 90;
-            let annualExp = parseFloat(document.getElementById('inpAnnualExp').value) || 600000;
-            let currentSavings = parseFloat(document.getElementById('inpCurrentSavings').value) || 0;
-            let fixedIncome = parseFloat(document.getElementById('inpFixedIncome').value) || 0;
-            let preReturn = (parseFloat(document.getElementById('inpPreReturn').value) || 6) / 100;
-            let postReturn = (parseFloat(document.getElementById('inpPostReturn').value) || 3) / 100;
+            let currentAge = parseFloat(document.getElementById('inpCurrentAge3').value) || 0;
+            let retireAge = parseFloat(document.getElementById('inpRetireAge3').value) || 0;
+            let targetAge = parseFloat(document.getElementById('inpTargetAge3').value) || 0;
+            
+            // 使用 getRawNumber 拔掉逗號再計算
+            let annualExp = getRawNumber(document.getElementById('inpAnnualExp3').value);
+            let currentSavings = getRawNumber(document.getElementById('inpCurrentSavings3').value);
+            let fixedIncome = getRawNumber(document.getElementById('inpFixedIncome3').value);
+            
+            let preReturn = (parseFloat(document.getElementById('inpPreReturn3').value) || 0) / 100;
+            let postReturn = (parseFloat(document.getElementById('inpPostReturn3').value) || 0) / 100;
 
             let yearsToRetire = retireAge - currentAge;
             let yearsInRetire = targetAge - retireAge;
             
+            // 若使用者正在輸入，年齡不合理時不要跳 Alert 影響體驗，直接歸零即可
             if(yearsToRetire <= 0 || yearsInRetire <= 0) {
-                alert("年齡設定有誤，請重新設定！");
-                return goToStep(1);
+                document.getElementById('resLumpSum').innerText = "0 元";
+                document.getElementById('resAnnual').innerText = "0 元";
+                return;
             }
 
-            // 1. 計算退休後每年的「資金缺口」
             let annualGap = annualExp - fixedIncome;
             if(annualGap < 0) annualGap = 0;
 
-            // 🌟 關鍵修改 1：退休後提領改為「期初拿錢 (Annuity Due)」-> 公式尾端乘上 (1 + postReturn)
+            // 期初年金公式 (乘上 1 + 報酬率)
             let totalNeededAtRetire = annualGap * ((1 - Math.pow(1 + postReturn, -yearsInRetire)) / postReturn) * (1 + postReturn);
             
-            // 扣除目前已準備理財
             let gapAtRetire = totalNeededAtRetire - currentSavings;
             if(gapAtRetire < 0) gapAtRetire = 0;
 
-            // 2. 現在一筆投入 (折現回現在，這部分不變)
             let lumpSumNeeded = gapAtRetire / Math.pow(1 + preReturn, yearsToRetire);
             
-            // 🌟 關鍵修改 2：每年投入改為「期初投入 (Annuity Due)」-> 分母多乘上 (1 + preReturn)
             let fvFactor = ((Math.pow(1 + preReturn, yearsToRetire) - 1) / preReturn) * (1 + preReturn);
             let annualNeeded = gapAtRetire / fvFactor;
 
-            // 更新畫面數字
             document.getElementById('resLumpSum').innerText = Math.round(lumpSumNeeded).toLocaleString() + " 元";
             document.getElementById('resAnnual').innerText = Math.round(annualNeeded).toLocaleString() + " 元";
 
-            // 重新繪製圖表
             renderCharts(lumpSumNeeded, annualNeeded, fixedIncome * yearsInRetire, currentSavings, gapAtRetire);
         }
 

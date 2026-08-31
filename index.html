@@ -309,6 +309,9 @@
             .result-highlight-box { grid-template-columns: 1fr; }
             .dashboard-header { flex-direction: column; }
             #calculatorContainer { padding: 15px 10px 80px 10px; }
+            
+            /* 🌟 手機版圖表變回上下排列 */
+            .charts-container { flex-direction: column; gap: 0; }
         }
     </style>
 </head>
@@ -487,6 +490,8 @@
             </div>
 
             <!-- 🚨 圖表安全區 (保證不破圖) -->
+
+            <div class="charts-container">
             <div class="chart-safe-zone">
                 <div class="chart-title">📊 投入方案對比</div>
                 <div class="canvas-wrapper">

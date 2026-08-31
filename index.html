@@ -555,14 +555,7 @@
             <!-- 圖表安全區 -->
             <div class="charts-container">
                 <div class="chart-safe-zone">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                        <div class="chart-title" style="margin-bottom: 0;">📈 資金成長與消耗軌跡</div>
-                        <!-- 🌟 新增：包含已準備理財金的核取方塊 -->
-                        <label style="display: flex; align-items: center; cursor: pointer; font-size: 0.85rem; color: #64748b; font-weight: 600;">
-                            <input type="checkbox" id="toggleSavings" onchange="calculateResult()" style="margin-right: 6px; width: 16px; height: 16px; cursor: pointer;">
-                            合併計算已準備理財金
-                        </label>
-                    </div>
+                    <div class="chart-title">📈 資金成長與消耗軌跡</div>
                     <div class="canvas-wrapper"><canvas id="barChart"></canvas></div>
                 </div>
                 
@@ -1140,11 +1133,9 @@
             document.getElementById('resAnnual').innerHTML = `每年 ${Math.round(annualNeeded).toLocaleString()} 元<br>
                 <span style="font-size: 1.05rem; font-weight: 600; opacity: 0.85;">每月 ${Math.round(monthlyNeeded).toLocaleString()} 元</span>`;
 
-            // 🌟 抓取 Checkbox 的狀態，一起傳給圖表繪製函數
-            let includeSavings = document.getElementById('toggleSavings').checked;
-
+            // 🌟 移除 includeSavings 參數，還原原本的傳遞方式
             renderCharts(lumpSumNeeded, annualNeeded, fixedIncome * yearsInRetire, currentSavings, gapAtRetire, {
-                currentAge, retireAge, targetAge, preReturn, postReturn, annualGap, includeSavings // 新增 includeSavings
+                currentAge, retireAge, targetAge, preReturn, postReturn, annualGap
             });
         }
 
@@ -1155,11 +1146,12 @@
             let dataLump = [];
             let dataAnn = [];
 
+            // 🌟 核心邏輯：只畫出為了解決資金缺口而投入的新資金軌跡
             let balLump = lumpSum;
             let balAnn = 0;
             let pmtGap = 0;
 
-            // 計算只看新資金時的消耗額
+            // 計算只看新資金時，退休後每年需消耗的額度
             if (gapAtRetire > 0 && params.targetAge > params.retireAge) {
                 let n = params.targetAge - params.retireAge;
                 let r = params.postReturn;
@@ -1170,13 +1162,6 @@
                 }
             }
 
-            // 🌟 核心邏輯：如果打勾了，就把原本的理財金折現加進第一年的本金中
-            if (params.includeSavings) {
-                let pvCurrentSavings = totalSavings / Math.pow(1 + params.preReturn, params.retireAge - params.currentAge);
-                balLump += pvCurrentSavings;
-                balAnn += pvCurrentSavings;
-            }
-
             for (let age = params.currentAge; age <= params.targetAge; age++) {
                 labels.push(age + '歲');
                 
@@ -1184,6 +1169,7 @@
                     dataLump.push(0);
                     dataAnn.push(0);
                 } else if (age < params.retireAge) {
+                    // 退休前：單純累積新資金
                     dataLump.push(Math.round(Math.max(0, balLump)));
                     balAnn += annual; 
                     dataAnn.push(Math.round(Math.max(0, balAnn)));
@@ -1191,13 +1177,12 @@
                     balLump *= (1 + params.preReturn);
                     balAnn *= (1 + params.preReturn);
                 } else {
+                    // 退休後：消耗期 (每年提領我們算出來的 pmtGap)
                     dataLump.push(Math.round(Math.max(0, balLump)));
                     dataAnn.push(Math.round(Math.max(0, balAnn)));
                     
-                    // 🌟 如果打勾(總資產)，每年就花掉所有缺口(annualGap)；沒打勾(純缺口)，就只花掉分配好的額度(pmtGap)
-                    let currentWithdrawal = params.includeSavings ? params.annualGap : pmtGap;
-                    balLump -= currentWithdrawal;
-                    balAnn -= currentWithdrawal;
+                    balLump -= pmtGap;
+                    balAnn -= pmtGap;
                     
                     balLump *= (1 + params.postReturn);
                     balAnn *= (1 + params.postReturn);

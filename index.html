@@ -255,13 +255,15 @@
         .btn-back:hover { background: #e2e8f0; }
 
         /* 🔥 階段三：儀表板 (深色卡片對比) */
-        .card-step3 { max-width: 900px; width: 100%; margin: 0 auto; } /* 🌟 這裡加寬到 900px 讓圖表有空間並排 */
+        .card-step3 { max-width: 900px; width: 100%; margin: 0 auto; }
         
-        .dashboard-header { display: flex; gap: 10px; background: #fff; padding: 15px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); margin-bottom: 20px; border: 1px solid #f1f5f9; }
-        .dash-input-group { flex: 1; background: #f8fafc; padding: 10px; border-radius: 10px; text-align: center; }
-        .dash-input-group label { font-size: 0.75rem; color: #64748b; margin-bottom: 5px; font-weight: 600; }
-        .dash-input-group input { width: 100%; border: none; background: #fff; padding: 6px; text-align: center; font-weight: bold; border-radius: 6px; color: #0f172a; margin: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-
+        /* 🌟 改用自動換行的 Grid 彈性佈局，能完美容納所有 8 個參數 */
+        .dashboard-header { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; background: #fff; padding: 20px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); margin-bottom: 20px; border: 1px solid #f1f5f9; }
+        .dash-input-group { background: #f8fafc; padding: 10px; border-radius: 10px; text-align: center; }
+        .dash-input-group label { display: block; font-size: 0.75rem; color: #64748b; margin-bottom: 5px; font-weight: 600; }
+        .dash-input-group input { width: 100%; border: 1px solid #e2e8f0; background: #fff; padding: 8px 5px; text-align: center; font-size: 1.05rem; font-weight: bold; border-radius: 6px; color: #0f172a; margin: 0; box-sizing: border-box; transition: 0.2s; }
+        .dash-input-group input:focus { border-color: #3b82f6; outline: none; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+        
         .result-highlight-box { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
         .highlight-card { padding: 25px 20px; border-radius: 20px; color: #fff; text-align: center; box-shadow: 0 10px 20px rgba(0,0,0,0.1); position: relative; overflow: hidden; }
         .highlight-card::after { content: ''; position: absolute; top: -50%; right: -20%; width: 100px; height: 100px; background: rgba(255,255,255,0.1); border-radius: 50%; }
@@ -438,22 +440,24 @@
             </div>
         </div>
 
-        <!-- Step 2：綠色財富風 -->
+<!-- Step 2：綠色財富風 -->
         <div id="calcStep2" class="step-container">
             <div class="card-step2">
                 <div class="step-title">💼 階段二：資產與金流檢視</div>
+                <!-- 🌟 替換為 text 屬性，並加上 oninput 即時格式化逗號 -->
                 <label class="calc-label">🏖️ 1. 退休生活每年要多少錢（元）</label>
-                <input type="number" id="inpAnnualExp" value="600000">
+                <input type="text" inputmode="numeric" id="inpAnnualExp" value="600,000" oninput="this.value=formatNumber(this.value)">
                 
                 <label class="calc-label">🏦 2. 目前的理財到退休時有多少錢（元）</label>
-                <input type="number" id="inpCurrentSavings" value="1000000">
+                <input type="text" inputmode="numeric" id="inpCurrentSavings" value="1,000,000" oninput="this.value=formatNumber(this.value)">
                 
                 <label class="calc-label">🛡️ 3. 退休時可固定領回多少錢（元/年）</label>
-                <input type="number" id="inpFixedIncome" value="240000">
+                <input type="text" inputmode="numeric" id="inpFixedIncome" value="240,000" oninput="this.value=formatNumber(this.value)">
                 
                 <div style="display: flex; gap: 10px; margin-top: 10px;">
                     <button class="btn-back" onclick="goToStep(1)">上一步</button>
-                    <button class="btn-green" onclick="calculateResult()">開始精算系統 ⚡</button>
+                    <!-- 🌟 這裡改成呼叫 startCalculation -->
+                    <button class="btn-green" onclick="startCalculation()">開始精算系統 ⚡</button>
                 </div>
             </div>
         </div>
@@ -461,20 +465,18 @@
         <!-- Step 3：儀表板風 -->
         <div id="calcStep3" class="step-container card-step3">
             
-            <!-- 上方控制參數 -->
+            <!-- 🌟 整合所有 8 個參數，並綁定 oninput 即時重算 -->
             <div class="dashboard-header">
-                <div class="dash-input-group">
-                    <label>🎯 準備到幾歲?</label>
-                    <input type="number" id="inpTargetAge" value="90" onchange="calculateResult()">
-                </div>
-                <div class="dash-input-group">
-                    <label>📈 退休前報酬(%)</label>
-                    <input type="number" id="inpPreReturn" value="6" onchange="calculateResult()">
-                </div>
-                <div class="dash-input-group">
-                    <label>📉 退休後報酬(%)</label>
-                    <input type="number" id="inpPostReturn" value="3" onchange="calculateResult()">
-                </div>
+                <div class="dash-input-group"><label>👦 現在年齡</label><input type="number" id="inpCurrentAge3" oninput="calculateResult()"></div>
+                <div class="dash-input-group"><label>👴 退休年齡</label><input type="number" id="inpRetireAge3" oninput="calculateResult()"></div>
+                <div class="dash-input-group"><label>🎯 準備到幾歲</label><input type="number" id="inpTargetAge3" value="90" oninput="calculateResult()"></div>
+                <div class="dash-input-group"><label>📈 退休前報酬(%)</label><input type="number" id="inpPreReturn3" value="8" oninput="calculateResult()"></div>
+                <div class="dash-input-group"><label>📉 退休後報酬(%)</label><input type="number" id="inpPostReturn3" value="4" oninput="calculateResult()"></div>
+                
+                <!-- 加入千分位格式化與即時重算 -->
+                <div class="dash-input-group"><label>🏖️ 每年花費</label><input type="text" inputmode="numeric" id="inpAnnualExp3" oninput="this.value=formatNumber(this.value); calculateResult()"></div>
+                <div class="dash-input-group"><label>🏦 目前已準備</label><input type="text" inputmode="numeric" id="inpCurrentSavings3" oninput="this.value=formatNumber(this.value); calculateResult()"></div>
+                <div class="dash-input-group"><label>🛡️ 每年固定領</label><input type="text" inputmode="numeric" id="inpFixedIncome3" oninput="this.value=formatNumber(this.value); calculateResult()"></div>
             </div>
             
             <!-- 核心結果數字卡片 -->
@@ -489,24 +491,18 @@
                 </div>
             </div>
 
-            <!-- 🚨 圖表安全區 (保證不破圖) -->
-
+            <!-- 圖表安全區 -->
             <div class="charts-container">
-            <div class="chart-safe-zone">
-                <div class="chart-title">📊 投入方案對比</div>
-                <div class="canvas-wrapper">
-                    <canvas id="barChart"></canvas>
+                <div class="chart-safe-zone">
+                    <div class="chart-title">📊 投入方案對比</div>
+                    <div class="canvas-wrapper"><canvas id="barChart"></canvas></div>
+                </div>
+                <div class="chart-safe-zone">
+                    <div class="chart-title">🥧 退休資金結構分析</div>
+                    <div class="canvas-wrapper"><canvas id="pieChart"></canvas></div>
                 </div>
             </div>
-
-            <div class="chart-safe-zone">
-                <div class="chart-title">🥧 退休資金結構分析</div>
-                <div class="canvas-wrapper">
-                    <canvas id="pieChart"></canvas>
-                </div>
-            </div>
-
-            <button class="btn-back" style="width: 100%; margin-top: 10px; padding: 15px;" onclick="goToStep(2)">重新調整基礎數值</button>
+            <!-- 🌟 重新調整基礎數值按鈕已刪除 -->
         </div>
     </div>
 

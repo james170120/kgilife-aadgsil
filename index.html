@@ -522,9 +522,9 @@
                     <div class="hl-title">⚡ 現在一筆投入需</div>
                     <div id="resLumpSum" class="hl-value">0</div>
                 </div>
-                <div class="highlight-card card-teal">
-                    <div class="hl-title">🔄 或 每年持續投入需</div>
-                    <div id="resAnnual" class="hl-value">0</div>
+                    <div class="highlight-card card-teal">
+                    <div class="hl-title">🔄 或 持續投入需</div>
+                    <div id="resAnnual" class="hl-value" style="font-size: 1.45rem;">0</div>
                 </div>
             </div>
 
@@ -1091,8 +1091,14 @@
             let fvFactor = ((Math.pow(1 + preReturn, yearsToRetire) - 1) / preReturn) * (1 + preReturn);
             let annualNeeded = gapAtRetire / fvFactor;
 
+            // 新增：計算每個月需要的金額
+            let monthlyNeeded = annualNeeded / 12;
+
             document.getElementById('resLumpSum').innerText = Math.round(lumpSumNeeded).toLocaleString() + " 元";
-            document.getElementById('resAnnual').innerText = Math.round(annualNeeded).toLocaleString() + " 元";
+            
+            // 將原本純文字替換成 每年/每月 的上下兩排 HTML 結構
+            document.getElementById('resAnnual').innerHTML = `每年 ${Math.round(annualNeeded).toLocaleString()} 元<br>
+                <span style="font-size: 1.05rem; font-weight: 600; opacity: 0.85;">每月 ${Math.round(monthlyNeeded).toLocaleString()} 元</span>`;
 
             renderCharts(lumpSumNeeded, annualNeeded, fixedIncome * yearsInRetire, currentSavings, gapAtRetire);
         }

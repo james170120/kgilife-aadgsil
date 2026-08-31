@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>智慧基金篩選</title>
     
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💰</text></svg>">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💰</text></svg>">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/4.3.0/css/fixedColumns.dataTables.min.css">
     
@@ -95,7 +95,7 @@
             position: absolute;
             top: 4px;
             left: 4px;
-            width: calc(33.333% - 4px); /* 🌟 改成 33.333% */
+            width: calc(33.333% - 4px);
             height: calc(100% - 8px);
             background: #fff;
             border-radius: 9px;
@@ -193,27 +193,6 @@
             transform: translateY(-1px);
         }
 
-        .quick-filters {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-        
-        .quick-btn {
-            background: #f1f5f9;
-            color: #475569;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            flex: none;
-            border: 1px solid transparent;
-        }
-        
-        .quick-btn:hover {
-            background: #e2e8f0;
-            border-color: #cbd5e1;
-        }
-
         .main-content {
             flex-grow: 1;
             padding: 20px;
@@ -250,11 +229,7 @@
             border-bottom: 2px solid #e2e8f0 !important; padding: 12px 10px;
         }
         table.dataTable tbody td { padding: 12px 10px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
-        table.dataTable.row-border tbody tr:first-child th, table.dataTable.row-border tbody tr:first-child td, table.dataTable.display tbody tr:first-child th, table.dataTable.display tbody tr:first-child td { border-top: none; }
-        table.dataTable tbody tr:hover { background-color: #f8fafc !important; }
         
-        .DTFC_LeftBodyLiner { overflow-x: hidden !important; }
-
         .name-container {
             max-width: 200px;         
             white-space: nowrap;      
@@ -271,11 +246,6 @@
         .name-clickable:hover {
             color: var(--accent-hover);
             text-decoration: underline;
-        }
-        .info-icon {
-            font-size: 0.85rem;
-            margin-right: 4px;
-            opacity: 0.7;
         }
 
         .modal-overlay {
@@ -296,42 +266,24 @@
             background: var(--primary-bg); padding: 18px 24px; border-bottom: 1px solid var(--border-light);
             display: flex; justify-content: space-between; align-items: flex-start;
         }
-        
         .modal-title-group { display: flex; flex-direction: column; gap: 4px; }
         .modal-title { font-size: 1.25rem; font-weight: 700; color: var(--text-main); margin: 0; line-height: 1.3; }
-        .modal-subtitle { font-size: 0.85rem; color: var(--text-muted); }
-
+        
         .btn-close-modal {
             background: none; border: none; font-size: 1.8rem; line-height: 1;
             color: #94a3b8; cursor: pointer; padding: 0; transition: color 0.2s;
         }
         .btn-close-modal:hover { color: #ef4444; }
+        .modal-body { padding: 24px; overflow-y: auto; background: #fff; }
 
-        .modal-body {
-            padding: 24px; overflow-y: auto; background: #fff;
-        }
-
-        .data-section-title {
-            font-size: 0.95rem; font-weight: 700; color: var(--text-main);
-            margin: 0 0 12px 0; display: flex; align-items: center;
-        }
-        .data-grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-            gap: 12px; margin-bottom: 24px;
-        }
-        .data-box {
-            background: #f8fafc; border: 1px solid #e2e8f0; padding: 12px; border-radius: 10px;
-        }
-        .data-label { 
-            font-size: 0.75rem; color: #64748b; margin-bottom: 4px; 
-            display: flex; align-items: center;
-        }
+        .data-section-title { font-size: 0.95rem; font-weight: 700; color: var(--text-main); margin: 0 0 12px 0; display: flex; align-items: center; }
+        .data-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; margin-bottom: 24px; }
+        .data-box { background: #f8fafc; border: 1px solid #e2e8f0; padding: 12px; border-radius: 10px; }
+        .data-label { font-size: 0.75rem; color: #64748b; margin-bottom: 4px; display: flex; align-items: center; }
         .data-value { font-size: 1.05rem; font-weight: 600; color: var(--text-main); }
-        .data-value.large { font-size: 1.2rem; }
 
-        /* 🌟 終極解法：全域提示框 (Global Tooltip) 樣式 */
         .global-tooltip {
-            position: fixed; /* 浮在全螢幕最上層，無視任何框框 */
+            position: fixed; 
             visibility: hidden;
             width: 220px;
             background-color: #334155;
@@ -339,25 +291,12 @@
             text-align: left;
             border-radius: 6px;
             padding: 8px 12px;
-            z-index: 999999; /* 保證比所有東西都高 */
+            z-index: 999999; 
             opacity: 0;
             transition: opacity 0.2s;
             font-size: 0.75rem;
-            font-weight: 400;
             line-height: 1.4;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             pointer-events: none;
-        }
-        
-        .global-tooltip::after {
-            content: "";
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            margin-left: -5px;
-            border-width: 5px;
-            border-style: solid;
-            border-color: #334155 transparent transparent transparent;
         }
 
         .help-icon {
@@ -367,20 +306,15 @@
             transition: background-color 0.2s;
             margin-left: 6px;
         }
-        .help-icon:hover {
-            background-color: var(--accent-blue);
-        }
+        .help-icon:hover { background-color: var(--accent-blue); }
 
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
-
-		/* =========================================================
+        /* =========================================================
            🍔 漢堡選單與下拉清單樣式
            ========================================================= */
-        .header-menu-container {
-            position: relative;
-        }
+        .header-menu-container { position: relative; }
 
         .hamburger-btn {
             background: none;
@@ -396,10 +330,7 @@
             justify-content: center;
         }
 
-        .hamburger-btn:hover {
-            background-color: #f1f5f9;
-            color: var(--accent-blue);
-        }
+        .hamburger-btn:hover { background-color: #f1f5f9; color: var(--accent-blue); }
 
         .dropdown-menu {
             position: absolute;
@@ -410,16 +341,14 @@
             border-radius: 12px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
             border: 1px solid var(--border-light);
-            display: none; /* 預設隱藏 */
+            display: none; 
             flex-direction: column;
             overflow: hidden;
             z-index: 9999;
             animation: fadeInDown 0.2s ease-out;
         }
 
-        .dropdown-menu.show {
-            display: flex;
-        }
+        .dropdown-menu.show { display: flex; }
 
         .dropdown-item {
             padding: 15px 20px;
@@ -433,83 +362,39 @@
             border-bottom: 1px solid #f1f5f9;
         }
 
-        .dropdown-item:last-child {
-            border-bottom: none;
-        }
-
-        .dropdown-item:hover {
-            background-color: #f8fafc;
-        }
-
+        .dropdown-item:last-child { border-bottom: none; }
+        .dropdown-item:hover { background-color: #f8fafc; }
         .dropdown-item.active {
             color: var(--accent-blue);
             background-color: #f0f6ff;
             border-left: 4px solid var(--accent-blue);
-            padding-left: 16px; /* 扣除 border 寬度保持平衡 */
+            padding-left: 16px; 
         }
 
         @keyframes fadeInDown {
             from { opacity: 0; transform: translateY(-10px); }
             to { opacity: 1; transform: translateY(0); }
         }
-		
-		/* =========================================================
-           📱 手機與平板的響應式設計 (RWD) 魔法 (解鎖滑動版)
+
+        /* =========================================================
+           📱 手機與平板的響應式設計 (RWD)
            ========================================================= */
         @media (max-width: 768px) {
-            /* 🌟 關鍵解藥：解除網頁滑動鎖定，讓手機可以自由上下滑 */
-            body {
-                overflow: auto !important; 
-            }
-
-            /* 整個畫面從「左右並排」改成「上下疊加」 */
-            .dashboard-container {
-                flex-direction: column;
-                height: auto; 
-            }
-
-            /* 左側邊欄變成 100% 寬度 */
-            .sidebar {
-                width: 100%;
-                box-sizing: border-box;
-                border-right: none;
-                border-bottom: 1px solid var(--border-light);
-                padding: 15px;
-            }
-
-            /* 確保主內容區能自然長高 */
-            .main-content {
-                padding: 10px;
-                height: auto;
-            }
-
-            /* 給表格專屬的高度，這樣滑到下面時，表格裡面依然可以上下左右滑 */
-            .table-wrapper {
-                height: 75vh; 
-            }
-
-            /* 讓上方標題與時間稍微縮小，適應手機螢幕 */
-            header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 5px;
-                padding: 12px 15px;
-            }
-            header h1 {
-                font-size: 1.2rem;
-            }
-
-            /* 手機沒有滑鼠，隱藏懸浮的問號提示框 */
-            .global-tooltip {
-                display: none !important;
-            }
+            body { overflow: auto !important; }
+            .dashboard-container { flex-direction: column; height: auto; }
+            .sidebar { width: 100%; box-sizing: border-box; border-right: none; border-bottom: 1px solid var(--border-light); padding: 15px; }
+            .main-content { padding: 10px; height: auto; }
+            .table-wrapper { height: 75vh; }
+            header { flex-direction: column; align-items: flex-start; gap: 5px; padding: 12px 15px; }
+            header h1 { font-size: 1.2rem; }
+            .header-menu-container { align-self: flex-end; margin-top: -30px; } /* 手機板選單位置微調 */
+            .global-tooltip { display: none !important; }
         }
-		
     </style>
 </head>
 <body>
 
-<header>
+    <header>
         <h1>📈 智慧基金篩選 </h1>
         
         <!-- 🍔 漢堡選單容器 -->
@@ -520,14 +405,14 @@
             <div id="dropdownMenu" class="dropdown-menu">
                 <a href="#" id="navFund" class="dropdown-item active">🔍 基金篩選</a>
                 <a href="#" id="navCalc" class="dropdown-item">💰 退休試算</a>
-                <!-- 未來有新功能，直接在這裡加 <a> 標籤即可 -->
             </div>
         </div>
     </header>
 
-<div id="lastUpdateTag" style="font-size: 0.8rem; color: #2ecc71; margin-top: 5px; font-weight: 600;">
-    ⌛ 正在確認最新數據時間...
-</div>
+    <div id="lastUpdateTag" style="font-size: 0.8rem; color: #2ecc71; margin-top: 5px; font-weight: 600; padding-left: 30px;">
+        ⌛ 正在確認最新數據時間...
+    </div>
+    
     <div class="dashboard-container">
         <div class="sidebar">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
@@ -537,17 +422,14 @@
                 </a>
             </div>
             <div class="policy-switcher" id="companySwitcher">
-                <!-- 🌟 第一層：3個按鈕，寬度設為 33.33% -->
                 <div class="switcher-slide" id="companySwitcherSlide" style="width: calc(33.333% - 2.66px);"></div>
                 <div class="policy-option active" onclick="switchCompany(0, 'kgi')">凱基人壽</div>
                 <div class="policy-option" onclick="switchCompany(1, 'chubb')">安達人壽</div>
                 <div class="policy-option" onclick="switchCompany(2, 'cardif')">法巴人壽</div>
             </div>
 
-            <!-- 🌟 第二層：凱基專屬的保單選單 (預設顯示) -->
             <div id="kgiPolicyContainer" style="display: block; margin-bottom: 20px;">
                 <div class="policy-switcher" id="kgiSwitcher" style="background: #eef2f7; padding: 3px; border-radius: 10px; margin-bottom: 0;">
-                    <!-- 2個按鈕，寬度設為 50% -->
                     <div class="switcher-slide" id="kgiSwitcherSlide" style="top: 3px; left: 3px; width: calc(50% - 3px); height: calc(100% - 6px); border-radius: 8px;"></div>
                     <div class="policy-option active" style="font-size: 0.85rem; padding: 6px 0;" onclick="switchKgiPolicy(0, 'latest_zhaocai.csv')">招財進保</div>
                     <div class="policy-option" style="font-size: 0.85rem; padding: 6px 0;" onclick="switchKgiPolicy(1, 'latest_yisheng.csv')">一生傳富</div>
@@ -571,7 +453,7 @@
                 <input type="number" id="filterReturnValue" placeholder="例如: 15" step="0.1">
 
                 <label class="input-group-compact" for="filterInceptionYear">成立年份 (含以前)</label>
-                <input type="number" id="filterInceptionYear" placeholder="例如: 2018 (尋找老字號標的)">
+                <input type="number" id="filterInceptionYear" placeholder="例如: 2018">
 
                 <label class="input-group-compact" for="filterCurrency">計價幣別</label>
                 <select id="filterCurrency"><option value="">全部幣別</option></select>
@@ -586,7 +468,6 @@
                 <label class="input-group-compact" for="filterNav">最新淨值 (≦)</label>
                 <input type="number" id="filterNav" placeholder="例如: 20" step="0.01">
 
-                <!-- 🌟 更乾淨的寫法：將文字放在 data-tooltip 屬性中 -->
                 <label class="input-group-compact" for="filterStdDev">年化標準差 (波動風險 ≦)
                     <span class="help-icon" data-tooltip="衡量基金的波動大小。數值越大，代表漲跌起伏越劇烈（風險越高）。">?</span>
                 </label>
@@ -615,6 +496,78 @@
         </div>
     </div>
 
+    <!-- 👇 漏掉的「退休試算器」介面補回這裡 👇 -->
+    <div id="calculatorContainer" style="display: none; height: calc(100vh - 60px); overflow-y: auto; padding: 20px; box-sizing: border-box; justify-content: center;">
+        <style>
+            /* 試算表專屬 CSS */
+            .calc-card { background: #fff; max-width: 500px; width: 100%; margin: 0 auto 20px auto; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); padding: 30px; display: none; animation: slideUp 0.3s ease-out; }
+            .calc-card.active { display: block; }
+            .step-title { font-size: 1.5rem; font-weight: 700; color: var(--accent-blue); margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid #eef2f7; }
+            .calc-label { display: block; font-weight: 600; color: var(--text-main); margin-bottom: 8px; font-size: 1rem; }
+            .calc-input { width: 100%; padding: 12px 15px; font-size: 1.1rem; border: 2px solid #e2e8f0; border-radius: 8px; margin-bottom: 20px; box-sizing: border-box; transition: border-color 0.2s; }
+            .calc-input:focus { border-color: var(--accent-blue); outline: none; }
+            .calc-btn { background: var(--accent-blue); color: white; border: none; padding: 12px 24px; font-size: 1rem; font-weight: 600; border-radius: 8px; cursor: pointer; width: 100%; transition: background 0.2s; }
+            .calc-btn:hover { background: var(--accent-hover); }
+            .calc-btn-secondary { background: #94a3b8; margin-top: 10px; }
+            .calc-btn-secondary:hover { background: #64748b; }
+            .result-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+            .result-box { background: #f8fafc; padding: 15px; border-radius: 10px; text-align: center; border: 1px solid #e2e8f0; }
+            .chart-wrapper { width: 100%; height: 250px; margin-top: 20px; }
+        </style>
+
+        <!-- Step 1 -->
+        <div id="calcStep1" class="calc-card active">
+            <div class="step-title">Step 1：年齡設定</div>
+            <label class="calc-label">1. 現在的年齡（歲）</label>
+            <input type="number" id="inpCurrentAge" class="calc-input" value="30">
+            <label class="calc-label">2. 預計退休的年齡（歲）</label>
+            <input type="number" id="inpRetireAge" class="calc-input" value="65">
+            <button class="calc-btn" onclick="goToStep(2)">下一步</button>
+        </div>
+
+        <!-- Step 2 -->
+        <div id="calcStep2" class="calc-card">
+            <div class="step-title">Step 2：退休金流與資產</div>
+            <label class="calc-label">1. 退休生活每年要多少錢（元）</label>
+            <input type="number" id="inpAnnualExp" class="calc-input" value="600000">
+            <label class="calc-label">2. 目前的理財到退休時有多少錢（元）</label>
+            <input type="number" id="inpCurrentSavings" class="calc-input" value="1000000">
+            <label class="calc-label">3. 退休時可固定領回多少錢（元/年）</label>
+            <input type="number" id="inpFixedIncome" class="calc-input" value="240000">
+            <div style="display: flex; gap: 10px;">
+                <button class="calc-btn calc-btn-secondary" onclick="goToStep(1)">上一步</button>
+                <button class="calc-btn" onclick="calculateResult()">查看計算結果</button>
+            </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div id="calcStep3" class="calc-card" style="max-width: 600px;">
+            <div class="step-title">試算結果</div>
+            <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                <div style="flex: 1;"><label class="calc-label" style="font-size:0.85rem;">準備到幾歲?</label><input type="number" id="inpTargetAge" class="calc-input" value="90" onchange="calculateResult()" style="margin-bottom:0; padding:8px;"></div>
+                <div style="flex: 1;"><label class="calc-label" style="font-size:0.85rem;">退休前報酬(%)</label><input type="number" id="inpPreReturn" class="calc-input" value="6" onchange="calculateResult()" style="margin-bottom:0; padding:8px;"></div>
+                <div style="flex: 1;"><label class="calc-label" style="font-size:0.85rem;">退休後報酬(%)</label><input type="number" id="inpPostReturn" class="calc-input" value="3" onchange="calculateResult()" style="margin-bottom:0; padding:8px;"></div>
+            </div>
+            
+            <div class="result-grid">
+                <div class="result-box">
+                    <div style="color: #64748b; font-size: 0.9rem; margin-bottom: 5px;">現在需一筆投入</div>
+                    <div id="resLumpSum" style="font-size: 1.5rem; font-weight: 700; color: #e74c3c;">0 元</div>
+                </div>
+                <div class="result-box">
+                    <div style="color: #64748b; font-size: 0.9rem; margin-bottom: 5px;">或 每年需投入</div>
+                    <div id="resAnnual" style="font-size: 1.5rem; font-weight: 700; color: #3a86ff;">0 元</div>
+                </div>
+            </div>
+
+            <div class="chart-wrapper"><canvas id="barChart"></canvas></div>
+            <div class="chart-wrapper" style="margin-top: 40px;"><canvas id="pieChart"></canvas></div>
+
+            <button class="calc-btn calc-btn-secondary" style="margin-top: 30px;" onclick="goToStep(2)">上一步 (調整基礎數值)</button>
+        </div>
+    </div>
+    <!-- 👆 試算器介面結束 👆 -->
+
     <div class="modal-overlay" id="fundModal">
         <div class="modal-card">
             <div class="modal-header">
@@ -637,43 +590,30 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/fixedcolumns/4.3.0/js/dataTables.fixedColumns.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <script>
-async function fetchLastUpdateTime(fileName) {
-            const owner = 'james170120'; // 你的帳號
-            const repo = 'kgilife-aadgsil'; // 你的 repo 名稱
-            
-            // 🌟 確保檔名乾淨，切掉問號後面的東西
+        async function fetchLastUpdateTime(fileName) {
+            const owner = 'james170120';
+            const repo = 'kgilife-aadgsil';
             const cleanFileName = fileName.split('?')[0];
-            
-            // 🌟 確保檔名有正確編碼 (防止中文字或特殊符號讓 API 壞掉)
             const encodedFileName = encodeURIComponent(cleanFileName);
             
-            // 🌟 這裡一定要用 encodedFileName，不能用原本的 fileName！
             const url = `https://api.github.com/repos/${owner}/${repo}/commits?path=${encodedFileName}&page=1&per_page=1`;
-            
             const timeTag = document.getElementById('lastUpdateTag');
             timeTag.innerText = '⌛ 正在確認最新數據時間...';
             timeTag.style.color = '#7f8c8d'; 
             
             try {
                 const response = await fetch(url);
-                if (!response.ok) {
-                    throw new Error(`GitHub API 回應錯誤: ${response.status}`);
-                }
+                if (!response.ok) { throw new Error(`GitHub API 回應錯誤: ${response.status}`); }
                 const data = await response.json();
                 
                 if (data && data.length > 0 && data[0].commit && data[0].commit.committer) {
                     const date = new Date(data[0].commit.committer.date);
                     const timeStr = date.toLocaleString('zh-TW', { 
-                        timeZone: 'Asia/Taipei',
-                        year: 'numeric',
-                        month: '2-digit',
-                        day: '2-digit',
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        second: '2-digit'
+                        timeZone: 'Asia/Taipei', year: 'numeric', month: '2-digit', day: '2-digit',
+                        hour: '2-digit', minute: '2-digit', second: '2-digit'
                     });
                     timeTag.innerText = `🟢 最新資料庫更新時間：${timeStr}`;
                     timeTag.style.color = '#2ecc71'; 
@@ -687,7 +627,7 @@ async function fetchLastUpdateTime(fileName) {
                 timeTag.style.color = '#e74c3c'; 
             }
         }
-        // --- 🌟 全域變數宣告 (統一放在這裡，不要重複) ---
+
         let currentCompany = 'kgi';
         let currentKgiFile = 'latest_zhaocai.csv'; 
         let currentFile = currentKgiFile;
@@ -712,13 +652,12 @@ async function fetchLastUpdateTime(fileName) {
                 loadCsvData(currentFile);
                 fetchLastUpdateTime(currentFile);
                 
-                // 🌟 凱基專屬：判斷目前是哪張子保單，給予對應的網址
                 if (currentKgiFile === 'latest_zhaocai.csv') {
                     linkElement.href = 'https://kgilife.moneydj.com/main.asp?sUrl=$W$HTML$SELECT]DJHTM{P}SBR1';
                 } else {
                     linkElement.href = 'https://kgilife.moneydj.com/main.asp?sUrl=$W$HTML$SELECT]DJHTM{P}SJF1';
                 }
-				linkElement.innerHTML = '🌐 凱基官方網站';
+                linkElement.innerHTML = '🌐 凱基官方網站';
                 linkElement.style.display = 'inline-block';
 
             } else if (companyId === 'chubb') {
@@ -727,9 +666,8 @@ async function fetchLastUpdateTime(fileName) {
                 loadCsvData(currentFile);
                 fetchLastUpdateTime(currentFile);
                 
-                // 🌟 安達專屬網址
                 linkElement.href = 'https://chubb.moneydj.com/fund-page.html?sUrl=$W$HTML$SELECT]DJHTM{A}1';
-				linkElement.innerHTML = '🌐 安達官方網站';
+                linkElement.innerHTML = '🌐 安達官方網站';
                 linkElement.style.display = 'inline-block';
 
             } else if (companyId === 'cardif') {
@@ -738,9 +676,8 @@ async function fetchLastUpdateTime(fileName) {
                 loadCsvData(currentFile);
                 fetchLastUpdateTime(currentFile);
                 
-                // 🌟 法巴專屬網址
                 linkElement.href = 'https://cardif.moneydj.com/main.asp?sUrl=$W$HTML$SELECT]DJHTM';
-				linkElement.innerHTML = '🌐 法巴官方網站';
+                linkElement.innerHTML = '🌐 法巴官方網站';
                 linkElement.style.display = 'inline-block';
             }
         }
@@ -759,17 +696,16 @@ async function fetchLastUpdateTime(fileName) {
             loadCsvData(currentFile);
             fetchLastUpdateTime(currentFile);
             
-            // 🌟 切換子保單時，官方網站連結也要跟著換！
             const linkElement = document.getElementById('officialLink');
             if (fileName === 'latest_zhaocai.csv') {
                 linkElement.href = 'https://kgilife.moneydj.com/main.asp?sUrl=$W$HTML$SELECT]DJHTM{P}SBR1';
             } else if (fileName === 'latest_yisheng.csv') {
                 linkElement.href = 'https://kgilife.moneydj.com/main.asp?sUrl=$W$HTML$SELECT]DJHTM{P}SJF1';
             }
-			linkElement.innerHTML = '🌐 凱基官方網站';
+            linkElement.innerHTML = '🌐 凱基官方網站';
         }
 
-        // --- 過濾器與重置按鈕邏輯 ---
+        // --- 過濾器邏輯 ---
         const filterInputs = ['filterReturnPeriod', 'filterReturnValue', 'filterInceptionYear', 'filterCurrency', 'filterDividend', 'filterNav', 'filterStdDev', 'filterSharpe', 'filterBeta'];
         filterInputs.forEach(id => {
             const element = document.getElementById(id);
@@ -854,19 +790,17 @@ async function fetchLastUpdateTime(fileName) {
             }
         );
 
-function loadCsvData(fileName) {
-            // 加上時間戳記，避免瀏覽器讀到舊的快取
+        function loadCsvData(fileName) {
             fetch(fileName + '?t=' + new Date().getTime())
                 .then(response => {
                     if (!response.ok) { throw new Error("找不到檔案：" + fileName); }
-                    return response.blob(); // 🌟 關鍵 1：改用 blob()，不要用 arrayBuffer()
+                    return response.blob(); 
                 })
                 .then(blob => {
-                    // 🌟 關鍵 2：讓 PapaParse 自動處理編碼，不要自己手動用 TextDecoder
                     Papa.parse(blob, {
                         header: true,
                         skipEmptyLines: true,
-                        encoding: "UTF-8", // 🌟 關鍵 3：明確告訴 PapaParse 這是 UTF-8
+                        encoding: "UTF-8", 
                         complete: function(results) {
                             let data = results.data;
                             if(data.length > 0) {
@@ -904,7 +838,6 @@ function loadCsvData(fileName) {
                                 });
                                 
                                 const columns = Object.keys(data[0]).map(function(key) {
-                                    // 🌟 關鍵 4：處理可能因為 BOM 導致欄位名稱前面有隱形字元的問題
                                     let cleanKey = key.replace(/^\uFEFF/, '');
                                     let columnConfig = { title: cleanKey, data: key };
                                     
@@ -1003,10 +936,7 @@ function loadCsvData(fileName) {
         $(document).on('click', '.name-clickable', function() {
             let rowIdx = $(this).attr('data-row-idx');
             let rowData = table.row(rowIdx).data();
-            
-            if(rowData) {
-                openModal(rowData);
-            }
+            if(rowData) { openModal(rowData); }
         });
 
         function formatVal(val) {
@@ -1088,33 +1018,21 @@ function loadCsvData(fileName) {
 
         window.onclick = function(event) {
             let modal = document.getElementById('fundModal');
-            if (event.target == modal) {
-                closeModal();
-            }
+            if (event.target == modal) { closeModal(); }
         }
 
-        // 🌟 讓 JS 自動精準計算提示框位置，無視任何遮擋！
         $(document).on('mouseenter', '.help-icon', function() {
             let text = $(this).attr('data-tooltip');
             let tooltip = document.getElementById('globalTooltip');
             tooltip.innerHTML = text;
-            
-            // 先顯示才能抓到實際長度與寬度
             tooltip.style.visibility = 'visible';
             tooltip.style.opacity = '1';
-            
-            // 取得問號在螢幕上的絕對位置
             let rect = this.getBoundingClientRect();
-            
-            // 計算提示框要出現在問號的正上方，並居中對齊
             let top = rect.top - tooltip.offsetHeight - 8;
             let left = rect.left + (rect.width / 2) - (tooltip.offsetWidth / 2);
-            
             tooltip.style.top = top + 'px';
             tooltip.style.left = left + 'px';
-            
         }).on('mouseleave', '.help-icon', function() {
-            // 滑鼠離開就隱藏
             let tooltip = document.getElementById('globalTooltip');
             tooltip.style.opacity = '0';
             tooltip.style.visibility = 'hidden';
@@ -1122,11 +1040,11 @@ function loadCsvData(fileName) {
 
         document.addEventListener("DOMContentLoaded", function() {
             loadCsvData(currentFile);
-			fetchLastUpdateTime(currentFile);
-			logVisit();
+            fetchLastUpdateTime(currentFile);
+            logVisit();
         });
 
-		// ==========================================
+        // ==========================================
         // 🍔 漢堡選單與視圖切換邏輯
         // ==========================================
         const hamburgerBtn = document.getElementById('hamburgerBtn');
@@ -1136,7 +1054,7 @@ function loadCsvData(fileName) {
 
         // 點擊漢堡按鈕展開/收合選單
         hamburgerBtn.addEventListener('click', function(e) {
-            e.stopPropagation(); // 阻止事件冒泡到 document
+            e.stopPropagation(); 
             dropdownMenu.classList.toggle('show');
         });
 
@@ -1155,9 +1073,9 @@ function loadCsvData(fileName) {
             
             document.querySelector('.dashboard-container').style.display = 'flex';
             document.getElementById('calculatorContainer').style.display = 'none';
-            if(table) table.columns.adjust(); // 表格重新計算寬度
+            if(table) table.columns.adjust(); 
             
-            dropdownMenu.classList.remove('show'); // 切換後自動關閉選單
+            dropdownMenu.classList.remove('show'); 
         });
 
         // 點擊「退休試算」
@@ -1169,7 +1087,7 @@ function loadCsvData(fileName) {
             document.querySelector('.dashboard-container').style.display = 'none';
             document.getElementById('calculatorContainer').style.display = 'flex';
             
-            dropdownMenu.classList.remove('show'); // 切換後自動關閉選單
+            dropdownMenu.classList.remove('show'); 
         });
 
         // ==========================================
@@ -1247,30 +1165,21 @@ function loadCsvData(fileName) {
                 options: { maintainAspectRatio: false, plugins: { title: { display: true, text: '退休資金結構圖', font:{size:16} } } }
             });
         }
-		// 🌟 開發者後門：連續點擊標題 5 次觸發強制更新
+
         let clickCount = 0;
         let clickTimer = null;
 
-        // 監聽最上方的 h1 標題
         document.querySelector('header h1').addEventListener('click', function() {
             clickCount++;
-            
-            // 如果是第一次點擊，啟動 2 秒的倒數計時器
             if (clickCount === 1) {
                 clickTimer = setTimeout(() => { 
-                    clickCount = 0; // 2 秒內沒點滿 5 下，就重新計算
+                    clickCount = 0; 
                 }, 2000); 
             }
-
-            // 連續點滿 5 下
             if (clickCount >= 5) {
                 clearTimeout(clickTimer);
                 clickCount = 0;
-                
-                // 跳出密碼輸入框
                 let pwd = prompt("🕵️‍♂️ 進入開發者模式：\n請輸入強制更新密碼：");
-                
-                // 設定你的專屬密碼 (例如：8888)
                 if (pwd === "1521") { 
                     triggerN8nUpdate();
                 } else if (pwd !== null) {
@@ -1279,11 +1188,8 @@ function loadCsvData(fileName) {
             }
         });
 
-        // 觸發 n8n 的函數
         function triggerN8nUpdate() {
-            // 👇 設定統一的 Webhook 網址
             const webhookUrl = "https://james15211521.zeabur.app/webhook/force-update";
-
             const timeTag = document.getElementById('lastUpdateTag');
             timeTag.innerText = '🚀 正在向 n8n 發送強制更新指令...';
             timeTag.style.color = '#3a86ff';
@@ -1304,15 +1210,15 @@ function loadCsvData(fileName) {
                     timeTag.style.color = '#e74c3c'; 
                 });
         }
-			// 🌟 網頁剛打開時發送一次
-      	  function logVisit() {
-        	    const trackerWebhookUrl = "https://james15211521.zeabur.app/webhook/track-visit";
-        	    fetch(trackerWebhookUrl, {
-           	     method: 'POST',
-           	     headers: { 'Content-Type': 'application/json' },
-           	     body: JSON.stringify({ action: "page_view" })
-        	    }).catch(err => { console.log("Tracker skipped."); });
-     	   }
+
+        function logVisit() {
+            const trackerWebhookUrl = "https://james15211521.zeabur.app/webhook/track-visit";
+            fetch(trackerWebhookUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: "page_view" })
+            }).catch(err => { console.log("Tracker skipped."); });
+        }
     </script>
 </body>
 </html>

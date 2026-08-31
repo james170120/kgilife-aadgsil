@@ -374,6 +374,85 @@
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
+
+		/* =========================================================
+           🍔 漢堡選單與下拉清單樣式
+           ========================================================= */
+        .header-menu-container {
+            position: relative;
+        }
+
+        .hamburger-btn {
+            background: none;
+            border: none;
+            font-size: 1.8rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 8px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hamburger-btn:hover {
+            background-color: #f1f5f9;
+            color: var(--accent-blue);
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
+            background: #fff;
+            width: 200px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border: 1px solid var(--border-light);
+            display: none; /* 預設隱藏 */
+            flex-direction: column;
+            overflow: hidden;
+            z-index: 9999;
+            animation: fadeInDown 0.2s ease-out;
+        }
+
+        .dropdown-menu.show {
+            display: flex;
+        }
+
+        .dropdown-item {
+            padding: 15px 20px;
+            text-decoration: none;
+            color: var(--text-main);
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f8fafc;
+        }
+
+        .dropdown-item.active {
+            color: var(--accent-blue);
+            background-color: #f0f6ff;
+            border-left: 4px solid var(--accent-blue);
+            padding-left: 16px; /* 扣除 border 寬度保持平衡 */
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+		
 		/* =========================================================
            📱 手機與平板的響應式設計 (RWD) 魔法 (解鎖滑動版)
            ========================================================= */
@@ -430,8 +509,20 @@
 </head>
 <body>
 
-    <header>
+<header>
         <h1>📈 智慧基金篩選 </h1>
+        
+        <!-- 🍔 漢堡選單容器 -->
+        <div class="header-menu-container">
+            <button id="hamburgerBtn" class="hamburger-btn">
+                ☰
+            </button>
+            <div id="dropdownMenu" class="dropdown-menu">
+                <a href="#" id="navFund" class="dropdown-item active">🔍 基金篩選</a>
+                <a href="#" id="navCalc" class="dropdown-item">💰 退休試算</a>
+                <!-- 未來有新功能，直接在這裡加 <a> 標籤即可 -->
+            </div>
+        </div>
     </header>
 
 <div id="lastUpdateTag" style="font-size: 0.8rem; color: #2ecc71; margin-top: 5px; font-weight: 600;">
@@ -546,6 +637,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/fixedcolumns/4.3.0/js/dataTables.fixedColumns.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <script>
 async function fetchLastUpdateTime(fileName) {
@@ -1033,6 +1125,128 @@ function loadCsvData(fileName) {
 			fetchLastUpdateTime(currentFile);
 			logVisit();
         });
+
+		// ==========================================
+        // 🍔 漢堡選單與視圖切換邏輯
+        // ==========================================
+        const hamburgerBtn = document.getElementById('hamburgerBtn');
+        const dropdownMenu = document.getElementById('dropdownMenu');
+        const navFund = document.getElementById('navFund');
+        const navCalc = document.getElementById('navCalc');
+
+        // 點擊漢堡按鈕展開/收合選單
+        hamburgerBtn.addEventListener('click', function(e) {
+            e.stopPropagation(); // 阻止事件冒泡到 document
+            dropdownMenu.classList.toggle('show');
+        });
+
+        // 點擊網頁空白處時，自動關閉下拉選單
+        document.addEventListener('click', function(e) {
+            if (!dropdownMenu.contains(e.target) && e.target !== hamburgerBtn) {
+                dropdownMenu.classList.remove('show');
+            }
+        });
+
+        // 點擊「基金篩選」
+        navFund.addEventListener('click', function(e) {
+            e.preventDefault();
+            this.classList.add('active');
+            navCalc.classList.remove('active');
+            
+            document.querySelector('.dashboard-container').style.display = 'flex';
+            document.getElementById('calculatorContainer').style.display = 'none';
+            if(table) table.columns.adjust(); // 表格重新計算寬度
+            
+            dropdownMenu.classList.remove('show'); // 切換後自動關閉選單
+        });
+
+        // 點擊「退休試算」
+        navCalc.addEventListener('click', function(e) {
+            e.preventDefault();
+            this.classList.add('active');
+            navFund.classList.remove('active');
+            
+            document.querySelector('.dashboard-container').style.display = 'none';
+            document.getElementById('calculatorContainer').style.display = 'flex';
+            
+            dropdownMenu.classList.remove('show'); // 切換後自動關閉選單
+        });
+
+        // ==========================================
+        // 💰 退休試算核心運算 (Time Value of Money)
+        // ==========================================
+        let myBarChart = null;
+        let myPieChart = null;
+
+        function goToStep(step) {
+            document.querySelectorAll('.calc-card').forEach(c => c.classList.remove('active'));
+            document.getElementById('calcStep' + step).classList.add('active');
+        }
+
+        function calculateResult() {
+            goToStep(3); 
+            
+            let currentAge = parseFloat(document.getElementById('inpCurrentAge').value) || 30;
+            let retireAge = parseFloat(document.getElementById('inpRetireAge').value) || 65;
+            let targetAge = parseFloat(document.getElementById('inpTargetAge').value) || 90;
+            let annualExp = parseFloat(document.getElementById('inpAnnualExp').value) || 600000;
+            let currentSavings = parseFloat(document.getElementById('inpCurrentSavings').value) || 0;
+            let fixedIncome = parseFloat(document.getElementById('inpFixedIncome').value) || 0;
+            let preReturn = (parseFloat(document.getElementById('inpPreReturn').value) || 6) / 100;
+            let postReturn = (parseFloat(document.getElementById('inpPostReturn').value) || 3) / 100;
+
+            let yearsToRetire = retireAge - currentAge;
+            let yearsInRetire = targetAge - retireAge;
+            if(yearsToRetire <= 0 || yearsInRetire <= 0) return alert("年齡設定有誤！");
+
+            let annualGap = annualExp - fixedIncome;
+            if(annualGap < 0) annualGap = 0;
+
+            let totalNeededAtRetire = annualGap * ((1 - Math.pow(1 + postReturn, -yearsInRetire)) / postReturn);
+            let gapAtRetire = totalNeededAtRetire - currentSavings;
+            if(gapAtRetire < 0) gapAtRetire = 0;
+
+            let lumpSumNeeded = gapAtRetire / Math.pow(1 + preReturn, yearsToRetire);
+            let annualNeeded = gapAtRetire * (preReturn / (Math.pow(1 + preReturn, yearsToRetire) - 1));
+
+            document.getElementById('resLumpSum').innerText = Math.round(lumpSumNeeded).toLocaleString() + " 元";
+            document.getElementById('resAnnual').innerText = Math.round(annualNeeded).toLocaleString() + " 元";
+
+            renderCharts(lumpSumNeeded, annualNeeded, fixedIncome * yearsInRetire, currentSavings, gapAtRetire);
+        }
+
+        function renderCharts(lumpSum, annual, totalSocial, totalSavings, gapAtRetire) {
+            let barCtx = document.getElementById('barChart').getContext('2d');
+            if (myBarChart) myBarChart.destroy();
+            myBarChart = new Chart(barCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['現在一筆投入', '或 每年需投入'],
+                    datasets: [{
+                        label: '投入金額',
+                        data: [lumpSum, annual],
+                        backgroundColor: ['#f97316', '#a855f7'],
+                        borderRadius: 6
+                    }]
+                },
+                options: { maintainAspectRatio: false, plugins: { legend: { display: false }, title: { display: true, text: '投入方案對比圖', font:{size:16} } } }
+            });
+
+            let pieCtx = document.getElementById('pieChart').getContext('2d');
+            if (myPieChart) myPieChart.destroy();
+            myPieChart = new Chart(pieCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['社會保險基本盤', '目前已準備理財', '最終資金缺口'],
+                    datasets: [{
+                        data: [totalSocial, totalSavings, gapAtRetire],
+                        backgroundColor: ['#3b82f6', '#22c55e', '#ef4444'],
+                        borderWidth: 2
+                    }]
+                },
+                options: { maintainAspectRatio: false, plugins: { title: { display: true, text: '退休資金結構圖', font:{size:16} } } }
+            });
+        }
 		// 🌟 開發者後門：連續點擊標題 5 次觸發強制更新
         let clickCount = 0;
         let clickTimer = null;

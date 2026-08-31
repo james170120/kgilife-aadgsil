@@ -41,6 +41,8 @@
             align-items: center;
             justify-content: space-between; 
             border-bottom: 1px solid var(--border-light);
+            position: relative;
+            z-index: 100;
         }
 
         header h1 {
@@ -49,272 +51,15 @@
             font-weight: 700;
             color: var(--text-main);
             letter-spacing: 0.5px;
-        }
-
-        .dashboard-container {
-            display: flex;
-            height: calc(100vh - 60px);
-            overflow: hidden;
-        }
-
-        .sidebar {
-            width: 320px;
-            background-color: var(--primary-bg);
-            padding: 20px;
-            overflow-y: auto;
-            flex-shrink: 0;
-            border-right: 1px solid var(--border-light);
-        }
-
-        .policy-switcher {
-            display: flex;
-            background: #e2e8f0;
-            padding: 4px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            position: relative;
-        }
-
-        .policy-option {
-            flex: 1;
-            text-align: center;
-            padding: 8px 0;
-            font-size: 0.9rem;
-            font-weight: 600;
-            z-index: 1;
             cursor: pointer;
-            transition: color 0.3s;
-            color: #64748b;
         }
-
-        .policy-option.active {
-            color: var(--text-main);
-        }
-
-        .switcher-slide {
-            position: absolute;
-            top: 4px;
-            left: 4px;
-            width: calc(33.333% - 4px);
-            height: calc(100% - 8px);
-            background: #fff;
-            border-radius: 9px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 0;
-        }
-
-        .filter-card {
-            background: var(--card-bg);
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.03);
-            margin-bottom: 15px;
-            border: 1px solid rgba(0,0,0,0.02);
-        }
-
-        .filter-title {
-            font-size: 0.95rem;
-            font-weight: 700;
-            color: var(--text-main);
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-        }
-
-        .filter-title::before {
-            content: '';
-            display: inline-block;
-            width: 4px;
-            height: 14px;
-            background-color: var(--accent-blue);
-            margin-right: 8px;
-            border-radius: 4px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 6px;
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            font-weight: 500;
-        }
-
-        select, input[type="number"], input[type="text"] {
-            width: 100%;
-            padding: 10px 12px;
-            margin-bottom: 15px;
-            border: 1px solid #dce4ec;
-            border-radius: 8px;
-            background-color: #fafbfc;
-            font-size: 0.9rem;
-            color: var(--text-main);
-            transition: all 0.2s;
-            box-sizing: border-box;
-        }
-
-        select:focus, input[type="number"]:focus, input[type="text"]:focus {
-            outline: none;
-            border-color: var(--accent-blue);
-            background-color: #fff;
-            box-shadow: 0 0 0 3px rgba(58, 134, 255, 0.15);
-        }
-
-        .input-group-compact {
-            margin-bottom: 6px;
-            display: flex;
-            align-items: center;
-        }
-
-        .btn-group {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        button {
-            flex: 1;
-            padding: 12px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.9rem;
-            transition: all 0.2s;
-        }
-
-        .btn-reset {
-            background-color: #eef2f7;
-            color: #475569;
-        }
-
-        .btn-reset:hover {
-            background-color: #cbd5e1;
-            transform: translateY(-1px);
-        }
-
-        .main-content {
-            flex-grow: 1;
-            padding: 20px;
-            overflow: hidden; 
-        }
-
-        .table-wrapper {
-            background: var(--card-bg);
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
-            border: 1px solid rgba(0,0,0,0.02);
-            height: calc(100% - 40px); 
-        }
-
-        .val-up { color: var(--color-up); font-weight: 600; }
-        .val-down { color: var(--color-down); }
-
-        .badge {
-            display: inline-block;
-            padding: 3px 8px;
-            border-radius: 12px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            text-align: center;
-        }
-        .badge-rr12 { background-color: #d1fae5; color: #065f46; } 
-        .badge-rr3 { background-color: #fef3c7; color: #92400e; }  
-        .badge-rr45 { background-color: #fee2e2; color: #991b1b; } 
-
-        table.dataTable { border-collapse: collapse !important; }
-        table.dataTable thead th {
-            background-color: #f8fafc; color: #64748b; font-size: 0.8rem; font-weight: 600; text-transform: uppercase;
-            border-bottom: 2px solid #e2e8f0 !important; padding: 12px 10px;
-        }
-        table.dataTable tbody td { padding: 12px 10px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
-        
-        .name-container {
-            max-width: 200px;         
-            white-space: nowrap;      
-            overflow: hidden;         
-            text-overflow: ellipsis;  
-            display: block;
-        }
-        .name-clickable {
-            color: var(--accent-blue);
-            cursor: pointer;
-            transition: all 0.2s;
-            font-weight: 500;
-        }
-        .name-clickable:hover {
-            color: var(--accent-hover);
-            text-decoration: underline;
-        }
-
-        .modal-overlay {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.4); z-index: 1000; justify-content: center; align-items: center;
-            backdrop-filter: blur(3px); 
-            animation: fadeIn 0.2s ease-out;
-        }
-        
-        .modal-card {
-            background: #fff; width: 90%; max-width: 650px; border-radius: 16px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.15); overflow: hidden;
-            display: flex; flex-direction: column; max-height: 85vh;
-            animation: slideUp 0.3s ease-out;
-        }
-
-        .modal-header {
-            background: var(--primary-bg); padding: 18px 24px; border-bottom: 1px solid var(--border-light);
-            display: flex; justify-content: space-between; align-items: flex-start;
-        }
-        .modal-title-group { display: flex; flex-direction: column; gap: 4px; }
-        .modal-title { font-size: 1.25rem; font-weight: 700; color: var(--text-main); margin: 0; line-height: 1.3; }
-        
-        .btn-close-modal {
-            background: none; border: none; font-size: 1.8rem; line-height: 1;
-            color: #94a3b8; cursor: pointer; padding: 0; transition: color 0.2s;
-        }
-        .btn-close-modal:hover { color: #ef4444; }
-        .modal-body { padding: 24px; overflow-y: auto; background: #fff; }
-
-        .data-section-title { font-size: 0.95rem; font-weight: 700; color: var(--text-main); margin: 0 0 12px 0; display: flex; align-items: center; }
-        .data-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; margin-bottom: 24px; }
-        .data-box { background: #f8fafc; border: 1px solid #e2e8f0; padding: 12px; border-radius: 10px; }
-        .data-label { font-size: 0.75rem; color: #64748b; margin-bottom: 4px; display: flex; align-items: center; }
-        .data-value { font-size: 1.05rem; font-weight: 600; color: var(--text-main); }
-
-        .global-tooltip {
-            position: fixed; 
-            visibility: hidden;
-            width: 220px;
-            background-color: #334155;
-            color: #fff;
-            text-align: left;
-            border-radius: 6px;
-            padding: 8px 12px;
-            z-index: 999999; 
-            opacity: 0;
-            transition: opacity 0.2s;
-            font-size: 0.75rem;
-            line-height: 1.4;
-            pointer-events: none;
-        }
-
-        .help-icon {
-            display: inline-flex; justify-content: center; align-items: center;
-            width: 14px; height: 14px; background-color: #cbd5e1; color: #fff;
-            border-radius: 50%; font-size: 10px; font-weight: bold; cursor: help;
-            transition: background-color 0.2s;
-            margin-left: 6px;
-        }
-        .help-icon:hover { background-color: var(--accent-blue); }
-
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
         /* =========================================================
            🍔 漢堡選單與下拉清單樣式
            ========================================================= */
-        .header-menu-container { position: relative; }
+        .header-menu-container {
+            position: relative;
+        }
 
         .hamburger-btn {
             background: none;
@@ -330,7 +75,10 @@
             justify-content: center;
         }
 
-        .hamburger-btn:hover { background-color: #f1f5f9; color: var(--accent-blue); }
+        .hamburger-btn:hover {
+            background-color: #f1f5f9;
+            color: var(--accent-blue);
+        }
 
         .dropdown-menu {
             position: absolute;
@@ -361,7 +109,6 @@
             align-items: center;
             border-bottom: 1px solid #f1f5f9;
         }
-
         .dropdown-item:last-child { border-bottom: none; }
         .dropdown-item:hover { background-color: #f8fafc; }
         .dropdown-item.active {
@@ -376,19 +123,182 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        /* 基金篩選容器 */
+        .dashboard-container {
+            display: flex;
+            height: calc(100vh - 60px);
+            overflow: hidden;
+        }
+
+        .sidebar {
+            width: 320px;
+            background-color: var(--primary-bg);
+            padding: 20px;
+            overflow-y: auto;
+            flex-shrink: 0;
+            border-right: 1px solid var(--border-light);
+        }
+
+        .main-content {
+            flex-grow: 1;
+            padding: 20px;
+            overflow: hidden; 
+        }
+
+        .table-wrapper {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            border: 1px solid rgba(0,0,0,0.02);
+            height: calc(100% - 40px); 
+        }
+
+        /* 各種原有的 CSS 元件 */
+        .policy-switcher { display: flex; background: #e2e8f0; padding: 4px; border-radius: 12px; margin-bottom: 20px; position: relative; }
+        .policy-option { flex: 1; text-align: center; padding: 8px 0; font-size: 0.9rem; font-weight: 600; z-index: 1; cursor: pointer; transition: color 0.3s; color: #64748b; }
+        .policy-option.active { color: var(--text-main); }
+        .switcher-slide { position: absolute; top: 4px; left: 4px; width: calc(33.333% - 4px); height: calc(100% - 8px); background: #fff; border-radius: 9px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 0; }
+        
+        .filter-card { background: var(--card-bg); padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.03); margin-bottom: 15px; border: 1px solid rgba(0,0,0,0.02); }
+        .filter-title { font-size: 0.95rem; font-weight: 700; color: var(--text-main); margin-bottom: 15px; display: flex; align-items: center; }
+        .filter-title::before { content: ''; display: inline-block; width: 4px; height: 14px; background-color: var(--accent-blue); margin-right: 8px; border-radius: 4px; }
+        
+        label { display: block; margin-bottom: 6px; font-size: 0.85rem; color: var(--text-muted); font-weight: 500; }
+        select, input[type="number"], input[type="text"] { width: 100%; padding: 10px 12px; margin-bottom: 15px; border: 1px solid #dce4ec; border-radius: 8px; background-color: #fafbfc; font-size: 0.9rem; color: var(--text-main); transition: all 0.2s; box-sizing: border-box; }
+        select:focus, input[type="number"]:focus, input[type="text"]:focus { outline: none; border-color: var(--accent-blue); background-color: #fff; box-shadow: 0 0 0 3px rgba(58, 134, 255, 0.15); }
+        .input-group-compact { margin-bottom: 6px; display: flex; align-items: center; }
+        
+        .btn-group { display: flex; gap: 10px; margin-top: 10px; }
+        button { flex: 1; padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.9rem; transition: all 0.2s; }
+        .btn-reset { background-color: #eef2f7; color: #475569; }
+        .btn-reset:hover { background-color: #cbd5e1; transform: translateY(-1px); }
+
+        .val-up { color: var(--color-up); font-weight: 600; }
+        .val-down { color: var(--color-down); }
+        .badge { display: inline-block; padding: 3px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 700; text-align: center; }
+        .badge-rr12 { background-color: #d1fae5; color: #065f46; } 
+        .badge-rr3 { background-color: #fef3c7; color: #92400e; }  
+        .badge-rr45 { background-color: #fee2e2; color: #991b1b; } 
+
+        table.dataTable { border-collapse: collapse !important; }
+        table.dataTable thead th { background-color: #f8fafc; color: #64748b; font-size: 0.8rem; font-weight: 600; text-transform: uppercase; border-bottom: 2px solid #e2e8f0 !important; padding: 12px 10px; }
+        table.dataTable tbody td { padding: 12px 10px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
+        
+        .name-container { max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
+        .name-clickable { color: var(--accent-blue); cursor: pointer; transition: all 0.2s; font-weight: 500; }
+        .name-clickable:hover { color: var(--accent-hover); text-decoration: underline; }
+
+        /* Modal & Tooltip */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(3px); animation: fadeIn 0.2s ease-out; }
+        .modal-card { background: #fff; width: 90%; max-width: 650px; border-radius: 16px; box-shadow: 0 15px 35px rgba(0,0,0,0.15); overflow: hidden; display: flex; flex-direction: column; max-height: 85vh; animation: slideUp 0.3s ease-out; }
+        .modal-header { background: var(--primary-bg); padding: 18px 24px; border-bottom: 1px solid var(--border-light); display: flex; justify-content: space-between; align-items: flex-start; }
+        .modal-title-group { display: flex; flex-direction: column; gap: 4px; }
+        .modal-title { font-size: 1.25rem; font-weight: 700; color: var(--text-main); margin: 0; }
+        .modal-subtitle { font-size: 0.85rem; color: var(--text-muted); }
+        .btn-close-modal { background: none; border: none; font-size: 1.8rem; color: #94a3b8; cursor: pointer; padding: 0; }
+        .modal-body { padding: 24px; overflow-y: auto; background: #fff; }
+        .data-section-title { font-size: 0.95rem; font-weight: 700; color: var(--text-main); margin: 0 0 12px 0; }
+        .data-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; margin-bottom: 24px; }
+        .data-box { background: #f8fafc; border: 1px solid #e2e8f0; padding: 12px; border-radius: 10px; }
+        .data-label { font-size: 0.75rem; color: #64748b; margin-bottom: 4px; }
+        .data-value { font-size: 1.05rem; font-weight: 600; color: var(--text-main); }
+        
+        .global-tooltip { position: fixed; visibility: hidden; width: 220px; background-color: #334155; color: #fff; border-radius: 6px; padding: 8px 12px; z-index: 999999; opacity: 0; transition: opacity 0.2s; font-size: 0.75rem; line-height: 1.4; }
+        .help-icon { display: inline-flex; justify-content: center; align-items: center; width: 14px; height: 14px; background-color: #cbd5e1; color: #fff; border-radius: 50%; font-size: 10px; cursor: help; margin-left: 6px; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
         /* =========================================================
-           📱 手機與平板的響應式設計 (RWD)
+           💰 退休試算全新專屬 UI 設計
            ========================================================= */
+        #calculatorContainer {
+            display: none; 
+            height: calc(100vh - 60px); 
+            overflow-y: auto; /* 保證可以滑動 */
+            padding: 30px 20px 100px 20px; /* 底部留白100px，確保能滑到底部 */
+            box-sizing: border-box; 
+            align-items: flex-start;
+            justify-content: center;
+        }
+
+        /* 共用卡片結構 */
+        .step-container {
+            width: 100%;
+            max-width: 550px;
+            margin: 0 auto;
+            display: none;
+            animation: slideUp 0.3s ease-out;
+        }
+        .step-container.active { display: block; }
+        
+        /* 🔥 階段一：年齡 (藍色圓潤風) */
+        .card-step1 { background: #ffffff; border: 2px solid #e0f2fe; border-radius: 24px; padding: 30px; box-shadow: 0 10px 25px rgba(14, 165, 233, 0.1); }
+        .card-step1 .step-title { color: #0284c7; font-size: 1.3rem; font-weight: 700; margin-bottom: 25px; text-align: center; }
+        .card-step1 .input-wrap { background: #f0f9ff; padding: 15px 20px; border-radius: 16px; margin-bottom: 15px; }
+        .card-step1 .calc-label { color: #0369a1; font-weight: 700; margin-bottom: 10px; font-size: 1rem; }
+        .card-step1 input { border: none; background: #fff; border-radius: 10px; padding: 15px; font-size: 1.2rem; font-weight: bold; color: #0f172a; text-align: center; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); }
+        .card-step1 input:focus { box-shadow: 0 0 0 3px #bae6fd; }
+        .btn-blue { background: #0ea5e9; color: #fff; padding: 16px; border-radius: 16px; width: 100%; font-size: 1.1rem; font-weight: bold; border: none; cursor: pointer; transition: 0.2s; margin-top: 10px; box-shadow: 0 4px 10px rgba(14, 165, 233, 0.3); }
+        .btn-blue:hover { background: #0284c7; transform: translateY(-2px); }
+
+        /* 🔥 階段二：資產 (綠色財富風) */
+        .card-step2 { background: #ffffff; border-top: 6px solid #10b981; border-radius: 16px; padding: 30px; box-shadow: 0 10px 25px rgba(16, 185, 129, 0.1); }
+        .card-step2 .step-title { color: #047857; font-size: 1.3rem; font-weight: 700; margin-bottom: 25px; border-bottom: 2px dashed #a7f3d0; padding-bottom: 15px; }
+        .card-step2 .calc-label { color: #374151; font-weight: 600; margin-bottom: 8px; font-size: 0.95rem; }
+        .card-step2 input { border: 1px solid #d1fae5; background: #f0fdf4; border-radius: 8px; padding: 12px 15px; font-size: 1.1rem; font-weight: 600; color: #065f46; margin-bottom: 20px; }
+        .card-step2 input:focus { border-color: #34d399; background: #fff; box-shadow: 0 0 0 3px #d1fae5; }
+        .btn-green { background: #10b981; color: #fff; padding: 14px; border-radius: 10px; flex: 2; font-size: 1.1rem; font-weight: bold; border: none; cursor: pointer; transition: 0.2s; }
+        .btn-green:hover { background: #059669; }
+        .btn-back { background: #f1f5f9; color: #64748b; padding: 14px; border-radius: 10px; flex: 1; font-weight: bold; border: none; cursor: pointer; }
+        .btn-back:hover { background: #e2e8f0; }
+
+        /* 🔥 階段三：儀表板 (深色卡片對比) */
+        .card-step3 { max-width: 650px; width: 100%; margin: 0 auto; }
+        .dashboard-header { display: flex; gap: 10px; background: #fff; padding: 15px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); margin-bottom: 20px; border: 1px solid #f1f5f9; }
+        .dash-input-group { flex: 1; background: #f8fafc; padding: 10px; border-radius: 10px; text-align: center; }
+        .dash-input-group label { font-size: 0.75rem; color: #64748b; margin-bottom: 5px; font-weight: 600; }
+        .dash-input-group input { width: 100%; border: none; background: #fff; padding: 6px; text-align: center; font-weight: bold; border-radius: 6px; color: #0f172a; margin: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+
+        .result-highlight-box { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
+        .highlight-card { padding: 25px 20px; border-radius: 20px; color: #fff; text-align: center; box-shadow: 0 10px 20px rgba(0,0,0,0.1); position: relative; overflow: hidden; }
+        .highlight-card::after { content: ''; position: absolute; top: -50%; right: -20%; width: 100px; height: 100px; background: rgba(255,255,255,0.1); border-radius: 50%; }
+        .card-orange { background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); }
+        .card-purple { background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%); }
+        .hl-title { font-size: 0.9rem; opacity: 0.9; margin-bottom: 10px; font-weight: 600; }
+        .hl-value { font-size: 1.8rem; font-weight: 800; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+
+        /* 🌟 這是解決破圖的關鍵：給圖表專屬的安全容器 */
+        .chart-safe-zone {
+            background: #fff;
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            margin-bottom: 20px;
+            border: 1px solid #f1f5f9;
+        }
+        .chart-title { font-weight: 700; color: #334155; margin-bottom: 15px; border-left: 4px solid #3b82f6; padding-left: 10px; }
+        .canvas-wrapper {
+            position: relative;
+            height: 260px; /* 🚨 必須要有固定高度，Chart.js 才不會無限長大 */
+            width: 100%;
+        }
+
         @media (max-width: 768px) {
             body { overflow: auto !important; }
             .dashboard-container { flex-direction: column; height: auto; }
-            .sidebar { width: 100%; box-sizing: border-box; border-right: none; border-bottom: 1px solid var(--border-light); padding: 15px; }
+            .sidebar { width: 100%; border-right: none; border-bottom: 1px solid var(--border-light); padding: 15px; }
             .main-content { padding: 10px; height: auto; }
             .table-wrapper { height: 75vh; }
             header { flex-direction: column; align-items: flex-start; gap: 5px; padding: 12px 15px; }
-            header h1 { font-size: 1.2rem; }
-            .header-menu-container { align-self: flex-end; margin-top: -30px; } /* 手機板選單位置微調 */
+            .header-menu-container { position: absolute; right: 15px; top: 12px; }
             .global-tooltip { display: none !important; }
+            
+            /* 手機版試算表調整 */
+            .result-highlight-box { grid-template-columns: 1fr; }
+            .dashboard-header { flex-direction: column; }
+            #calculatorContainer { padding: 15px 10px 80px 10px; }
         }
     </style>
 </head>
@@ -399,9 +309,7 @@
         
         <!-- 🍔 漢堡選單容器 -->
         <div class="header-menu-container">
-            <button id="hamburgerBtn" class="hamburger-btn">
-                ☰
-            </button>
+            <button id="hamburgerBtn" class="hamburger-btn">☰</button>
             <div id="dropdownMenu" class="dropdown-menu">
                 <a href="#" id="navFund" class="dropdown-item active">🔍 基金篩選</a>
                 <a href="#" id="navCalc" class="dropdown-item">💰 退休試算</a>
@@ -409,15 +317,16 @@
         </div>
     </header>
 
-    <div id="lastUpdateTag" style="font-size: 0.8rem; color: #2ecc71; margin-top: 5px; font-weight: 600; padding-left: 30px;">
+    <div id="lastUpdateTag" style="font-size: 0.8rem; color: #2ecc71; margin-top: 5px; font-weight: 600; padding: 0 15px;">
         ⌛ 正在確認最新數據時間...
     </div>
     
+    <!-- 原本的基金表格容器 -->
     <div class="dashboard-container">
         <div class="sidebar">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                 <label style="font-weight: 700; color: var(--text-main); margin-bottom: 0;">保險公司：</label>
-                <a id="officialLink" href="https://kgilife.moneydj.com/main.asp?sUrl=$W$HTML$SELECT]DJHTM{P}SBR1" target="_blank" style="font-size: 0.8rem; color: var(--accent-blue); text-decoration: none; transition: color 0.2s; font-weight: 600;">
+                <a id="officialLink" href="https://kgilife.moneydj.com/main.asp?sUrl=$W$HTML$SELECT]DJHTM{P}SBR1" target="_blank" style="font-size: 0.8rem; color: var(--accent-blue); text-decoration: none; font-weight: 600;">
                     🌐 官方網站
                 </a>
             </div>
@@ -438,7 +347,6 @@
 
             <div class="filter-card">
                 <div class="filter-title">核心過濾條件</div>
-                
                 <label class="input-group-compact" for="filterReturnPeriod">報酬率檢視期間</label>
                 <select id="filterReturnPeriod">
                     <option value="三個月(%)">近三個月 (%)</option>
@@ -448,47 +356,31 @@
                     <option value="成立以來(%)">成立以來總報酬 (%)</option>
                     <option value="成立以來平均報酬(%)">成立以來平均年報酬 (%)</option>
                 </select>
-
                 <label class="input-group-compact" for="filterReturnValue">要求最低報酬率 (%)</label>
                 <input type="number" id="filterReturnValue" placeholder="例如: 15" step="0.1">
-
                 <label class="input-group-compact" for="filterInceptionYear">成立年份 (含以前)</label>
-                <input type="number" id="filterInceptionYear" placeholder="例如: 2018">
-
+                <input type="number" id="filterInceptionYear" placeholder="例如: 2018 (尋找老字號標的)">
                 <label class="input-group-compact" for="filterCurrency">計價幣別</label>
                 <select id="filterCurrency"><option value="">全部幣別</option></select>
-
                 <label class="input-group-compact" for="filterDividend">配息頻率</label>
                 <select id="filterDividend"><option value="">全部頻率</option></select>
             </div>
 
             <div class="filter-card">
                 <div class="filter-title">進階風險指標</div>
-                
                 <label class="input-group-compact" for="filterNav">最新淨值 (≦)</label>
                 <input type="number" id="filterNav" placeholder="例如: 20" step="0.01">
-
-                <label class="input-group-compact" for="filterStdDev">年化標準差 (波動風險 ≦)
-                    <span class="help-icon" data-tooltip="衡量基金的波動大小。數值越大，代表漲跌起伏越劇烈（風險越高）。">?</span>
-                </label>
+                <label class="input-group-compact" for="filterStdDev">年化標準差 (波動風險 ≦)<span class="help-icon" data-tooltip="衡量基金的波動大小。數值越大，代表漲跌起伏越劇烈（風險越高）。">?</span></label>
                 <input type="number" id="filterStdDev" placeholder="建議 < 15" step="0.1">
-
-                <label class="input-group-compact" for="filterSharpe">夏普值 (CP值 ≧)
-                    <span class="help-icon" data-tooltip="衡量承受每1%風險能帶來的超額報酬。數值越大越好，代表承擔相同風險下賺得比較多。">?</span>
-                </label>
+                <label class="input-group-compact" for="filterSharpe">夏普值 (CP值 ≧)<span class="help-icon" data-tooltip="衡量承受每1%風險能帶來的超額報酬。數值越大越好，代表承擔相同風險下賺得比較多。">?</span></label>
                 <input type="number" id="filterSharpe" placeholder="建議 > 0.5" step="0.01">
-
-                <label class="input-group-compact" for="filterBeta">Beta值 (大盤連動度 ≦)
-                    <span class="help-icon" data-tooltip="大盤漲跌1%時，基金跟著漲跌的幅度。大於1代表比大盤活潑，小於1代表比大盤抗跌。">?</span>
-                </label>
+                <label class="input-group-compact" for="filterBeta">Beta值 (大盤連動度 ≦)<span class="help-icon" data-tooltip="大盤漲跌1%時，基金跟著漲跌的幅度。大於1代表比大盤活潑，小於1代表比大盤抗跌。">?</span></label>
                 <input type="number" id="filterBeta" placeholder="建議 < 1" step="0.01">
-                
                 <div class="btn-group">
                     <button class="btn-reset" id="btnReset">清除所有條件</button>
                 </div>
             </div>
         </div>
-
         <div class="main-content">
             <div class="table-wrapper">
                 <table id="fundTable" class="display nowrap" style="width:100%;"></table>
@@ -496,78 +388,7 @@
         </div>
     </div>
 
-    <!-- 👇 漏掉的「退休試算器」介面補回這裡 👇 -->
-    <div id="calculatorContainer" style="display: none; height: calc(100vh - 60px); overflow-y: auto; padding: 20px; box-sizing: border-box; justify-content: center;">
-        <style>
-            /* 試算表專屬 CSS */
-            .calc-card { background: #fff; max-width: 500px; width: 100%; margin: 0 auto 20px auto; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); padding: 30px; display: none; animation: slideUp 0.3s ease-out; }
-            .calc-card.active { display: block; }
-            .step-title { font-size: 1.5rem; font-weight: 700; color: var(--accent-blue); margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid #eef2f7; }
-            .calc-label { display: block; font-weight: 600; color: var(--text-main); margin-bottom: 8px; font-size: 1rem; }
-            .calc-input { width: 100%; padding: 12px 15px; font-size: 1.1rem; border: 2px solid #e2e8f0; border-radius: 8px; margin-bottom: 20px; box-sizing: border-box; transition: border-color 0.2s; }
-            .calc-input:focus { border-color: var(--accent-blue); outline: none; }
-            .calc-btn { background: var(--accent-blue); color: white; border: none; padding: 12px 24px; font-size: 1rem; font-weight: 600; border-radius: 8px; cursor: pointer; width: 100%; transition: background 0.2s; }
-            .calc-btn:hover { background: var(--accent-hover); }
-            .calc-btn-secondary { background: #94a3b8; margin-top: 10px; }
-            .calc-btn-secondary:hover { background: #64748b; }
-            .result-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
-            .result-box { background: #f8fafc; padding: 15px; border-radius: 10px; text-align: center; border: 1px solid #e2e8f0; }
-            .chart-wrapper { width: 100%; height: 250px; margin-top: 20px; }
-        </style>
-
-        <!-- Step 1 -->
-        <div id="calcStep1" class="calc-card active">
-            <div class="step-title">Step 1：年齡設定</div>
-            <label class="calc-label">1. 現在的年齡（歲）</label>
-            <input type="number" id="inpCurrentAge" class="calc-input" value="30">
-            <label class="calc-label">2. 預計退休的年齡（歲）</label>
-            <input type="number" id="inpRetireAge" class="calc-input" value="65">
-            <button class="calc-btn" onclick="goToStep(2)">下一步</button>
-        </div>
-
-        <!-- Step 2 -->
-        <div id="calcStep2" class="calc-card">
-            <div class="step-title">Step 2：退休金流與資產</div>
-            <label class="calc-label">1. 退休生活每年要多少錢（元）</label>
-            <input type="number" id="inpAnnualExp" class="calc-input" value="600000">
-            <label class="calc-label">2. 目前的理財到退休時有多少錢（元）</label>
-            <input type="number" id="inpCurrentSavings" class="calc-input" value="1000000">
-            <label class="calc-label">3. 退休時可固定領回多少錢（元/年）</label>
-            <input type="number" id="inpFixedIncome" class="calc-input" value="240000">
-            <div style="display: flex; gap: 10px;">
-                <button class="calc-btn calc-btn-secondary" onclick="goToStep(1)">上一步</button>
-                <button class="calc-btn" onclick="calculateResult()">查看計算結果</button>
-            </div>
-        </div>
-
-        <!-- Step 3 -->
-        <div id="calcStep3" class="calc-card" style="max-width: 600px;">
-            <div class="step-title">試算結果</div>
-            <div style="display: flex; gap: 10px; margin-bottom: 20px;">
-                <div style="flex: 1;"><label class="calc-label" style="font-size:0.85rem;">準備到幾歲?</label><input type="number" id="inpTargetAge" class="calc-input" value="90" onchange="calculateResult()" style="margin-bottom:0; padding:8px;"></div>
-                <div style="flex: 1;"><label class="calc-label" style="font-size:0.85rem;">退休前報酬(%)</label><input type="number" id="inpPreReturn" class="calc-input" value="6" onchange="calculateResult()" style="margin-bottom:0; padding:8px;"></div>
-                <div style="flex: 1;"><label class="calc-label" style="font-size:0.85rem;">退休後報酬(%)</label><input type="number" id="inpPostReturn" class="calc-input" value="3" onchange="calculateResult()" style="margin-bottom:0; padding:8px;"></div>
-            </div>
-            
-            <div class="result-grid">
-                <div class="result-box">
-                    <div style="color: #64748b; font-size: 0.9rem; margin-bottom: 5px;">現在需一筆投入</div>
-                    <div id="resLumpSum" style="font-size: 1.5rem; font-weight: 700; color: #e74c3c;">0 元</div>
-                </div>
-                <div class="result-box">
-                    <div style="color: #64748b; font-size: 0.9rem; margin-bottom: 5px;">或 每年需投入</div>
-                    <div id="resAnnual" style="font-size: 1.5rem; font-weight: 700; color: #3a86ff;">0 元</div>
-                </div>
-            </div>
-
-            <div class="chart-wrapper"><canvas id="barChart"></canvas></div>
-            <div class="chart-wrapper" style="margin-top: 40px;"><canvas id="pieChart"></canvas></div>
-
-            <button class="calc-btn calc-btn-secondary" style="margin-top: 30px;" onclick="goToStep(2)">上一步 (調整基礎數值)</button>
-        </div>
-    </div>
-    <!-- 👆 試算器介面結束 👆 -->
-
+    <!-- Modal 與 Tooltip -->
     <div class="modal-overlay" id="fundModal">
         <div class="modal-card">
             <div class="modal-header">
@@ -577,14 +398,103 @@
                 </div>
                 <button class="btn-close-modal" onclick="closeModal()">&times;</button>
             </div>
-            <div class="modal-body" id="modalContentArea">
-                <!-- Javascript 會把數據卡片塞進這裡 -->
+            <div class="modal-body" id="modalContentArea"></div>
+        </div>
+    </div>
+    <div id="globalTooltip" class="global-tooltip"></div>
+
+
+    <!-- ==========================================
+         💰 退休試算器容器 (全新樣式，防破圖設計)
+         ========================================== -->
+    <div id="calculatorContainer">
+        
+        <!-- Step 1：藍色時間軸風 -->
+        <div id="calcStep1" class="step-container active">
+            <div class="card-step1">
+                <div class="step-title">⏳ 階段一：規劃時間軸</div>
+                <div class="input-wrap">
+                    <label class="calc-label">👦 1. 現在的年齡（歲）</label>
+                    <input type="number" id="inpCurrentAge" value="30">
+                </div>
+                <div class="input-wrap">
+                    <label class="calc-label">👴 2. 預計退休的年齡（歲）</label>
+                    <input type="number" id="inpRetireAge" value="65">
+                </div>
+                <button class="btn-blue" onclick="goToStep(2)">設定完成，下一步 ➔</button>
             </div>
+        </div>
+
+        <!-- Step 2：綠色財富風 -->
+        <div id="calcStep2" class="step-container">
+            <div class="card-step2">
+                <div class="step-title">💼 階段二：資產與金流檢視</div>
+                <label class="calc-label">🏖️ 1. 退休生活每年要多少錢（元）</label>
+                <input type="number" id="inpAnnualExp" value="600000">
+                
+                <label class="calc-label">🏦 2. 目前的理財到退休時有多少錢（元）</label>
+                <input type="number" id="inpCurrentSavings" value="1000000">
+                
+                <label class="calc-label">🛡️ 3. 退休時可固定領回多少錢（元/年）</label>
+                <input type="number" id="inpFixedIncome" value="240000">
+                
+                <div style="display: flex; gap: 10px; margin-top: 10px;">
+                    <button class="btn-back" onclick="goToStep(1)">上一步</button>
+                    <button class="btn-green" onclick="calculateResult()">開始精算系統 ⚡</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 3：儀表板風 -->
+        <div id="calcStep3" class="step-container card-step3">
+            
+            <!-- 上方控制參數 -->
+            <div class="dashboard-header">
+                <div class="dash-input-group">
+                    <label>🎯 準備到幾歲?</label>
+                    <input type="number" id="inpTargetAge" value="90" onchange="calculateResult()">
+                </div>
+                <div class="dash-input-group">
+                    <label>📈 退休前報酬(%)</label>
+                    <input type="number" id="inpPreReturn" value="6" onchange="calculateResult()">
+                </div>
+                <div class="dash-input-group">
+                    <label>📉 退休後報酬(%)</label>
+                    <input type="number" id="inpPostReturn" value="3" onchange="calculateResult()">
+                </div>
+            </div>
+            
+            <!-- 核心結果數字卡片 -->
+            <div class="result-highlight-box">
+                <div class="highlight-card card-orange">
+                    <div class="hl-title">⚡ 現在一筆投入需</div>
+                    <div id="resLumpSum" class="hl-value">0</div>
+                </div>
+                <div class="highlight-card card-purple">
+                    <div class="hl-title">🔄 或 每年持續投入需</div>
+                    <div id="resAnnual" class="hl-value">0</div>
+                </div>
+            </div>
+
+            <!-- 🚨 圖表安全區 (保證不破圖) -->
+            <div class="chart-safe-zone">
+                <div class="chart-title">📊 投入方案對比</div>
+                <div class="canvas-wrapper">
+                    <canvas id="barChart"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-safe-zone">
+                <div class="chart-title">🥧 退休資金結構分析</div>
+                <div class="canvas-wrapper">
+                    <canvas id="pieChart"></canvas>
+                </div>
+            </div>
+
+            <button class="btn-back" style="width: 100%; margin-top: 10px; padding: 15px;" onclick="goToStep(2)">重新調整基礎數值</button>
         </div>
     </div>
 
-    <!-- 🌟 全域隱形提示框 -->
-    <div id="globalTooltip" class="global-tooltip"></div>
 
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
@@ -593,28 +503,28 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <script>
+        // ==========================================
+        // 原始基金表格的所有 JavaScript 功能
+        // ==========================================
         async function fetchLastUpdateTime(fileName) {
-            const owner = 'james170120';
-            const repo = 'kgilife-aadgsil';
+            const owner = 'james170120'; 
+            const repo = 'kgilife-aadgsil'; 
             const cleanFileName = fileName.split('?')[0];
             const encodedFileName = encodeURIComponent(cleanFileName);
-            
             const url = `https://api.github.com/repos/${owner}/${repo}/commits?path=${encodedFileName}&page=1&per_page=1`;
+            
             const timeTag = document.getElementById('lastUpdateTag');
             timeTag.innerText = '⌛ 正在確認最新數據時間...';
             timeTag.style.color = '#7f8c8d'; 
             
             try {
                 const response = await fetch(url);
-                if (!response.ok) { throw new Error(`GitHub API 回應錯誤: ${response.status}`); }
+                if (!response.ok) throw new Error(`GitHub API 錯誤: ${response.status}`);
                 const data = await response.json();
                 
                 if (data && data.length > 0 && data[0].commit && data[0].commit.committer) {
                     const date = new Date(data[0].commit.committer.date);
-                    const timeStr = date.toLocaleString('zh-TW', { 
-                        timeZone: 'Asia/Taipei', year: 'numeric', month: '2-digit', day: '2-digit',
-                        hour: '2-digit', minute: '2-digit', second: '2-digit'
-                    });
+                    const timeStr = date.toLocaleString('zh-TW', { timeZone: 'Asia/Taipei', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' });
                     timeTag.innerText = `🟢 最新資料庫更新時間：${timeStr}`;
                     timeTag.style.color = '#2ecc71'; 
                 } else {
@@ -633,7 +543,6 @@
         let currentFile = currentKgiFile;
         let table;
 
-        // 🌟 第一層：切換保險公司
         function switchCompany(index, companyId) {
             const options = document.querySelectorAll('#companySwitcher .policy-option');
             options.forEach(opt => opt.classList.remove('active'));
@@ -651,7 +560,6 @@
                 currentFile = currentKgiFile;         
                 loadCsvData(currentFile);
                 fetchLastUpdateTime(currentFile);
-                
                 if (currentKgiFile === 'latest_zhaocai.csv') {
                     linkElement.href = 'https://kgilife.moneydj.com/main.asp?sUrl=$W$HTML$SELECT]DJHTM{P}SBR1';
                 } else {
@@ -659,30 +567,25 @@
                 }
                 linkElement.innerHTML = '🌐 凱基官方網站';
                 linkElement.style.display = 'inline-block';
-
             } else if (companyId === 'chubb') {
                 kgiContainer.style.display = 'none';  
                 currentFile = 'latest_chubb.csv';     
                 loadCsvData(currentFile);
                 fetchLastUpdateTime(currentFile);
-                
                 linkElement.href = 'https://chubb.moneydj.com/fund-page.html?sUrl=$W$HTML$SELECT]DJHTM{A}1';
                 linkElement.innerHTML = '🌐 安達官方網站';
                 linkElement.style.display = 'inline-block';
-
             } else if (companyId === 'cardif') {
                 kgiContainer.style.display = 'none';  
                 currentFile = 'latest_cardif.csv';    
                 loadCsvData(currentFile);
                 fetchLastUpdateTime(currentFile);
-                
                 linkElement.href = 'https://cardif.moneydj.com/main.asp?sUrl=$W$HTML$SELECT]DJHTM';
                 linkElement.innerHTML = '🌐 法巴官方網站';
                 linkElement.style.display = 'inline-block';
             }
         }
 
-        // 🌟 第二層：切換凱基專屬保單
         function switchKgiPolicy(index, fileName) {
             const options = document.querySelectorAll('#kgiSwitcher .policy-option');
             options.forEach(opt => opt.classList.remove('active'));
@@ -705,7 +608,6 @@
             linkElement.innerHTML = '🌐 凱基官方網站';
         }
 
-        // --- 過濾器邏輯 ---
         const filterInputs = ['filterReturnPeriod', 'filterReturnValue', 'filterInceptionYear', 'filterCurrency', 'filterDividend', 'filterNav', 'filterStdDev', 'filterSharpe', 'filterBeta'];
         filterInputs.forEach(id => {
             const element = document.getElementById(id);
@@ -848,10 +750,9 @@
                                     if (cleanKey === '標的名稱') {
                                         columnConfig.render = function (data, type, row, meta) {
                                             if (type === 'display' && data) {
-                                                return `
-                                                    <span class="name-container name-clickable" data-row-idx="${meta.row}">
-                                                        <span class="info-icon">ℹ️</span>${data}
-                                                    </span>`;
+                                                return `<span class="name-container name-clickable" data-row-idx="${meta.row}">
+                                                            <span class="info-icon">ℹ️</span>${data}
+                                                        </span>`;
                                             }
                                             return data;
                                         };
@@ -966,9 +867,7 @@
                     <div class="data-box"><div class="data-label">計價幣別</div><div class="data-value">${data['幣別'] || '-'}</div></div>
                     <div class="data-box"><div class="data-label">風險等級</div><div class="data-value">${formatBadge(data['風險收益等級'])}</div></div>
                     <div class="data-box">
-                        <div class="data-label">嘉實評等
-                            <span class="help-icon" data-tooltip="嘉實(Moneydj)針對績效與風險的綜合評分。最高5顆星，星數越多代表在同類基金中表現越佳。">?</span>
-                        </div>
+                        <div class="data-label">嘉實評等<span class="help-icon" data-tooltip="嘉實(Moneydj)針對績效與風險的綜合評分。最高5顆星，星數越多代表在同類基金中表現越佳。">?</span></div>
                         <div class="data-value" style="color:#eab308; font-weight:700;">${data['嘉實基金評等'] ? data['嘉實基金評等'] + ' ⭐' : '-'}</div>
                     </div>
                     <div class="data-box"><div class="data-label">配息頻率</div><div class="data-value">${data['配息頻率'] || '-'}</div></div>
@@ -987,24 +886,9 @@
 
                 <div class="data-section-title">🛡️ 風險與波動指標</div>
                 <div class="data-grid">
-                    <div class="data-box">
-                        <div class="data-label">年化標準差 
-                            <span class="help-icon" data-tooltip="衡量基金的波動大小。數值越大，代表漲跌起伏越劇烈（風險越高）。">?</span>
-                        </div>
-                        <div class="data-value">${data['年化標準差'] || '-'}</div>
-                    </div>
-                    <div class="data-box">
-                        <div class="data-label">夏普值 (CP值)
-                            <span class="help-icon" data-tooltip="衡量承受每1%風險能帶來的超額報酬。數值越大越好，代表承擔相同風險下賺得比較多。">?</span>
-                        </div>
-                        <div class="data-value">${formatVal(data['年化Sharpe'])}</div>
-                    </div>
-                    <div class="data-box">
-                        <div class="data-label">Beta值 (連動性)
-                            <span class="help-icon" data-tooltip="大盤漲跌1%時，基金跟著漲跌的幅度。大於1代表比大盤活潑，小於1代表比大盤抗跌。">?</span>
-                        </div>
-                        <div class="data-value">${formatVal(data['年化Beta'])}</div>
-                    </div>
+                    <div class="data-box"><div class="data-label">年化標準差<span class="help-icon" data-tooltip="衡量基金的波動大小。數值越大，代表漲跌起伏越劇烈（風險越高）。">?</span></div><div class="data-value">${data['年化標準差'] || '-'}</div></div>
+                    <div class="data-box"><div class="data-label">夏普值 (CP值)<span class="help-icon" data-tooltip="衡量承受每1%風險能帶來的超額報酬。數值越大越好，代表承擔相同風險下賺得比較多。">?</span></div><div class="data-value">${formatVal(data['年化Sharpe'])}</div></div>
+                    <div class="data-box"><div class="data-label">Beta值 (連動性)<span class="help-icon" data-tooltip="大盤漲跌1%時，基金跟著漲跌的幅度。大於1代表比大盤活潑，小於1代表比大盤抗跌。">?</span></div><div class="data-value">${formatVal(data['年化Beta'])}</div></div>
                 </div>
             `;
 
@@ -1012,10 +896,7 @@
             document.getElementById('fundModal').style.display = 'flex';
         }
 
-        function closeModal() {
-            document.getElementById('fundModal').style.display = 'none';
-        }
-
+        function closeModal() { document.getElementById('fundModal').style.display = 'none'; }
         window.onclick = function(event) {
             let modal = document.getElementById('fundModal');
             if (event.target == modal) { closeModal(); }
@@ -1044,6 +925,7 @@
             logVisit();
         });
 
+
         // ==========================================
         // 🍔 漢堡選單與視圖切換邏輯
         // ==========================================
@@ -1052,20 +934,17 @@
         const navFund = document.getElementById('navFund');
         const navCalc = document.getElementById('navCalc');
 
-        // 點擊漢堡按鈕展開/收合選單
         hamburgerBtn.addEventListener('click', function(e) {
             e.stopPropagation(); 
             dropdownMenu.classList.toggle('show');
         });
 
-        // 點擊網頁空白處時，自動關閉下拉選單
         document.addEventListener('click', function(e) {
             if (!dropdownMenu.contains(e.target) && e.target !== hamburgerBtn) {
                 dropdownMenu.classList.remove('show');
             }
         });
 
-        // 點擊「基金篩選」
         navFund.addEventListener('click', function(e) {
             e.preventDefault();
             this.classList.add('active');
@@ -1074,31 +953,32 @@
             document.querySelector('.dashboard-container').style.display = 'flex';
             document.getElementById('calculatorContainer').style.display = 'none';
             if(table) table.columns.adjust(); 
-            
             dropdownMenu.classList.remove('show'); 
         });
 
-        // 點擊「退休試算」
         navCalc.addEventListener('click', function(e) {
             e.preventDefault();
             this.classList.add('active');
             navFund.classList.remove('active');
             
             document.querySelector('.dashboard-container').style.display = 'none';
-            document.getElementById('calculatorContainer').style.display = 'flex';
-            
+            document.getElementById('calculatorContainer').style.display = 'block'; 
             dropdownMenu.classList.remove('show'); 
         });
 
+
         // ==========================================
-        // 💰 退休試算核心運算 (Time Value of Money)
+        // 💰 退休試算核心運算 (防破圖版)
         // ==========================================
         let myBarChart = null;
         let myPieChart = null;
 
         function goToStep(step) {
-            document.querySelectorAll('.calc-card').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.step-container').forEach(c => c.classList.remove('active'));
             document.getElementById('calcStep' + step).classList.add('active');
+            
+            // 如果切換回之前的步驟，捲軸自動回頂部
+            document.getElementById('calculatorContainer').scrollTop = 0;
         }
 
         function calculateResult() {
@@ -1115,7 +995,11 @@
 
             let yearsToRetire = retireAge - currentAge;
             let yearsInRetire = targetAge - retireAge;
-            if(yearsToRetire <= 0 || yearsInRetire <= 0) return alert("年齡設定有誤！");
+            
+            if(yearsToRetire <= 0 || yearsInRetire <= 0) {
+                alert("年齡設定有誤，請重新設定！");
+                return goToStep(1);
+            }
 
             let annualGap = annualExp - fixedIncome;
             if(annualGap < 0) annualGap = 0;
@@ -1134,20 +1018,26 @@
         }
 
         function renderCharts(lumpSum, annual, totalSocial, totalSavings, gapAtRetire) {
+            Chart.defaults.font.family = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif';
+
             let barCtx = document.getElementById('barChart').getContext('2d');
             if (myBarChart) myBarChart.destroy();
             myBarChart = new Chart(barCtx, {
                 type: 'bar',
                 data: {
-                    labels: ['現在一筆投入', '或 每年需投入'],
+                    labels: ['現在一筆投入', '持續每年投入'],
                     datasets: [{
-                        label: '投入金額',
                         data: [lumpSum, annual],
-                        backgroundColor: ['#f97316', '#a855f7'],
-                        borderRadius: 6
+                        backgroundColor: ['#ea580c', '#8b5cf6'],
+                        borderRadius: 8,
+                        barPercentage: 0.6
                     }]
                 },
-                options: { maintainAspectRatio: false, plugins: { legend: { display: false }, title: { display: true, text: '投入方案對比圖', font:{size:16} } } }
+                options: { 
+                    maintainAspectRatio: false, 
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true, grid: { borderDash: [5, 5] } }, x: { grid: { display: false } } }
+                }
             });
 
             let pieCtx = document.getElementById('pieChart').getContext('2d');
@@ -1158,23 +1048,30 @@
                     labels: ['社會保險基本盤', '目前已準備理財', '最終資金缺口'],
                     datasets: [{
                         data: [totalSocial, totalSavings, gapAtRetire],
-                        backgroundColor: ['#3b82f6', '#22c55e', '#ef4444'],
-                        borderWidth: 2
+                        backgroundColor: ['#3b82f6', '#10b981', '#ef4444'],
+                        borderWidth: 3,
+                        borderColor: '#fff'
                     }]
                 },
-                options: { maintainAspectRatio: false, plugins: { title: { display: true, text: '退休資金結構圖', font:{size:16} } } }
+                options: { 
+                    maintainAspectRatio: false,
+                    cutout: '65%',
+                    plugins: { legend: { position: 'bottom' } } 
+                }
             });
         }
 
+
+        // ==========================================
+        // 🔒 開發者後門與資料追蹤
+        // ==========================================
         let clickCount = 0;
         let clickTimer = null;
 
         document.querySelector('header h1').addEventListener('click', function() {
             clickCount++;
             if (clickCount === 1) {
-                clickTimer = setTimeout(() => { 
-                    clickCount = 0; 
-                }, 2000); 
+                clickTimer = setTimeout(() => { clickCount = 0; }, 2000); 
             }
             if (clickCount >= 5) {
                 clearTimeout(clickTimer);
@@ -1199,9 +1096,7 @@
                     if (response.ok) {
                         alert("✅ 成功觸發 n8n 強制更新！\n\n機器人已經在背景努力抓取最新資料並上傳 GitHub。\n請大約等待 1~2 分鐘後，再重新整理此網頁查看最新時間。");
                         timeTag.innerText = '⏳ n8n 背景更新中，請稍後重新整理...';
-                    } else {
-                        throw new Error('伺服器無回應');
-                    }
+                    } else { throw new Error('伺服器無回應'); }
                 })
                 .catch(error => {
                     console.error("觸發失敗:", error);

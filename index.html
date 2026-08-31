@@ -1138,8 +1138,12 @@
             let dataLump = [];
             let dataAnn = [];
 
-            let balLump = lumpSum;
-            let balAnn = 0;
+            // 🐛 修正核心：將「退休時已準備的金額」折現回「現在的價值」，並加入初始本金一起滾動
+            let pvCurrentSavings = totalSavings / Math.pow(1 + params.preReturn, params.retireAge - params.currentAge);
+
+            // 初始本金 = 我們算出的需投入金額 + 你原本就有的本金(現值)
+            let balLump = lumpSum + pvCurrentSavings;
+            let balAnn = pvCurrentSavings;
 
             for (let age = params.currentAge; age <= params.targetAge; age++) {
                 labels.push(age + '歲');
@@ -1173,7 +1177,7 @@
             let barCtx = document.getElementById('barChart').getContext('2d');
             if (myBarChart) myBarChart.destroy();
             myBarChart = new Chart(barCtx, {
-                type: 'line', // 🌟 改為曲線圖
+                type: 'line', 
                 data: {
                     labels: labels,
                     datasets: [
@@ -1181,12 +1185,12 @@
                             label: '現在一筆投入',
                             data: dataLump,
                             borderColor: '#3b82f6',
-                            backgroundColor: 'rgba(59, 130, 246, 0.12)', // 淡藍色背景填滿
+                            backgroundColor: 'rgba(59, 130, 246, 0.12)', 
                             borderWidth: 2,
                             fill: true,
-                            pointRadius: 0, // 隱藏多餘的點，游標移過去才顯示
+                            pointRadius: 0, 
                             pointHitRadius: 10,
-                            tension: 0.4 // 讓曲線平滑
+                            tension: 0.4 
                         },
                         {
                             label: '每年持續投入',
@@ -1194,7 +1198,7 @@
                             borderColor: '#14b8a6',
                             backgroundColor: 'transparent',
                             borderWidth: 2.5,
-                            borderDash: [6, 4], // 🌟 設定虛線，這樣重疊時才看得到藍線！
+                            borderDash: [6, 4], 
                             fill: false,
                             pointRadius: 0,
                             pointHitRadius: 10,
@@ -1207,7 +1211,7 @@
                     plugins: { 
                         legend: { display: true, position: 'top', labels: { usePointStyle: true, boxWidth: 8 } },
                         tooltip: {
-                            mode: 'index', // 🌟 游標移過去時，同時顯示兩條線的數字
+                            mode: 'index', 
                             intersect: false,
                             callbacks: {
                                 label: function(context) {
@@ -1224,7 +1228,7 @@
                         }, 
                         x: { 
                             grid: { display: false },
-                            ticks: { maxTicksLimit: 8 } // 避免 X 軸標籤太擠
+                            ticks: { maxTicksLimit: 8 } 
                         } 
                     }
                 }
@@ -1254,7 +1258,7 @@
                                 label: function(context) {
                                     return ' ' + context.label + ' : ' + context.raw.toLocaleString() + ' 元';
                                 }
-                            }
+                            } 
                         }
                     } 
                 }

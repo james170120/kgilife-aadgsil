@@ -254,12 +254,22 @@
         .btn-back { background: #f1f5f9; color: #64748b; padding: 14px; border-radius: 10px; flex: 1; font-weight: bold; border: none; cursor: pointer; }
         .btn-back:hover { background: #e2e8f0; }
 
-        /* 🔥 階段三：儀表板 (深色卡片對比) */
+        /* 🔥 階段三：儀表板 (分層排版與新顏色) */
         .card-step3 { max-width: 900px; width: 100%; margin: 0 auto; }
         
-        /* 🌟 改用自動換行的 Grid 彈性佈局，能完美容納所有 8 個參數 */
-        .dashboard-header { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; background: #fff; padding: 20px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); margin-bottom: 20px; border: 1px solid #f1f5f9; }
-        .dash-input-group { background: #f8fafc; padding: 10px; border-radius: 10px; text-align: center; }
+        /* 🌟 區塊化排版主容器 */
+        .dashboard-header { display: flex; flex-direction: column; gap: 15px; background: #fff; padding: 20px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); margin-bottom: 20px; border: 1px solid #f1f5f9; }
+        
+        /* 🌟 單一區塊 (Row) 的設定 */
+        .dash-row { display: flex; gap: 15px; align-items: center; border-bottom: 1px dashed #e2e8f0; padding-bottom: 15px; }
+        .dash-row:last-child { border-bottom: none; padding-bottom: 0; }
+        
+        /* 🌟 區塊標籤 (如：階段一) */
+        .dash-row-tag { flex-shrink: 0; background: #f1f5f9; color: #475569; font-size: 0.75rem; font-weight: 700; padding: 6px 12px; border-radius: 20px; width: 65px; text-align: center; }
+        .dash-row-inputs { flex-grow: 1; display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; }
+        
+        .dash-input-group { background: #f8fafc; padding: 10px; border-radius: 10px; text-align: center; border: 1px solid transparent; transition: 0.2s; }
+        .dash-input-group:hover { border-color: #cbd5e1; }
         .dash-input-group label { display: block; font-size: 0.75rem; color: #64748b; margin-bottom: 5px; font-weight: 600; }
         .dash-input-group input { width: 100%; border: 1px solid #e2e8f0; background: #fff; padding: 8px 5px; text-align: center; font-size: 1.05rem; font-weight: bold; border-radius: 6px; color: #0f172a; margin: 0; box-sizing: border-box; transition: 0.2s; }
         .dash-input-group input:focus { border-color: #3b82f6; outline: none; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
@@ -267,8 +277,11 @@
         .result-highlight-box { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
         .highlight-card { padding: 25px 20px; border-radius: 20px; color: #fff; text-align: center; box-shadow: 0 10px 20px rgba(0,0,0,0.1); position: relative; overflow: hidden; }
         .highlight-card::after { content: ''; position: absolute; top: -50%; right: -20%; width: 100px; height: 100px; background: rgba(255,255,255,0.1); border-radius: 50%; }
-        .card-orange { background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); }
-        .card-purple { background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%); }
+        
+        /* 🌟 全新專業 Fintech 配色 */
+        .card-blue { background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); } /* 深海藍 */
+        .card-teal { background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%); } /* 碧玉綠 */
+        
         .hl-title { font-size: 0.9rem; opacity: 0.9; margin-bottom: 10px; font-weight: 600; }
         .hl-value { font-size: 1.8rem; font-weight: 800; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
 
@@ -306,6 +319,11 @@
             header { flex-direction: column; align-items: flex-start; gap: 5px; padding: 12px 15px; }
             .header-menu-container { position: absolute; right: 15px; top: 12px; }
             .global-tooltip { display: none !important; }
+
+            /* 🌟 手機版區塊排列調整 */
+            .dash-row { flex-direction: column; align-items: flex-start; gap: 10px; }
+            .dash-row-tag { width: auto; font-size: 0.8rem; }
+            .dash-row-inputs { width: 100%; grid-template-columns: 1fr 1fr; }
             
             /* 手機版試算表調整 */
             .result-highlight-box { grid-template-columns: 1fr; }
@@ -466,26 +484,45 @@
         <div id="calcStep3" class="step-container card-step3">
             
             <!-- 🌟 整合所有 8 個參數，並綁定 oninput 即時重算 -->
+            <!-- 🌟 重新設計的分區塊參數列 -->
             <div class="dashboard-header">
-                <div class="dash-input-group"><label>👦 現在年齡</label><input type="number" id="inpCurrentAge3" oninput="calculateResult()"></div>
-                <div class="dash-input-group"><label>👴 退休年齡</label><input type="number" id="inpRetireAge3" oninput="calculateResult()"></div>
-                <div class="dash-input-group"><label>🎯 準備到幾歲</label><input type="number" id="inpTargetAge3" value="90" oninput="calculateResult()"></div>
-                <div class="dash-input-group"><label>📈 退休前報酬(%)</label><input type="number" id="inpPreReturn3" value="8" oninput="calculateResult()"></div>
-                <div class="dash-input-group"><label>📉 退休後報酬(%)</label><input type="number" id="inpPostReturn3" value="4" oninput="calculateResult()"></div>
+                <!-- 區塊 1：階段一輸入 -->
+                <div class="dash-row">
+                    <div class="dash-row-tag">階段一</div>
+                    <div class="dash-row-inputs">
+                        <div class="dash-input-group"><label>👦 現在年齡</label><input type="number" id="inpCurrentAge3" oninput="calculateResult()"></div>
+                        <div class="dash-input-group"><label>👴 退休年齡</label><input type="number" id="inpRetireAge3" oninput="calculateResult()"></div>
+                    </div>
+                </div>
                 
-                <!-- 加入千分位格式化與即時重算 -->
-                <div class="dash-input-group"><label>🏖️ 每年花費</label><input type="text" inputmode="numeric" id="inpAnnualExp3" oninput="this.value=formatNumber(this.value); calculateResult()"></div>
-                <div class="dash-input-group"><label>🏦 目前已準備</label><input type="text" inputmode="numeric" id="inpCurrentSavings3" oninput="this.value=formatNumber(this.value); calculateResult()"></div>
-                <div class="dash-input-group"><label>🛡️ 每年固定領</label><input type="text" inputmode="numeric" id="inpFixedIncome3" oninput="this.value=formatNumber(this.value); calculateResult()"></div>
+                <!-- 區塊 2：階段二輸入 -->
+                <div class="dash-row">
+                    <div class="dash-row-tag">階段二</div>
+                    <div class="dash-row-inputs">
+                        <div class="dash-input-group"><label>🏖️ 每年花費</label><input type="text" inputmode="numeric" id="inpAnnualExp3" oninput="this.value=formatNumber(this.value); calculateResult()"></div>
+                        <div class="dash-input-group"><label>🏦 目前已準備</label><input type="text" inputmode="numeric" id="inpCurrentSavings3" oninput="this.value=formatNumber(this.value); calculateResult()"></div>
+                        <div class="dash-input-group"><label>🛡️ 每年固定領</label><input type="text" inputmode="numeric" id="inpFixedIncome3" oninput="this.value=formatNumber(this.value); calculateResult()"></div>
+                    </div>
+                </div>
+
+                <!-- 區塊 3：目標參數設定 -->
+                <div class="dash-row">
+                    <div class="dash-row-tag">目標設定</div>
+                    <div class="dash-row-inputs">
+                        <div class="dash-input-group"><label>🎯 準備到幾歲</label><input type="number" id="inpTargetAge3" value="90" oninput="calculateResult()"></div>
+                        <div class="dash-input-group"><label>📈 退休前報酬(%)</label><input type="number" id="inpPreReturn3" value="8" oninput="calculateResult()"></div>
+                        <div class="dash-input-group"><label>📉 退休後報酬(%)</label><input type="number" id="inpPostReturn3" value="4" oninput="calculateResult()"></div>
+                    </div>
+                </div>
             </div>
             
-            <!-- 核心結果數字卡片 -->
+            <!-- 核心結果數字卡片 (更換為新的顏色 Class) -->
             <div class="result-highlight-box">
-                <div class="highlight-card card-orange">
+                <div class="highlight-card card-blue">
                     <div class="hl-title">⚡ 現在一筆投入需</div>
                     <div id="resLumpSum" class="hl-value">0</div>
                 </div>
-                <div class="highlight-card card-purple">
+                <div class="highlight-card card-teal">
                     <div class="hl-title">🔄 或 每年持續投入需</div>
                     <div id="resAnnual" class="hl-value">0</div>
                 </div>

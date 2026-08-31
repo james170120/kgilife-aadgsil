@@ -978,21 +978,13 @@
         });
 
 
-        // ==========================================
+// ==========================================
         // 💰 退休試算核心運算 (防破圖版)
         // ==========================================
         let myBarChart = null;
         let myPieChart = null;
 
-        function goToStep(step) {
-            document.querySelectorAll('.step-container').forEach(c => c.classList.remove('active'));
-            document.getElementById('calcStep' + step).classList.add('active');
-            
-            // 如果切換回之前的步驟，捲軸自動回頂部
-            document.getElementById('calculatorContainer').scrollTop = 0;
-        }
-
-            // 🌟 新增：數字加上千分位逗號
+        // 🌟 新增：數字加上千分位逗號
         function formatNumber(val) {
             if (!val) return '';
             let raw = val.toString().replace(/\D/g, ''); // 拔除所有非數字字元

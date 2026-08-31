@@ -1129,7 +1129,6 @@
             });
         }
 
-        // 🌟 修改：升級為動態曲線圖 (Line Chart)
         function renderCharts(lumpSum, annual, totalSocial, totalSavings, gapAtRetire, params) {
             Chart.defaults.font.family = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif';
 
@@ -1138,17 +1137,30 @@
             let dataLump = [];
             let dataAnn = [];
 
-            // 🐛 修正核心：將「退休時已準備的金額」折現回「現在的價值」，並加入初始本金一起滾動
-            let pvCurrentSavings = totalSavings / Math.pow(1 + params.preReturn, params.retireAge - params.currentAge);
+            // 🌟 修正核心：只畫「這筆新資金」的成長與消耗軌跡，不包含舊有資產
+            let balLump = lumpSum;
+            let balAnn = 0;
 
-            // 初始本金 = 我們算出的需投入金額 + 你原本就有的本金(現值)
-            let balLump = lumpSum + pvCurrentSavings;
-            let balAnn = pvCurrentSavings;
+            // 計算這筆新資金在退休後，每年需負責分攤提領的金額
+            let pmtGap = 0;
+            if (gapAtRetire > 0 && params.targetAge > params.retireAge) {
+                let n = params.targetAge - params.retireAge;
+                let r = params.postReturn;
+                if (r === 0) {
+                    pmtGap = gapAtRetire / n;
+                } else {
+                    pmtGap = gapAtRetire / ( ((1 - Math.pow(1 + r, -n)) / r) * (1 + r) );
+                }
+            }
 
             for (let age = params.currentAge; age <= params.targetAge; age++) {
                 labels.push(age + '歲');
                 
-                if (age < params.retireAge) {
+                if (age === params.targetAge) {
+                    // 目標壽命最後一年，資金剛好花完歸零
+                    dataLump.push(0);
+                    dataAnn.push(0);
+                } else if (age < params.retireAge) {
                     // 退休前：累積期
                     dataLump.push(Math.round(Math.max(0, balLump)));
                     balAnn += annual; // 每年初投入
@@ -1156,20 +1168,16 @@
                     
                     balLump *= (1 + params.preReturn);
                     balAnn *= (1 + params.preReturn);
-                } else if (age < params.targetAge) {
-                    // 退休後：消耗期 (每年初領生活費)
+                } else {
+                    // 退休後：消耗期 (只提領這筆新資金負責的額度)
                     dataLump.push(Math.round(Math.max(0, balLump)));
                     dataAnn.push(Math.round(Math.max(0, balAnn)));
                     
-                    balLump -= params.annualGap;
-                    balAnn -= params.annualGap;
+                    balLump -= pmtGap;
+                    balAnn -= pmtGap;
                     
                     balLump *= (1 + params.postReturn);
                     balAnn *= (1 + params.postReturn);
-                } else {
-                    // 目標壽命最後一年 (餘額趨近於 0)
-                    dataLump.push(Math.round(Math.max(0, balLump)));
-                    dataAnn.push(Math.round(Math.max(0, balAnn)));
                 }
             }
 
@@ -1234,7 +1242,7 @@
                 }
             });
 
-            // 🥧 退休資金結構分析 (圓餅圖) 保持不變
+            // 🥧 退休資金結構分析 (圓餅圖)
             let pieCtx = document.getElementById('pieChart').getContext('2d');
             if (myPieChart) myPieChart.destroy();
             myPieChart = new Chart(pieCtx, {

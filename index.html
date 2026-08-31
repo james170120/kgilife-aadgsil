@@ -981,7 +981,7 @@
             document.getElementById('calculatorContainer').scrollTop = 0;
         }
 
-        function calculateResult() {
+function calculateResult() {
             goToStep(3); 
             
             let currentAge = parseFloat(document.getElementById('inpCurrentAge').value) || 30;
@@ -1001,19 +1001,29 @@
                 return goToStep(1);
             }
 
+            // 1. 計算退休後每年的「資金缺口」
             let annualGap = annualExp - fixedIncome;
             if(annualGap < 0) annualGap = 0;
 
-            let totalNeededAtRetire = annualGap * ((1 - Math.pow(1 + postReturn, -yearsInRetire)) / postReturn);
+            // 🌟 關鍵修改 1：退休後提領改為「期初拿錢 (Annuity Due)」-> 公式尾端乘上 (1 + postReturn)
+            let totalNeededAtRetire = annualGap * ((1 - Math.pow(1 + postReturn, -yearsInRetire)) / postReturn) * (1 + postReturn);
+            
+            // 扣除目前已準備理財
             let gapAtRetire = totalNeededAtRetire - currentSavings;
             if(gapAtRetire < 0) gapAtRetire = 0;
 
+            // 2. 現在一筆投入 (折現回現在，這部分不變)
             let lumpSumNeeded = gapAtRetire / Math.pow(1 + preReturn, yearsToRetire);
-            let annualNeeded = gapAtRetire * (preReturn / (Math.pow(1 + preReturn, yearsToRetire) - 1));
+            
+            // 🌟 關鍵修改 2：每年投入改為「期初投入 (Annuity Due)」-> 分母多乘上 (1 + preReturn)
+            let fvFactor = ((Math.pow(1 + preReturn, yearsToRetire) - 1) / preReturn) * (1 + preReturn);
+            let annualNeeded = gapAtRetire / fvFactor;
 
+            // 更新畫面數字
             document.getElementById('resLumpSum').innerText = Math.round(lumpSumNeeded).toLocaleString() + " 元";
             document.getElementById('resAnnual').innerText = Math.round(annualNeeded).toLocaleString() + " 元";
 
+            // 重新繪製圖表
             renderCharts(lumpSumNeeded, annualNeeded, fixedIncome * yearsInRetire, currentSavings, gapAtRetire);
         }
 
